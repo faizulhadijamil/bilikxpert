@@ -1,0 +1,106 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media print {
+  #no-print {
+    display: none;
+  }
+}
+
+.chckt-button__amount{
+  display: none;
+}
+
+.chckt-pm-list.js-chckt-pm-list .chckt-pm.chckt-pm-card.js-chckt-pm.chckt-pm--hidden{
+  display:block;
+}
+
+.chckt-pm-list.js-chckt-pm-list .chckt-pm.chckt-pm-card.js-chckt-pm.js-chckt-pm--selected .js-chckt-pm__pm-holder.chckt-pm__pm-holder label:nth-child(5) {
+  display:none;
+}
+
+.chckt-pm-list.js-chckt-pm-list .chckt-button-container.js-chckt-button-container{
+  display:none
+}
+
+.chckt-pm-list.js-chckt-pm-list .chckt-pm.chckt-pm-card.js-chckt-pm.js-chckt-pm--selected .chckt-pm__header.js-chckt-pm__header .chckt-pm__name.js-chckt-pm__name{
+  visibility: hidden;
+}
+
+.chckt-pm-list.js-chckt-pm-list .chckt-pm.chckt-pm-card.js-chckt-pm.js-chckt-pm--selected .chckt-pm__header.js-chckt-pm__header .chckt-pm__name.js-chckt-pm__name:after{
+  content:'Visa / Mastercard';
+  visibility: visible;
+  margin-left:-80px;
+}
+
+/*&.control-arrow {
+  &:before {
+    margin: 0 5px;
+    display: inline-block;
+    border-top: 8px solid black;
+    border-bottom: 8px solid black;
+    content: '';
+  }
+}
+
+&.control-disabled {
+  @include opacity(0);
+  cursor: inherit;
+  display: none;
+}
+
+&.control-prev {
+  left: 0;
+  &:before {
+    border-right: 8px solid #000;
+  }
+}
+
+&.control-next {
+  right: 0;
+  &:before {
+    border-left: 8px solid #000;
+  }
+}
+
+.contentlist .carousel .control-arrow::before
+{
+    border-top-width: 20px;
+    border-bottom-width: 20px;
+}
+.contentlist .carousel .control-prev::before
+{
+    border-right-width: 10px;
+    border-right-color: rgba(238,209,47,1);
+}
+.contentlist .carousel .control-next::before
+{
+    border-left-width: 10px;
+    border-left-color: rgba(238,209,47,1);
+}*/
