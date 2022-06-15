@@ -13,16 +13,12 @@ import { getVendProducts } from './selectors';
 // const cors = require('cors')({ origin: true });
 
 // project ID
-const devProjectId = "babeldev-fb434";
-const demoProjectId = "babeldemo-e684b";
-const prodProjectId = "babel-2c378";
-const babelAsiaId = "babelasia-37615";
-const euphoriaId = "euphoria-78b2c";
+const roomExpertId = "faizroom-36b74";
 
 // const projectId = devProjectId;
 // const projectId = demoProjectId;
 // const projectId = prodProjectId;
-const projectId = babelAsiaId;
+const projectId = roomExpertId;
 // const projectId = euphoriaId;
 
 let messageTimer;
@@ -55,76 +51,15 @@ let unsubscribeReferralCny;
 // require("firebase/firestore");
 // for babelAsiaId
 var config = {
-  apiKey: "AIzaSyBoucAnhK3TCPMaJ5QrNnLlw7-bCjsjyoo",
-  authDomain: "babelasia-37615.firebaseapp.com",
-  databaseURL: "https://babelasia-37615.firebaseio.com",
-  projectId: "babelasia-37615",
-  storageBucket: "babelasia-37615.appspot.com",
-  messagingSenderId: "171899057367",
-  appId: "1:171899057367:web:853f0f7baadebbda24ec92",
-  measurementId: "G-6GSZPHL0NH"
+  apiKey: "AIzaSyCnQXnlRIFlIZ0tQooH5PW-I54MsHVbxow",
+    authDomain: "faizroom-36b74.firebaseapp.com",
+    databaseURL: "https://faizroom-36b74.firebaseio.com",
+    projectId: roomExpertId,
+    storageBucket: "faizroom-36b74.appspot.com",
+    messagingSenderId: "669544874882",
+    appId: "1:669544874882:web:44a141df4ce90436b9859b",
+    measurementId: "G-CJ5Z1077NM"
 };
-
-if (projectId === babelAsiaId){
-  config = {
-    apiKey: "AIzaSyBoucAnhK3TCPMaJ5QrNnLlw7-bCjsjyoo",
-    authDomain: "babelasia-37615.firebaseapp.com",
-    databaseURL: "https://babelasia-37615.firebaseio.com",
-    projectId: "babelasia-37615",
-    storageBucket: "babelasia-37615.appspot.com",
-    messagingSenderId: "171899057367",
-    appId: "1:171899057367:web:853f0f7baadebbda24ec92",
-    measurementId: "G-6GSZPHL0NH"
-  };
-}
-else if (projectId === prodProjectId){
-  console.log('old babel environment')
-  config = {
-    apiKey: "AIzaSyCSyUNFkDC0SqRJz_NAcFxSGlgj9W_MtaA",
-    authDomain: "babel-2c378.firebaseapp.com",
-    databaseURL: "https://babel-2c378.firebaseio.com",
-    projectId: "babel-2c378",
-    messagingSenderId: "736489711587",
-    appId: "1:736489711587:web:d4ca4f1fe9ee6fc3d7a2d6",
-    storageBucket: 'babel-2c378.appspot.com',
-    measurementId: "G-H3VH7CBK6B"
-  };
-}
-// for demo environment
-else if (projectId === demoProjectId){
-  config = {
-    apiKey: "AIzaSyCApxTS_nB66t6b7F3TraWIWk1-_WziH3A",
-    authDomain: "babeldemo-e684b.firebaseapp.com",
-    databaseURL: "https://babeldemo-e684b.firebaseio.com",
-    projectId: projectId,
-    storageBucket: "",
-    messagingSenderId: "357700981546",
-    appId: "1:357700981546:web:0214a328657547b2430453",
-    measurementId: "G-PEXXWG7S2T"
-  };
-}
-// for dev environment
-else if (projectId === devProjectId){
-  config = {
-    apiKey: "AIzaSyDge_8KXyMq7E9ioeayXJnXizgv-if235c",
-    authDomain: "babeldev-fb434.firebaseapp.com",
-    databaseURL: "https://babeldev-fb434.firebaseio.com",
-    projectId: projectId,
-    storageBucket: "babeldev-fb434.appspot.com",
-  };
-}
-// for euphoria
-else if (projectId === euphoriaId){
-  config = {
-    apiKey: "AIzaSyCVInRz9erQi1oOM42h8xTesqCe1FHYyVM",
-    authDomain: "euphoria-78b2c.firebaseapp.com",
-    databaseURL: "https://euphoria-78b2c-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: projectId,
-    storageBucket: "euphoria-78b2c.appspot.com",
-    serviceAccountId: 'firebase-adminsdk-il7y4@euphoria-78b2c.iam.gserviceaccount.com',
-  };
-}
-
 
 // initialize firebase
 firebase.initializeApp(config);
