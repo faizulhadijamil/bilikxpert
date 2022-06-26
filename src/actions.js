@@ -262,11 +262,6 @@ export function bootstrap(){
           else if (pathname.indexOf('/renewmembership') !== -1 || pathname.indexOf('/renewmembership/') !== -1){
             console.log('renewmembership path');
           }
-          // else if (pathname.indexOf('/covidform') !== -1){
-          //   console.log('covidform form');
-          //   dispatch(viewRegForCV19());
-          //   // dispatch(verifyAuth('covid19form'));
-          // }
           else if (pathname.indexOf('/createclass') !== -1){
             console.log('createclass path');
           }
@@ -286,6 +281,7 @@ export function bootstrap(){
 export function login(email, password, handleLoginFailed){
   return function action(dispatch, getState) {
     dispatch(showMessage("Logging in..."));
+    console.log('try to login....')
     firebase.auth().signInWithEmailAndPassword(email, password)
     .then(function(user) {
         dispatch(showMessage("Logged in!"));
@@ -577,13 +573,7 @@ export function signUp(email, password, name, phone, mcId, referralSource, image
       dispatch(setSigningUp(false));
       dispatch(showMessage("Signed Up!"));
       
-      // dispatch(viewNext());
-      if (fromcv19){
-        dispatch(viewcv19page())
-      }
-      else{
-        dispatch(viewNext());
-      }
+      dispatch(viewNext());
       return Promise.resolve();
 
     }).catch(function(error) {
@@ -852,7 +842,7 @@ export function verifyTAC(tacNumberFromApp, whatsappNumber, handleResponse){
 export function fetchMethodsForEmail(email, handleCompletion){
   return function action(dispatch, getState) {
     dispatch(setFetchingEmail(true));
-    // console.log('fetching: ', email);
+    console.log('fetchMethodsForEmail...: ', email);
     // setTimeout(()=>{
     //   dispatch(setNeedsSignUp(false));
     //   dispatch(setFetchingEmail(false));
@@ -3668,47 +3658,6 @@ export function addRecurring(userId){
   }
 }
 
-export function addCovid19ToUser(userId, travelToWithinCountry, CV19CloseContact, CV19Agree){
-  return function action(dispatch, getState) {
-    var userRef;
-    userRef = firestore.collection("users").doc(userId);
-    const cv19FormRef = firestore.collection("CV19Forms");
-    const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-    
-    const user = getState().state.get('user');
-    const currentUserIsStaff = user && user.get('isStaff') === true;
-
-    const cv19Data = {
-      // manualAdd:true,
-      createdAt:timestamp,
-      userId:userId,
-      travelToWithinCountry,
-      CV19CloseContact,
-      CV19Agree
-    };
-
-    return userRef.update({
-      covid19Declaration:true,
-      covid19DeclarationAt:timestamp
-    }).then(()=>{
-      console.log('adding cv19 to cv19form collections');
-      cv19FormRef.add(cv19Data);
-    }).then(()=>{
-      console.log('added covid19Free to the user');
-      dispatch(showMessage("Success"));
-
-      const newPath = currentUserIsStaff? `/people`:`/next`;
-      // const newPath = currentUserIsStaff? `/people`:`/covidform/${userId}`;
-      if(getState().router.location.pathname !== newPath){
-        dispatch(push(newPath));
-      }
-    }).catch((e)=>{
-      console.log('error covid19Free: ', e);
-      dispatch(showMessage("Error: ", e));
-    })
-  }
-}
-
 export function getPaymentSession(paymentSessionData, handleResponse){
   return function action(dispatch, getState) {
     console.log('paymentSessionData: ', paymentSessionData);
@@ -3908,13 +3857,7 @@ export function viewNext(userId = null, bookingId = null){
           const staffRole = data && data.staffRole;
           const roles = data && data.roles;
           const isTrainer = (staffRole && staffRole === 'trainer') || (roles && roles.trainer);
-          const covid19DeclarationAt = data && data.covid19DeclarationAt;
-          const cv19DeclarationIsActive = covid19DeclarationAt && moment(getTheDate(covid19DeclarationAt)).add(14, 'days').isSameOrAfter(moment());
-          // console.log('cv19DeclarationIsActive: ', cv19DeclarationIsActive);
-          // if (!cv19DeclarationIsActive && !isStaff){
-          //   nextPath = `/covidform/${userId}`
-          // }
-          // else if (isStaff){
+        
           if (isStaff && !isTrainer){
             nextPath = `/people`;
           }
@@ -3944,25 +3887,6 @@ export function viewNext(userId = null, bookingId = null){
       // if(getState().router.location.pathname !== nextPath){
       //   dispatch(push(nextPath));
       // }
-  }
-}
-
-export function viewcv19page(){
-  return function action(dispatch, getState) {
-    const currentUserId = getState().state.getIn(['user', 'id']) || null;
-    console.log('theuserId: ', currentUserId);
-    var newPath = `/covidform`;
-    if(!currentUserId){
-      if(getState().router.location.pathname !== newPath){
-        dispatch(push(newPath));
-      }
-    }
-    else{
-      newPath = `/covidform/${currentUserId}`;
-      if(getState().router.location.pathname !== newPath){
-        dispatch(push(newPath));
-      }
-    }
   }
 }
 
@@ -4108,16 +4032,6 @@ export function viewWhatsappRegistration(){
   }
 }
 
-// view registration for covid 19
-export function viewRegForCV19(){
-  return function action(dispatch, getState){
-    const newPath = `/login/covid19ref`;
-    if(getState().router.location.pathname !== newPath){
-      dispatch(push(newPath));
-    }
-  }
-}
-
 export function viewPromo(){
   return function action(dispatch, getState) {
     const newPath = `/promo`;
@@ -4203,15 +4117,6 @@ export function viewBookExclusiveId(bookingId){
   }
 }
 
-export function viewCovid19Form(userId){
-  return function action(dispatch, getState) {
-    const newPath = `/covidform/${userId}`;
-    if(getState().router.location.pathname !== newPath){
-      dispatch(push(newPath));
-    }
-  }
-}
-
 
 export function goBackOnce(){
   return function action(dispatch, getState) {
@@ -4243,11 +4148,6 @@ export function verifyAuth(bookingId = null) {
             console.log('no user yet')
             return
           }
-          // pass the paramater for covid19 over here
-          // else if (getState().router.location.pathname.indexOf('covid19form') === 1){
-          //   console.log('redirect to login page with CV192')
-          //   dispatch(viewLogin('covid19form'));
-          // }
           else if(getState().router.location.pathname.indexOf('buy') === -1 && 
             getState().router.location.pathname.indexOf('payments') === -1 &&
             getState().router.location.pathname.indexOf('babellive') === -1 && 
@@ -4373,17 +4273,7 @@ export function verifyAuth(bookingId = null) {
               console.log(pathname, 'true');
               const email = (userData && userData.email) || '';
               // dispatch(viewJoin(email));
-              const covid19DeclarationAt = userData && userData.covid19DeclarationAt;
-              const isCV19Active = covid19DeclarationAt && moment(getTheDate(covid19DeclarationAt)).add(14, 'days').isSameOrAfter(moment());
-              console.log('isCV19Active: ', isCV19Active);
-              // if (!isCV19Active){
-              //   dispatch(viewCovid19Form(uid))
-              // }
-              // else{
-              //   // dispatch(viewProfile());
-              //   dispatch(viewNext(uid));
-              // }
-              // dispatch(viewProfile());
+             
               dispatch(viewNext(uid));
             }else if (pathname.indexOf('bfmreport') === 1){
               console.log('pathname: ', pathname);

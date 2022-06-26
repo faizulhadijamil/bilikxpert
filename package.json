@@ -1,6 +1,6 @@
 {
-  "name": "babel-web",
-  "version": "3.5.59",
+  "name": "bilikxpert",
+  "version": "1.0",
   "private": true,
   "dependencies": {
     "@adyen/api-library": "^3.1.3",

@@ -50,7 +50,7 @@ class BabelLogo extends React.Component {
     return (
       <div style={{maxWidth:600, height:128, marginLeft:'auto', marginRight:'auto', marginTop:32, marginBottom:96}}>
         {!hideLogo && <div style={{display:'flex', flex:1, flexDirection:'row', justifyContent:'space-around'}}>
-          <img src ={require("./assets/babel-icon-blue.png")} alt="logo" style={{width:128, height:128}} />
+          <img src ={require("./assets/bilikxpert_logos_black.png")} alt="logo" style={{width:128, height:128}} />
         </div>}
         <div style={{display:'flex', flex:1, flexDirection:'row', justifyContent:'center'}}>
           {!isMonserratFontStyle && <StdText 

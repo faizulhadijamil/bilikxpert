@@ -102,7 +102,7 @@ const styles = theme => ({
   fileInput: {display: 'none'},
 });
 
-const joinOptions = ["TTDI", "KLCC"];
+const joinOptions = ["Cahaya Maju", "Cahaya Warisan", "Cahaya Midah", "Cahaya Hanson", "Pandan Cahaya", "Pandan Indah", "Cempaka", "Tenaga", "Wangsa Maju"];
 
 class Registration extends React.Component {
 
@@ -371,9 +371,9 @@ class Registration extends React.Component {
     const isAdmin = roles && roles.get('admin') === true;
     const isMC = roles && roles.get('mc') === true;
     const isAuthorized = isAdmin || isMC;
-    // console.log('theStaffProps: ', this.props.staff);
-    // console.log('theUsers: ', this.props.users);
-    // console.log('currentUser: ', user);
+    console.log('theStaffProps: ', this.props.staff);
+    console.log('theUsers: ', this.props.users);
+    console.log('currentUser: ', user);
     
     const isStaff = user && user.get('isStaff');
     const currentStaffBranch = user && user.get('staffBranch');
@@ -390,8 +390,13 @@ class Registration extends React.Component {
 
     if(this.state.slideshowOpen && isPromo){return <OnboardingCarousel handleClose={()=>this.setState({slideshowOpen:false})}/>}
 
-    const isReady = (users && users.size && staff && staff.size && users.size !== staff.size) ? true : false;
-    // console.log(isLogin, isReady, this.props.match);
+    console.log('isStaff: ', isStaff);
+    console.log('users.size: ', users && users.size);
+    console.log('staff.size: ', staff && staff.size);
+
+
+    const isReady = (users && users.size && staff && staff.size) ? true : false;
+    console.log('isLogin:', isLogin, isReady, this.props.match);
 
     // if (!isLogin && (!isReady || !isAuthorized)) {
     if (!isLogin && (!isReady || !isStaff)) {
@@ -438,7 +443,7 @@ class Registration extends React.Component {
     const {joinOption} = this.state;
     const radioButtonOptionsLayout = 
     <FormControl style={{marginTop:16}} component="fieldset" className={classes.formControl}>
-      <FormLabel component="legend">Which outlet are you visiting?</FormLabel>
+      <FormLabel component="legend">Branch that you rent?</FormLabel>
       <RadioGroup
         aria-label="Location"
         name="joinOptions"
@@ -448,7 +453,12 @@ class Registration extends React.Component {
       >
         <FormControlLabel value={joinOptions[0]} control={<Radio />} label={joinOptions[0]} />
         <FormControlLabel value={joinOptions[1]} control={<Radio />} label={joinOptions[1]} />
-        
+        <FormControlLabel value={joinOptions[2]} control={<Radio />} label={joinOptions[2]} />
+        <FormControlLabel value={joinOptions[3]} control={<Radio />} label={joinOptions[3]} />
+        <FormControlLabel value={joinOptions[4]} control={<Radio />} label={joinOptions[4]} />
+        <FormControlLabel value={joinOptions[5]} control={<Radio />} label={joinOptions[5]} />
+        <FormControlLabel value={joinOptions[6]} control={<Radio />} label={joinOptions[6]} />
+        <FormControlLabel value={joinOptions[7]} control={<Radio />} label={joinOptions[7]} />
       </RadioGroup>
     </FormControl>;
 
@@ -811,7 +821,7 @@ class Registration extends React.Component {
       userItem = (
         <div>
           <Typography type="display1" component="h1" color="primary" style={{textAlign:'center', marginBottom:32}}>
-            Welcome to Babel
+            Welcome to BilikXpert
           </Typography>
           <TextField
             id="email"
@@ -931,8 +941,8 @@ class Registration extends React.Component {
         {!this.state.continueRegistration &&
           <CardMedia
             className={classes.media}
-            image={require('./assets/babel-icon-blue.png')}
-            title="Babel - Inspire. Change"
+            image={require('./assets/bilikxpert_logos_black.png')}
+            // title="Babel - Inspire. Change"
           />
         }
         <CardContent>{userItem}</CardContent>
