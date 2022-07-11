@@ -207,7 +207,7 @@ class MenuAppBar extends React.Component {
               <Route path='/' component={BabelIcon} />
             </Switch>
 
-            <StdText text = {'Babel'} variant = 'h4' color="inherit" style={{flex: 1, textAlign: 'center'}}/>
+            <StdText text = {'BilikXpert'} variant = 'h4' color="inherit" style={{flex: 1, textAlign: 'center'}}/>
          
             {(!userLoggedIn) && (<BabelIcon />)}
               {(userLoggedIn) && (
@@ -269,7 +269,7 @@ class BabelIcon extends React.Component {
   render() {
     return (
       <IconButton>
-        <img src={require('./assets/babel-icon.png')} alt='Babel' style={{width:44, height:44}}/>
+        <img src={require('./assets/bilikxpert_logos_white.png')} alt='BilikXpert' style={{width:44, height:44}}/>
       </IconButton>
     );
   }

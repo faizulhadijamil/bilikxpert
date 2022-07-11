@@ -29,6 +29,7 @@ import Person from './Person'
 import Registration from './Registration';
 import RegistrationWhatsapp from './RegisterWhatsappNumber';
 import SelfRegistration from './SelfRegistration';
+import UserRegByCRO from './UserRegByCRO';
 import FBLogin from './FBLogin';
 // import Settings from './Settings'
 import Profile from './Profile'
@@ -237,6 +238,7 @@ class App extends Component {
             <Route path='/people/:userId' component={Person} />
             {/* <Route exact path='/member' component={Members} /> */}
             <Route path='/next' component={Feed} />
+            <Route path='/userregistrationbycro' component={UserRegByCRO} />
             {/* <Route path='/settings' component={Settings} /> */}
             <Route path='/payments/:invoiceId' component={PaymentsAdyen} />
             {/* <Route path='/PaymentsAdyenDropIn/:invoiceId' component={PaymentsAdyenDropIn} />
@@ -289,7 +291,7 @@ class App extends Component {
             showLabels
             classes={{root:classes.bottomNav}}
           >
-            <BottomNavigationAction label="Next" icon={<DateRange />} onClick={()=>this.props.actions.viewNext()} />
+            <BottomNavigationAction label="Register" icon={<DateRange />} onClick={()=>this.props.actions.viewRegister()} />
             <BottomNavigationAction label="Classes" icon={<Dashboard />} onClick={()=>this.props.actions.viewClasses()}/>
             <BottomNavigationAction label={peopleLabel} icon={<PeopleIcon />} onClick={()=>this.props.actions.viewPeople()}/>
             {(user) &&

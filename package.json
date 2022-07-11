@@ -1,6 +1,6 @@
 {
   "name": "bilikxpert",
-  "version": "1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@adyen/api-library": "^3.1.3",

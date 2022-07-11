@@ -137,7 +137,6 @@ function getSuggestions(users, inputValue) {
 
     return keep;
   });
-
   // console.log(filteredUsers);
   return filteredUsers.entrySeq();
 }
@@ -161,6 +160,7 @@ class IntegrationAutosuggest extends React.Component {
 
     onSelect = (selectedItem, stateAndHelpers) => {
       if (selectedItem){
+        // console.log('selectedItem: ', selectedItem);
         this.props.onSelectionChange(selectedItem[0]);
         stateAndHelpers.clearSelection();
       }  
@@ -217,14 +217,19 @@ class IntegrationAutosuggest extends React.Component {
 
         const placeholder = this.props.placeholder ? this.props.placeholder : 'Search by name, email or phone';
         const selections = this.props.selections ? this.props.selections : 'users';
+        console.log('integration autosuggets selection: ', selections);
         // console.log('theselection: ', selections);
         var users = this.props.state && this.props.state.has(selections) ? this.props.state.getIn([selections, `${this.props.selections}ById`]) : null;
+        var branches = this.props.state && this.props.state.has(selections) ? this.props.state.getIn([selections, `${this.props.selections}ById`]) : null;
         if (selections === 'membershipConsultants') {
           users = membershipConsultants ? membershipConsultants.merge(trainers).merge(admins) : null;
         } else if (selections === 'activeMembers') {
           const expiredMembers = this.props.state && this.props.state.hasIn(['expiredMembers', 'expiredMembersById']) ? this.props.state.getIn(['expiredMembers', 'expiredMembersById']) : null;
           users = users ? users.merge(expiredMembers) : null;
-        } 
+        }
+        // else if (selections === 'branches') {
+
+        // }
 
         if (!users) {
           users = this.props.state && this.props.state.has('users') ? this.props.state.getIn(['users', 'usersById']) : null;
@@ -278,7 +283,20 @@ class IntegrationAutosuggest extends React.Component {
                     }),
                   ),
                 })
-              : renderSuggestionsContainer({
+              : (selections === 'branches') ?
+              renderSuggestionsContainer({
+                children: getSuggestions(branches, inputValue).map((suggestion, index) =>
+                  renderSuggestion({
+                    suggestion,
+                    index,
+                    theme,
+                    itemProps: getItemProps({ item: suggestion }),
+                    highlightedIndex,
+                    selectedItem,
+                  }),
+                ),
+              }):
+              renderSuggestionsContainer({
                 children: getSuggestions(users, inputValue).map((suggestion, index) =>
                   renderSuggestion({
                     suggestion,

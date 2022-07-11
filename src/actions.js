@@ -37,6 +37,7 @@ let unsubscribeGantnerLogs;
 let unsubscribeUserGantnerLogs;
 let unsubscribeCardToRegister;
 let unsubscribePackages;
+let unsubscribeBranches;
 let unsubscribePayments;
 let unsubscribeFreezePayments;
 let unsubscribeUserPayments;
@@ -266,8 +267,10 @@ export function bootstrap(){
             console.log('createclass path');
           }
           else{
+            console.log('verifyAuth...')
             dispatch(verifyAuth());
           }
+          dispatch(getBranches());
           dispatch(getClasses());
           dispatch(getTrainers());
           dispatch(getMembershipConsultants());
@@ -966,7 +969,7 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
     var userRef, logRef, paymentRef;
     // console.log('thecurrentLoginUserEmail: ', currentLoginUserEmail);
     // console.log('beforeUserData: ', BeforeuserData);
-    // console.log('userData: ', userData);
+    console.log('userData: ', userData);
     console.log('saveUserData action....');
     const isOnline = checkOnlineOffline();
     console.log('isOnline faizul?: ', isOnline);
@@ -989,13 +992,13 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
     if(userId === 'NEW' || userId === 'NEW_REG'){
       dispatch(showMessage(userId === 'NEW' ? "Saving New User..." : 'Saving...'));
       userRef = firestore.collection("users").doc();
-      var newUserData = {};
-      newUserData.roles = null;
-      newUserData.membershipStarts = null;
-      newUserData.membershipEnds = null;
-      newUserData.gantnerCardNumber = null;
+      // var newUserData = {};
+      // newUserData.roles = null;
+      // newUserData.membershipStarts = null;
+      // newUserData.membershipEnds = null;
+      // newUserData.gantnerCardNumber = null;
       return userRef.set({
-      ...newUserData,
+      // ...newUserData,
       ...userData,
       updatedAt:timestamp,
       createdAt:timestamp
@@ -1004,7 +1007,8 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
           if(userId === 'NEW'){
             dispatch(showMessage("New user saved!"));
             // dispatch(viewPerson(userRef.id));
-            dispatch(viewNext(userRef.id));
+            // dispatch(viewNext(userRef.id));
+            dispatch(viewPeople());
           }else{
             const currentUser = getState().state.has('user') ? getState().state.get('user') : null;
             const currentUserEmail = currentUser && currentUser.has('email') ? currentUser.get('email') : null;
@@ -1013,8 +1017,8 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
             // default is TTDI change on 11/9/2020 - faizul
             // const currentStaffBranch = currentUser && currentUser.has('staffBranch')? currentUser.get('staffBranch'):'TTDI';
             // const appCheckInRegistration = (currentStaffBranch === 'KLCC')? 'App - Registration (KLCC)':'App - Registration';
-            const appCheckInRegistration = userData.firstJoinVisit? (userData.firstJoinVisit === 'KLCC')? 'App - Registration (KLCC)' : 'App - Registration':'App - Registration';
-            dispatch(addCheckIn(userRef.id, appCheckInRegistration));
+            // const appCheckInRegistration = userData.firstJoinVisit? (userData.firstJoinVisit === 'KLCC')? 'App - Registration (KLCC)' : 'App - Registration':'App - Registration';
+            // dispatch(addCheckIn(userRef.id, appCheckInRegistration));
             // dispatch(addCheckIn(userRef.id, currentUserIsKLCC ? 'App - Registration (KLCC)' : 'App - Registration'));
           }
       })
@@ -1807,6 +1811,42 @@ export function getUserByEmail(email, handleResponse){
     });
   }
 }
+
+// get user by phone
+export function getUserByPhone(phone, handleResponse){
+  return function action(dispatch, getState) {
+    if(unsubscribeCurrentUser){
+      unsubscribeCurrentUser();
+    }
+    unsubscribeCurrentUser = firestore.collection("users").where('phone', '==', phone).onSnapshot(function(querySnapshot) {
+      if (querySnapshot.empty){
+        console.log('querySnapshot is empty');
+        handleResponse({error:true, message:'no member found'});
+      }
+      else{
+        querySnapshot.forEach(function(doc) {
+          console.log('phone exist...', doc.id, doc.data());
+          if (doc.data()){
+            handleResponse(doc.data());
+            dispatch(setUser(doc));
+          }
+          else{
+            handleResponse({error:true, message:'no member found'});
+          }
+        });
+        // if(!doc.exists){
+        //   console.log('userDoc missing', email);
+        // }else{
+        //   console.log('!!!exists email', doc.data());
+        //   dispatch(setUser(doc));
+        // }
+  
+      }
+      
+    });
+  }
+}
+
 // export function getReferralList (){
 //   return function action(dispatch, getstate) {
 //     if(unsubscribeReferral){
@@ -2080,6 +2120,30 @@ export function setSessions(sessions) {
   return {
     type: 'SET_SESSIONS',
     sessions
+  };
+}
+
+// for branch
+export function getBranches(){
+  return function action(dispatch, getState) {
+    if(unsubscribeBranches){
+      unsubscribeBranches();
+    }
+    unsubscribeBranches = firestore.collection("branches").onSnapshot(function(querySnapshot) {
+      var branches = {};
+      querySnapshot.forEach(function(doc) {
+        branches[doc.id] = doc.data();
+      });
+      dispatch(setBranches(branches));
+    });
+  }
+}
+
+export function setBranches(branches) {
+  console.log('setting the branches...', branches);
+  return {
+    type: 'SET_BRANCHES',
+    branches
   };
 }
 
@@ -3840,6 +3904,13 @@ export function viewVendItem(vendProductId, promo = false, email){
   }
 }
 
+export function viewRegister () {
+  return function action(dispatch, getState) {
+    var nextPath = `/userregistrationbycro`; // default
+    dispatch(push(nextPath));
+  }
+}
+
 export function viewNext(userId = null, bookingId = null){
   return function action(dispatch, getState) {
     // var nextPath = `/userprofile`;
@@ -4204,6 +4275,7 @@ export function verifyAuth(bookingId = null) {
               // dispatch(getProspects());
               dispatch(getGantnerLogs());
               dispatch(getPackages());
+              dispatch(getBranches());
               // dispatch(getPayments());
               // only superUser is allowed for now
               if (isSuperUser){
@@ -4361,6 +4433,9 @@ export function unsubscribeAll() {
     if (unsubscribeReferralCny){
       unsubscribeReferralCny();
     }
+    if (unsubscribeBranches){
+      unsubscribeBranches();
+    }
   }
 }
 
@@ -4376,7 +4451,8 @@ export function logout() {
     dispatch(setProspects(Map()));
     dispatch(setGantnerLogs(Map()));
     dispatch(setUsers(Map()));
-    dispatch(setPackages(Map()));
+    // dispatch(setPackages(Map()));
+    dispatch(setBranches(Map()));
     dispatch(setFreezePayments(Map()));
 
     firebase.auth().signOut();

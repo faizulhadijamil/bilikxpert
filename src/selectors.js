@@ -161,6 +161,19 @@ export const makeGetStaff = () => {
   return getStaff;
 }
 
+const getBranches = (state,props) => state.state && state.state.hasIn(['branches', 'branchesById']) ? state.state.getIn(['branches', 'branchesById']) : null;
+export const getBranchesList = createSelector(
+  [ getBranches ],
+  (branches) => {
+    console.log('theBranches package: ', branches);
+    return branches || null;
+  }
+);
+
+export const makeGetBranch = () => {
+  return getBranchesList;
+}
+
 const sortBy = (seq, key) =>{
   return seq.sort((a, b) => {
     const nameA = a.get(key);

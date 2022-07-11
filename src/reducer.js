@@ -20,7 +20,8 @@ const initialState = Map(fromJS({
   bookings:Map(),
   user:Map(),
   invoices:Map(),
-  freezePayments:Map()
+  freezePayments:Map(),
+  branches:Map()
 }));
 
 export default function(state = initialState, action) {
@@ -87,6 +88,11 @@ export default function(state = initialState, action) {
     case 'SET_PACKAGES':
       {
         return setPackagesById(action.packages, state);
+      }
+    case 'SET_BRANCHES':
+      {
+        console.log('actionReducer: ', action);
+        return setBranchesById(action.branches, state);
       }
     case 'SET_GANTNER_LOGS':
       {
@@ -549,6 +555,16 @@ function setPackagesById(packages, state) {
     return state;
   }else{
     return state.setIn(['packages','packagesById'], immutablePackages);
+  }
+}
+
+// setBranchesById
+function setBranchesById(branches, state) {
+  const immutableBranches = fromJS(branches);
+  if (is(state.getIn(['branches', 'branchesById']), immutableBranches)){
+    return state;
+  }else{
+    return state.setIn(['branches','branchesById'], immutableBranches);
   }
 }
 
