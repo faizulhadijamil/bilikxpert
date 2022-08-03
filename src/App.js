@@ -313,7 +313,7 @@ class App extends Component {
               }} />
           </BottomNavigation>
         }
-        {(user && !isStaff && showUserBottomNav) && 
+        {false && (user && !isStaff && showUserBottomNav) && 
           <BottomNavigation
           value={bottomNavValue}
           showLabels

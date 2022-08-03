@@ -332,34 +332,6 @@ class People extends React.Component {
                       onFocus={()=>window.scrollTo(0, 0)}
                     />
                   }
-            {false && selectedStaffChip &&
-                <TextField
-                  id="search"
-                  value={this.state.searchDisplay}
-                  label={(isAdmin || isCRO || isTrainer) ? "Search Name, Email, ID.." : "Search Trainers"}
-                  onChange={this.handleSearch('search')}
-                  className={classes.search}
-                  InputProps={{
-                    startAdornment:(
-                      <InputAdornment position="start">
-                        {selectedStaffChip && selectedStaffChip}
-                      </InputAdornment>
-                    ),
-                    endAdornment:(
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={this.handleClickSearchCloseIcon}
-                        >
-                          {this.state.searchDisplay.length > 0 ? <CloseIcon color='disabled'/> : <SearchIcon color='disabled'/>}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                    style:{alignItems : 'end', paddingTop:8, paddingLeft:8, paddingBottom:8}
-                  }}
-                  style={{borderRadius:3}}
-                  onFocus={()=>window.scrollTo(0, 0)}
-                />
-              }
             </Grid>
                 {false && isAdmin && this.renderUserList('All Users', 'allUsers', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}
                 {staffLevel6 && this.renderUserList('In Gym Needs Attention (KLCC)', 'inGymNeedsAttentionKLCC', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}

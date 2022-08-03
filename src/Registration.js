@@ -383,6 +383,7 @@ class Registration extends React.Component {
     const fewMoreStepText = 'Just a few more steps...';
     const fullNameLabel = 'Full Name (as stated on your IC/Passport)';
     const howDidUknowLabel = 'How did you know about us?';
+    const branchLabel = 'Branch';
     const whatUWantToAchieveLabel = 'What would you like to achieve?';
     const emailLabel = 'Email';
     const phoneNumberLabel = 'Phone Number';
@@ -439,6 +440,7 @@ class Registration extends React.Component {
 
     console.log(isValidEmail, isValidName, isValidPhone, isValidReferralSource, isValidConsultant, !checkinDisabled);
     // console.log('refSOurce: ', this.state.refSource);
+
 
     const {joinOption} = this.state;
     const radioButtonOptionsLayout = 
@@ -612,15 +614,6 @@ class Registration extends React.Component {
               <div>
                 {nameTextInput}
                 {phoneTextInput}
-                {false && <TextField
-                  margin="dense"
-                  id="referralSource"
-                  label={howDidUknowLabel}
-                  fullWidth
-                  onChange={this.handleChange('referralSource')}
-                  required
-                  autoComplete='off'
-                />}
                 {!this.state.refSource && <IntegrationAutosuggest selections='referralSource' placeholder={howDidUknowLabel} onSelectionChange={selectedRefSource => this.handleAutosuggest('refSource', selectedRefSource)}/>}
                 {this.state.refSource && 
                   <div style={{marginTop:16}}>
@@ -832,16 +825,7 @@ class Registration extends React.Component {
             value={email}
             style = {{marginBottom:5}}
           />
-          {false && <TextField
-            id="whatsappPhone"
-            label="whatsapp phone number"
-            fullWidth
-            onChange={this.handleChange('whatsappPhone')}
-            autoComplete='off'
-            type="number"
-            value={whatsappPhone}
-            style = {{marginBottom:5}}
-          />}
+         
           <StdButton
             text = {'Continue'}
             key = {'continue'}
@@ -849,11 +833,7 @@ class Registration extends React.Component {
             onClick={()=>this.handleContinue()}
             showCircularProgress = {this.props.isFetchingEmail}
           />
-          {false && <StdButton
-            text = {'continue with whatsapp number'}
-            key = {'continueWhatsappNumber'}
-            onClick={()=>this.handleContinueWhatsapp()}
-          />}
+        
            {/* <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center', cursor:'pointer', backgroundColor:'#4968ad', padding:20}}>
             <FacebookProvider appId="476078559432892">
                 <Login
@@ -872,13 +852,13 @@ class Registration extends React.Component {
                 </Login>
             </FacebookProvider>
           </div> */}
-          <StdButton
+          {false && <StdButton
             text = {'Facebook Login'}
             key = {'fbLoginBtn'}
             // disabled={!isValidEmail || this.props.isFetchingEmail}
             onClick={()=>this.handleLoginFB()}
             // showCircularProgress = {this.props.isFetchingEmail}
-          />
+          />}
           {fbUserData && 
             <div>
                <Typography>
@@ -914,18 +894,7 @@ class Registration extends React.Component {
               </Typography>
             </div>
           }
-          {false && <Button raised color='primary' key={'continue'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} onClick={()=>this.handleContinue()} disabled={!isValidEmail || this.props.isFetchingEmail}>
-            Continue
-            {this.props.isFetchingEmail &&
-              <CircularProgress style={{color:'white', marginLeft:8}}/>
-            }
-          </Button>}
-           {false && <Button variant="contained" color='primary' key={'continueFB'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} onClick={()=>this.handleContinue()} disabled={!isValidEmail || this.props.isFetchingEmail}>
-            FACEBOOK
-            {this.props.isFetchingEmail &&
-              <CircularProgress style={{color:'white', marginLeft:8}}/>
-            }
-          </Button>}
+         
           {(this.state.email.length > 0 || isPromo) && false && 
             <Button color='primary' key={'clear'} classes={{disabled:classes.buttonDisabled}} onClick={()=>this.handleClear()} style={{color:'#F71A38', width:'100%', marginTop:8*4}}>
               {this.state.email.length === 0 && isPromo ? 'Show Intro' : 'Clear'}

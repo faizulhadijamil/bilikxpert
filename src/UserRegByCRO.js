@@ -300,7 +300,8 @@ class UserRegByCRO extends React.Component {
     this.props.actions.getUserByPhone(this.state.phone, (response) => {
         console.log('getUserByPhone response: ', response);
         if (response && response.error){ // phone not exist or member not exist
-            // continue to registration, show other field
+            // continue to registration, show other field;
+
             this.setState({showDetails:true});
         }
     });
@@ -309,6 +310,18 @@ class UserRegByCRO extends React.Component {
   handleContinueRegister = () => {
     console.log('handleContinueRegister state: ', this.state);
     // todo error checking...
+    if (!this.state.name || (this.state.name && this.state.name.length<5)){
+      console.log('invalid name');
+      return;
+    }
+    else if (!this.state.phone || (this.state.phone && this.state.phone.length<5)){
+      console.log('invalid phone');
+      return;
+    }
+    else if (!this.state.branch){
+      console.log('no branch');
+      return;
+    }
 
     var userData = {
         email: this.state.email,
@@ -317,7 +330,8 @@ class UserRegByCRO extends React.Component {
         currentBranch: this.state.branch,
         currentRoomNumber: this.state.roomNumber,
         autoMembershipStarts:this.state.autoMembershipStarts? this.state.autoMembershipStarts:moment().tz('Asia/Kuala_Lumpur').format('YYYY-MM-DD'),
-        mcId: this.state.mcId  
+        mcId: this.state.mcId,
+        nric: this.state.nric  
     }
 
     // this.props.actions.saveUserData('NEW_REG', userData);
@@ -566,6 +580,19 @@ class UserRegByCRO extends React.Component {
                 shrink: true,
             }}
         />;
+
+    const icTextInput = <TextField
+        margin="dense"
+        id="nric"
+        label="IC/Passport ID"
+        // type="number"
+        type="text"
+        // defaultValue={editUser && editUser.get('nric')}
+        fullWidth
+        onChange={this.handleChange('nric')}
+        // disabled={!roles || isShared || isTrainer}
+        required
+      />;
 
     var userItem = null;
 
@@ -915,6 +942,7 @@ class UserRegByCRO extends React.Component {
          {phoneTextInput}
          {showDetails && nameTextInput}
          {showDetails && emailTextInput}
+         {showDetails && icTextInput}
          {showDetails && !this.state.branch && <IntegrationAutosuggest selections='branches' placeholder={branchLabel} onSelectionChange={branch => this.handleAutosuggest('branch', branch)}/>}
         {showDetails && this.state.branch && 
             <div style={{marginTop:16}}>
@@ -942,6 +970,7 @@ class UserRegByCRO extends React.Component {
             />
             </div>
         }
+
 
           <StdButton
             text = {'Continue'}

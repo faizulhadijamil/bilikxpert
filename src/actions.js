@@ -1009,6 +1009,8 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
             // dispatch(viewPerson(userRef.id));
             // dispatch(viewNext(userRef.id));
             dispatch(viewPeople());
+            // dispatch(viewHome());
+            // ())
           }else{
             const currentUser = getState().state.has('user') ? getState().state.get('user') : null;
             const currentUserEmail = currentUser && currentUser.has('email') ? currentUser.get('email') : null;
@@ -3963,6 +3965,7 @@ export function viewNext(userId = null, bookingId = null){
 
 export function viewPeople(){
   return function action(dispatch, getState) {
+    // const newPath = '';
     const newPath = `/people`;
     if(getState().router.location.pathname !== newPath){
       dispatch(push(newPath));
