@@ -108,6 +108,9 @@ class App extends Component {
 
   render() {
     const {classes} = this.props;
+
+
+    
     const user = this.props.state && this.props.state.has('user') && this.props.state.hasIn(['user', 'id']) ? this.props.state.get('user') : null;
     // const roles = user && user.get('roles');
     // const isAdmin = roles && roles.get('admin') === true;
