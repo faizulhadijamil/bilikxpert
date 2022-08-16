@@ -1,5 +1,3 @@
-import 'react-credit-cards/es/styles-compiled.css';
-
 import {
   CircularProgress
 } from 'material-ui/Progress'
@@ -13,7 +11,6 @@ import {withStyles} from '@material-ui/core';
 import Card, {
   CardContent
 } from 'material-ui/Card';
-import Cards from 'react-credit-cards';
 import {Collapse, Divider, ExpandLessIcon, ExpandMoreIcon, Grid, List, ListItem, ListItemText, 
   TextField, Typography, Dialog, DialogActions, DialogContent, DialogTitle, BottomNavigation, BottomNavigationAction} from '@material-ui/core';
 

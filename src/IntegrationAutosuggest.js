@@ -124,6 +124,7 @@ function getSuggestions(users, inputValue) {
     const name = suggestion.has('name') ? suggestion.get('name') : null;
     const email = suggestion.has('email') ? suggestion.get('email') : null;
     const phone = suggestion.has('phone') ? `${suggestion.get('phone')}` : null;
+    const roomNumber = suggestion.has('rooms') ? `${suggestion.get('roomNumber')}` : null;
     const keep =
       // (!inputValue || suggestion.label.toLowerCase().includes(inputValue.toLowerCase())) &&
       (!inputValue || (name && name.toLowerCase().includes(inputValue.toLowerCase())) ||
@@ -160,7 +161,7 @@ class IntegrationAutosuggest extends React.Component {
 
     onSelect = (selectedItem, stateAndHelpers) => {
       if (selectedItem){
-        // console.log('selectedItem: ', selectedItem);
+        //console.log('selectedItem: ', selectedItem);
         this.props.onSelectionChange(selectedItem[0]);
         stateAndHelpers.clearSelection();
       }  
@@ -217,10 +218,13 @@ class IntegrationAutosuggest extends React.Component {
 
         const placeholder = this.props.placeholder ? this.props.placeholder : 'Search by name, email or phone';
         const selections = this.props.selections ? this.props.selections : 'users';
+        const rooms = this.props.rooms ? this.props.rooms : 'roomNumber';
         console.log('integration autosuggets selection: ', selections);
-        // console.log('theselection: ', selections);
+        //console.log('integration autosuggets rooms: ', rooms);
+        //console.log('theselection: ', selections);
         var users = this.props.state && this.props.state.has(selections) ? this.props.state.getIn([selections, `${this.props.selections}ById`]) : null;
         var branches = this.props.state && this.props.state.has(selections) ? this.props.state.getIn([selections, `${this.props.selections}ById`]) : null;
+        var roomNumber= this.props.state && this.props.state.has(selections) ? this.props.state.getIn([selections, `${this.props.selections}BybranchesId`]) : null;
         if (selections === 'membershipConsultants') {
           users = membershipConsultants ? membershipConsultants.merge(trainers).merge(admins) : null;
         } else if (selections === 'activeMembers') {
@@ -293,6 +297,7 @@ class IntegrationAutosuggest extends React.Component {
                     itemProps: getItemProps({ item: suggestion }),
                     highlightedIndex,
                     selectedItem,
+                    roomNumber,
                   }),
                 ),
               }):

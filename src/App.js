@@ -22,7 +22,7 @@ import Classes from './Classes';
 import createClass from './gymClass/createClass';
 import Feed from './Feed'
 // import Payments from './Payments';
-import PaymentsAdyen from './PaymentsAdyen';
+//import PaymentsAdyen from './PaymentsAdyen';
 // import PaymentsAdyenDropIn from './PaymentsAdyenDropIn';
 import People from './People'
 import Person from './Person'
@@ -30,18 +30,18 @@ import Registration from './Registration';
 import RegistrationWhatsapp from './RegisterWhatsappNumber';
 import SelfRegistration from './SelfRegistration';
 import UserRegByCRO from './UserRegByCRO';
-import FBLogin from './FBLogin';
+// import FBLogin from './FBLogin';
 // import Settings from './Settings'
 import Profile from './Profile'
 import UserProfile from './UserProfile';
 // import TermsConditions from './TermsConditions'
 // import PrivacyPolicy from './PrivacyPolicy'
-import Report from './Report'
-import UserReport from './UserReport'
+//import Report from './Report'
+// import UserReport from './UserReport'
 // import Referral from './Referral'
 // import CNYangpow from './promoPage/cnyangpow'
-import PaymentReport from './reportPage/PaymentReport'
-import BFMReport from './reportPage/BFMReport';
+//import PaymentReport from './reportPage/PaymentReport'
+//import BFMReport from './reportPage/BFMReport';
 // import testPage from './testPage';
 // import Members from './Members';
 // import vendProductPage from './vendProductPage';
@@ -223,27 +223,27 @@ class App extends Component {
         <div id="your-payment-div"></div>
         <div className={classes.root}>
           <Switch>
-            <Route exact path='/' component={Feed} />
-            <Route exact path='/classes' component={Classes} />
-            <Route path='/classes/:name' component={Booking} />
-            <Route exact path='/report' component={Report} />
-            <Route exact path='/userreport' component={UserReport} />
-            <Route exact path='/createclass' component={createClass} />
-            <Route exact path='/paymentreport' component={PaymentReport} />
-            <Route exact path='/bfmreport' component={BFMReport} />
-            <Route exact path='/fblogin' component={FBLogin} />
+          {<Route exact path='/' component={Feed} />}
+            {<Route exact path='/classes' component={Classes} />}
+            {/*Route path='/classes/:name' component={Booking} />*/}
+            {/* Route exact path='/report' component={Report} /> */}
+            {/*Route exact path='/userreport' component={UserReport} />*/}
+            {/*Route exact path='/createclass' component={createClass} />*/}
+            {/*Route exact path='/paymentreport' component={PaymentReport} /> */}
+            {/*Route exact path='/bfmreport' component={BFMReport} /> */}
+            {/*Route exact path='/fblogin' component={FBLogin} />*/}
             {/* <Route exact path='/testpage' component={testPage} /> */}
             {/* <Route exact path='/vendproductpage' component={vendProductPage} /> */}
             {/* <Route path='/referral' component={Referral} /> */}
             {/* <Route path='/cnyangpow' component={CNYangpow} /> */}
             {/* <Route path='/createInvoice' component={createInvoice} /> */}
             <Route exact path='/people' component={People} />
-            <Route path='/people/:userId' component={Person} />
+            {<Route path='/people/:userId' component={Person} />}
             {/* <Route exact path='/member' component={Members} /> */}
             <Route path='/next' component={Feed} />
             <Route path='/userregistrationbycro' component={UserRegByCRO} />
             {/* <Route path='/settings' component={Settings} /> */}
-            <Route path='/payments/:invoiceId' component={PaymentsAdyen} />
+            {/*<Route path='/payments/:invoiceId' component={PaymentsAdyen} />
             {/* <Route path='/PaymentsAdyenDropIn/:invoiceId' component={PaymentsAdyenDropIn} />
             <Route path='/paymentsPB/:invoiceId' component={Payments} /> */}
             <Route path='/registration' component={SelfRegistration} />
@@ -296,7 +296,7 @@ class App extends Component {
           >
             <BottomNavigationAction label="Register" icon={<DateRange />} onClick={()=>this.props.actions.viewRegister()} />
             <BottomNavigationAction label="Classes" icon={<Dashboard />} onClick={()=>this.props.actions.viewClasses()}/>
-            <BottomNavigationAction label={peopleLabel} icon={<PeopleIcon />} onClick={()=>this.props.actions.viewPeople()}/>
+            { /*<BottomNavigationAction label={peopleLabel} icon={<PeopleIcon />} onClick={()=>this.props.actions.viewPeople()}/> */}
             {(user) &&
               <BottomNavigationAction label="Profile" icon={<PersonIcon />} onClick={()=>this.props.actions.viewProfile()}/>
             }
@@ -324,7 +324,7 @@ class App extends Component {
           >
           <BottomNavigationAction label="Book" icon={<DateRange />} onClick={()=>this.props.actions.viewPT()} />
           <BottomNavigationAction label="Shop" icon={<ShoppingCart />} onClick={()=>this.props.actions.viewClasses()}/>
-          <BottomNavigationAction label={"Profile"} icon={<PeopleIcon />} onClick={()=>this.props.actions.viewProfile()}/>
+          { /* <BottomNavigationAction label={"Profile"} icon={<PeopleIcon />} onClick={()=>this.props.actions.viewProfile()}/> */}
         </BottomNavigation>}
       </MuiThemeProvider>
     );

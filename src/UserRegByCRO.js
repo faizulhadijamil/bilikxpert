@@ -328,7 +328,7 @@ class UserRegByCRO extends React.Component {
         name: this.state.name,
         phone: this.state.phone,
         currentBranch: this.state.branch,
-        currentRoomNumber: this.state.roomNumber,
+        currentRooms: this.state.roomNumber,
         autoMembershipStarts:this.state.autoMembershipStarts? this.state.autoMembershipStarts:moment().tz('Asia/Kuala_Lumpur').format('YYYY-MM-DD'),
         mcId: this.state.mcId,
         nric: this.state.nric  
@@ -434,7 +434,7 @@ class UserRegByCRO extends React.Component {
     const emailLabel = 'Email';
     const phoneNumberLabel = 'Phone Number';
     const postCodeLabel = 'Where are you from? (Just the postcode would do)';
-    const roomNumberLabel = 'room number';
+    const roomNumberLabel = 'Room Number';
 
     if(this.state.slideshowOpen && isPromo){return <OnboardingCarousel handleClose={()=>this.setState({slideshowOpen:false})}/>}
 
@@ -469,6 +469,7 @@ class UserRegByCRO extends React.Component {
     const branchesData = this.props.branch || null;
     const branchSize = branchesData && branchesData.size;
     const branchId = this.state.branch || null;
+    const roomsData = this.state.rooms || null;
    
     var branchName = ''
     const selectedBranch = branchesData && branchesData.filter((x, key)=>{
@@ -479,12 +480,24 @@ class UserRegByCRO extends React.Component {
         return false;
     }).first();
 
-    const branchData = branchId && selectedBranch;
+    var roomNumber = ''
+    const selectedrooms = roomsData && roomNumber.filter((x, key)=>{
+        if (key === branchId){
+            branchName = x.has('rooms')? x.get('roomNumber'):'';
+            return true;
+        }
+        return false;
+    }).first();
+
+    const branchData = branchId && selectedBranch ;
+    const RoomsData = roomNumber;
     console.log('the branchId: ', branchId);
     console.log('selectedBranch: ', selectedBranch);
     console.log('branchData: ', branchData);
-    // branchName = branchId && selectedBranch.has('name')? selectedBranch.get('name'):null;
+    console.log('rooms' , roomNumber)
+    //branchName = branchId && selectedBranch.has('name')? selectedBranch.get('name'):null;
     console.log('branchName: ', branchName);
+    console.log('rooms :' , roomNumber)
 
     const enteredUserHasPackage = enteredUser && enteredUser.get('packageId') && !(enteredUser.get('cancellationDate') && enteredUser.get('cancellationReason'));
 
@@ -525,6 +538,8 @@ class UserRegByCRO extends React.Component {
       </RadioGroup>
     </FormControl>;
 
+    
+
     var signUpDisabled = false;
     if (this.props.emailNeedsSignUpDetails) {
       signUpDisabled = !(isValidEmail && isValidName && isValidPhone && this.state.password && this.state.confirmPassword && this.state.password.length > 4 && this.state.password === this.state.confirmPassword);
@@ -561,9 +576,9 @@ class UserRegByCRO extends React.Component {
 
     const roomNumberTextInput = 
       <TextField
-        margin="dense" id="roomNumber" label={roomNumberLabel} type="number" fullWidth
-        onChange={this.handleChange('roomNumber')} autoComplete='off' required
-        // onInput = {(e) =>{ e.target.value = Math.max(0, parseInt(e.target.value)).toString().slice(0,5)}}
+        margin="dense" id="rooms" label={roomNumberLabel} type="text" fullWidth
+        onChange={this.handleChange('rooms')} autoComplete='off' required
+        onInput = {(e) =>{ e.target.value = Math.max(0, parseInt(e.target.value)).toString().slice(0,5)}}
       />;
 
     const membershipStartTextInput = 
@@ -786,6 +801,7 @@ class UserRegByCRO extends React.Component {
             {emailTextInput}
             {nameTextInput}
             {phoneTextInput}
+            {roomNumberTextInput}
             {false && <TextField
               margin="dense"
               id="referralSource"
@@ -943,6 +959,8 @@ class UserRegByCRO extends React.Component {
          {showDetails && nameTextInput}
          {showDetails && emailTextInput}
          {showDetails && icTextInput}
+         {showDetails && roomNumberTextInput}
+
          {showDetails && !this.state.branch && <IntegrationAutosuggest selections='branches' placeholder={branchLabel} onSelectionChange={branch => this.handleAutosuggest('branch', branch)}/>}
         {showDetails && this.state.branch && 
             <div style={{marginTop:16}}>
@@ -955,7 +973,18 @@ class UserRegByCRO extends React.Component {
             />
             </div>
         }
-        {showDetails && this.state.branch && roomNumberTextInput}
+        {showDetails && !this.state.roomNumber && <IntegrationAutosuggest selections='rooms' placeholder={roomNumberLabel} onSelectionChange={roomNumberLabel => this.handleAutosuggest('rooms', roomNumber)}/>}
+        {showDetails && this.state.roomNumber && 
+                    <div style={{marginTop:16}}>
+                    <FormLabel component="legend">Room Number</FormLabel>
+                    <Chip
+                        avatar={null}
+                        label={roomNumberLabel}
+                        style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                        onDelete={()=>this.handleAutosuggest('rooms', null)}
+                    />
+                    </div>
+        }
         {showDetails && membershipStartTextInput}
 
         {showDetails && !mcId && <IntegrationAutosuggest selections='membershipConsultants' placeholder="Customer Relations Officer's Name" onSelectionChange={selectedUserId => this.handleAutosuggest('mcId', selectedUserId)}/>}

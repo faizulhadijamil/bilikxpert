@@ -1,4 +1,3 @@
-import 'react-credit-cards/es/styles-compiled.css';
 import moment from 'moment-timezone';
 import {
   bindActionCreators

@@ -1,4 +1,3 @@
-import 'react-credit-cards/es/styles-compiled.css';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {withStyles, Button, List, Typography} from '@material-ui/core';
