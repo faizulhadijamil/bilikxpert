@@ -64,6 +64,35 @@ function renderSuggestion(params) {
   );
 }
 
+function renderSuggestionRooms(params) {
+  const {
+    suggestion,
+    index,
+    itemProps,
+    highlightedIndex,
+    selectedItem
+  } = params;
+
+  const isHighlighted = highlightedIndex === index;
+  const isSelected = selectedItem === suggestion[1].get('roomNumber');
+
+  return (
+    <MenuItem
+      {...itemProps}
+      key={suggestion[1]}
+      selected={isHighlighted}
+      component="div"
+      style={{
+        fontWeight: isSelected
+          ? 500
+          : 400,
+      }}
+    >
+      {suggestion[1].get('roomNumber')}
+    </MenuItem>
+  );
+}
+
 function renderRefSuggestion(params) {
   const {
     suggestion,
@@ -119,12 +148,10 @@ function getRefSuggestions(referralOptions, inputValue) {
 
 function getSuggestions(users, inputValue) {
   let count = 0;
-
   const filteredUsers = users.filter(suggestion => {
     const name = suggestion.has('name') ? suggestion.get('name') : null;
     const email = suggestion.has('email') ? suggestion.get('email') : null;
     const phone = suggestion.has('phone') ? `${suggestion.get('phone')}` : null;
-    const roomNumber = suggestion.has('rooms') ? `${suggestion.get('roomNumber')}` : null;
     const keep =
       // (!inputValue || suggestion.label.toLowerCase().includes(inputValue.toLowerCase())) &&
       (!inputValue || (name && name.toLowerCase().includes(inputValue.toLowerCase())) ||
@@ -140,6 +167,24 @@ function getSuggestions(users, inputValue) {
   });
   // console.log(filteredUsers);
   return filteredUsers.entrySeq();
+}
+
+function getRoomSuggestion (rooms, inputValue){
+  let count = 0;
+  const filteredRooms = rooms.filter(suggestion => {
+    console.log('inside getroom suggestion: ', suggestion);
+    const roomNumber = suggestion.has('roomNumber') ? suggestion.get('roomNumber') : null;
+    const keep =
+      // (!inputValue || suggestion.label.toLowerCase().includes(inputValue.toLowerCase())) &&
+      (!inputValue || (roomNumber && roomNumber.toLowerCase().includes(inputValue.toLowerCase()))) &&
+      count < 5;
+
+    if (keep) {
+      count += 1;
+    }
+    return keep;
+  });
+  return filteredRooms.entrySeq();
 }
 
 const styles = {
@@ -200,7 +245,8 @@ class IntegrationAutosuggest extends React.Component {
     render() {
         const {
           classes,
-          theme
+          theme,
+          branchId
         } = this.props;
 
         const referralOptions = ['Newspapers and magazines', 'Recommendation from friends/family', 'Online articles/media',
@@ -218,13 +264,18 @@ class IntegrationAutosuggest extends React.Component {
 
         const placeholder = this.props.placeholder ? this.props.placeholder : 'Search by name, email or phone';
         const selections = this.props.selections ? this.props.selections : 'users';
-        const rooms = this.props.rooms ? this.props.rooms : 'roomNumber';
-        console.log('integration autosuggets selection: ', selections);
+        // const rooms = this.props.rooms ? this.props.rooms : 'roomNumber';
         //console.log('integration autosuggets rooms: ', rooms);
         //console.log('theselection: ', selections);
         var users = this.props.state && this.props.state.has(selections) ? this.props.state.getIn([selections, `${this.props.selections}ById`]) : null;
         var branches = this.props.state && this.props.state.has(selections) ? this.props.state.getIn([selections, `${this.props.selections}ById`]) : null;
-        var roomNumber= this.props.state && this.props.state.has(selections) ? this.props.state.getIn([selections, `${this.props.selections}BybranchesId`]) : null;
+        var allrooms = this.props.state && this.props.state.has(selections) ? this.props.state.getIn([selections, `${this.props.selections}ById`]) : null;
+        var rooms = allrooms && allrooms.filter(roomData=>{
+          const roomBranchId = roomData.has('branchId') ? roomData.get('branchId') : null;
+          if (roomBranchId && roomBranchId === branchId){
+            return true;
+          }
+        });
         if (selections === 'membershipConsultants') {
           users = membershipConsultants ? membershipConsultants.merge(trainers).merge(admins) : null;
         } else if (selections === 'activeMembers') {
@@ -297,8 +348,22 @@ class IntegrationAutosuggest extends React.Component {
                     itemProps: getItemProps({ item: suggestion }),
                     highlightedIndex,
                     selectedItem,
-                    roomNumber,
+                    // roomNumber,
                   }),
+                ),
+              }): 
+              (selections === 'rooms') ?
+              renderSuggestionsContainer({
+                children: getRoomSuggestion(rooms, inputValue).map((suggestion, index) =>
+                renderSuggestionRooms({
+                  suggestion,
+                  index,
+                  theme,
+                  itemProps: getItemProps({ item: suggestion }),
+                  highlightedIndex,
+                  selectedItem,
+                  // roomNumber,
+                }),
                 ),
               }):
               renderSuggestionsContainer({

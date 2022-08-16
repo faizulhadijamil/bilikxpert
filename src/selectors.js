@@ -174,6 +174,19 @@ export const makeGetBranch = () => {
   return getBranchesList;
 }
 
+const getRooms = (state,props) => state.state && state.state.hasIn(['rooms', 'roomsById']) ? state.state.getIn(['rooms', 'roomsById']) : null;
+export const getRoomsList = createSelector(
+  [ getRooms ],
+  (rooms) => {
+    console.log('theRoom: ', rooms);
+    return rooms || null;
+  }
+);
+
+export const makeGetRoom = () => {
+  return getRoomsList;
+}
+
 const sortBy = (seq, key) =>{
   return seq.sort((a, b) => {
     const nameA = a.get(key);

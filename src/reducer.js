@@ -91,8 +91,12 @@ export default function(state = initialState, action) {
       }
     case 'SET_BRANCHES':
       {
-        console.log('actionReducer: ', action);
         return setBranchesById(action.branches, state);
+      }
+    case 'SET_ROOMS':
+      {
+        console.log('actionReducer: ', action);
+        return setRoomsById(action.rooms, state);
       }
     case 'SET_GANTNER_LOGS':
       {
@@ -565,6 +569,16 @@ function setBranchesById(branches, state) {
     return state;
   }else{
     return state.setIn(['branches','branchesById'], immutableBranches);
+  }
+}
+
+// setRoomsById
+function setRoomsById(rooms, state) {
+  const immutableBranches = fromJS(rooms);
+  if (is(state.getIn(['rooms', 'roomsById']), immutableBranches)){
+    return state;
+  }else{
+    return state.setIn(['rooms','roomsById'], immutableBranches);
   }
 }
 

@@ -13,7 +13,8 @@ import {
   makeGetAllUsers,
   makeGetCurrentUser,
   makeGetStaff,
-  makeGetBranch
+  makeGetBranch,
+  makeGetRoom
 } from './selectors';
 import * as Actions from './actions';
 import IntegrationAutosuggest from './IntegrationAutosuggest';
@@ -420,6 +421,8 @@ class UserRegByCRO extends React.Component {
     console.log('theStaffProps: ', this.props.staff);
     console.log('theUsers: ', this.props.users);
     console.log('currentUser: ', user);
+    console.log('currentProps: ', this.props);
+    console.log('currentState: ', this.state);
     
     const isStaff = user && user.get('isStaff');
     const currentStaffBranch = user && user.get('staffBranch');
@@ -469,7 +472,8 @@ class UserRegByCRO extends React.Component {
     const branchesData = this.props.branch || null;
     const branchSize = branchesData && branchesData.size;
     const branchId = this.state.branch || null;
-    const roomsData = this.state.rooms || null;
+
+    const roomsData = this.props.rooms || null;
    
     var branchName = ''
     const selectedBranch = branchesData && branchesData.filter((x, key)=>{
@@ -481,12 +485,15 @@ class UserRegByCRO extends React.Component {
     }).first();
 
     var roomNumber = ''
-    const selectedrooms = roomsData && roomNumber.filter((x, key)=>{
-        if (key === branchId){
-            branchName = x.has('rooms')? x.get('roomNumber'):'';
-            return true;
-        }
-        return false;
+    const selectedRooms = roomsData && roomsData.filter((x, key)=>{
+      console.log('key rooms: ', key);
+      console.log('x value: ', x);
+      return true;
+        // if (key === branchId){
+        //     branchName = x.has('rooms')? x.get('roomNumber'):'';
+        //     return true;
+        // }
+        // return false;
     }).first();
 
     const branchData = branchId && selectedBranch ;
@@ -494,7 +501,6 @@ class UserRegByCRO extends React.Component {
     console.log('the branchId: ', branchId);
     console.log('selectedBranch: ', selectedBranch);
     console.log('branchData: ', branchData);
-    console.log('rooms' , roomNumber)
     //branchName = branchId && selectedBranch.has('name')? selectedBranch.get('name'):null;
     console.log('branchName: ', branchName);
     console.log('rooms :' , roomNumber)
@@ -959,7 +965,7 @@ class UserRegByCRO extends React.Component {
          {showDetails && nameTextInput}
          {showDetails && emailTextInput}
          {showDetails && icTextInput}
-         {showDetails && roomNumberTextInput}
+         {showDetails && false && roomNumberTextInput}
 
          {showDetails && !this.state.branch && <IntegrationAutosuggest selections='branches' placeholder={branchLabel} onSelectionChange={branch => this.handleAutosuggest('branch', branch)}/>}
         {showDetails && this.state.branch && 
@@ -973,7 +979,7 @@ class UserRegByCRO extends React.Component {
             />
             </div>
         }
-        {showDetails && !this.state.roomNumber && <IntegrationAutosuggest selections='rooms' placeholder={roomNumberLabel} onSelectionChange={roomNumberLabel => this.handleAutosuggest('rooms', roomNumber)}/>}
+        {showDetails && !this.state.roomNumber && <IntegrationAutosuggest selections='rooms' branchId={this.state.branch} placeholder={roomNumberLabel} onSelectionChange={roomNumber => this.handleAutosuggest('rooms', roomNumber)}/>}
         {showDetails && this.state.roomNumber && 
                     <div style={{marginTop:16}}>
                     <FormLabel component="legend">Room Number</FormLabel>
@@ -1134,6 +1140,7 @@ const makeMapStateToProps = () => {
     const getAllUsers = makeGetAllUsers();
     const getCurrentUser = makeGetCurrentUser();
     const getBranch = makeGetBranch();
+    const getRooms = makeGetRoom();
     const isLogin = props.match.path === '/login';
     var users = null;
     if (!isLogin) {
@@ -1143,6 +1150,7 @@ const makeMapStateToProps = () => {
       staff: getStaff(state, props),
       users: users,
       branch: getBranch(state, props),
+      rooms: getRooms(state, props),
       message: getMessageState(state, props),
       currentUser: getCurrentUser(state, props),
       isNative: state && state.state && state.state.get('isNative') ? true : false,

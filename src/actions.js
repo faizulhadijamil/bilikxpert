@@ -38,6 +38,7 @@ let unsubscribeUserGantnerLogs;
 let unsubscribeCardToRegister;
 let unsubscribePackages;
 let unsubscribeBranches;
+let unsubscribeRooms;
 let unsubscribePayments;
 let unsubscribeFreezePayments;
 let unsubscribeUserPayments;
@@ -271,6 +272,7 @@ export function bootstrap(){
             dispatch(verifyAuth());
           }
           dispatch(getBranches());
+          dispatch(getRooms());
           dispatch(getClasses());
           dispatch(getTrainers());
           dispatch(getMembershipConsultants());
@@ -2146,6 +2148,30 @@ export function setBranches(branches) {
   return {
     type: 'SET_BRANCHES',
     branches
+  };
+}
+
+// for rooms
+export function getRooms(){
+  return function action(dispatch, getState) {
+    if(unsubscribeRooms){
+      unsubscribeRooms();
+    }
+    unsubscribeRooms = firestore.collection("rooms").onSnapshot(function(querySnapshot) {
+      var rooms = {};
+      querySnapshot.forEach(function(doc) {
+        rooms[doc.id] = doc.data();
+      });
+      dispatch(setRooms(rooms));
+    });
+  }
+}
+
+export function setRooms(rooms) {
+  console.log('setting the rooms...', rooms);
+  return {
+    type: 'SET_ROOMS',
+    rooms
   };
 }
 
@@ -4279,6 +4305,7 @@ export function verifyAuth(bookingId = null) {
               dispatch(getGantnerLogs());
               dispatch(getPackages());
               dispatch(getBranches());
+              dispatch(getRooms());
               // dispatch(getPayments());
               // only superUser is allowed for now
               if (isSuperUser){
