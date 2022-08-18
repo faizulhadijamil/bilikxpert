@@ -330,6 +330,7 @@ class UserRegByCRO extends React.Component {
         phone: this.state.phone,
         currentBranch: this.state.branch,
         currentRooms: this.state.roomNumber,
+        currentRoomId: this.state.roomId,
         autoMembershipStarts:this.state.autoMembershipStarts? this.state.autoMembershipStarts:moment().tz('Asia/Kuala_Lumpur').format('YYYY-MM-DD'),
         mcId: this.state.mcId,
         nric: this.state.nric  
@@ -474,6 +475,7 @@ class UserRegByCRO extends React.Component {
     const branchId = this.state.branch || null;
 
     const roomsData = this.props.rooms || null;
+    const selectedRoomId = this.state.roomId;
    
     var branchName = ''
     const selectedBranch = branchesData && branchesData.filter((x, key)=>{
@@ -488,22 +490,20 @@ class UserRegByCRO extends React.Component {
     const selectedRooms = roomsData && roomsData.filter((x, key)=>{
       console.log('key rooms: ', key);
       console.log('x value: ', x);
-      return true;
+      if (key === selectedRoomId){
+        roomNumber = x.has('roomNumber')? x.get('roomNumber'):'';
+        return true;
+      }
         // if (key === branchId){
         //     branchName = x.has('rooms')? x.get('roomNumber'):'';
         //     return true;
         // }
         // return false;
     }).first();
+    console.log('selectedRooms: ', selectedRooms);
 
-    const branchData = branchId && selectedBranch ;
-    const RoomsData = roomNumber;
-    console.log('the branchId: ', branchId);
-    console.log('selectedBranch: ', selectedBranch);
-    console.log('branchData: ', branchData);
-    //branchName = branchId && selectedBranch.has('name')? selectedBranch.get('name'):null;
-    console.log('branchName: ', branchName);
-    console.log('rooms :' , roomNumber)
+    // const branchData = branchId && selectedBranch ;
+    // const RoomsData = roomNumber;
 
     const enteredUserHasPackage = enteredUser && enteredUser.get('packageId') && !(enteredUser.get('cancellationDate') && enteredUser.get('cancellationReason'));
 
@@ -979,15 +979,15 @@ class UserRegByCRO extends React.Component {
             />
             </div>
         }
-        {showDetails && !this.state.roomNumber && <IntegrationAutosuggest selections='rooms' branchId={this.state.branch} placeholder={roomNumberLabel} onSelectionChange={roomNumber => this.handleAutosuggest('rooms', roomNumber)}/>}
-        {showDetails && this.state.roomNumber && 
+        {showDetails && !this.state.roomId && <IntegrationAutosuggest selections='rooms' branchId={this.state.branch} placeholder={roomNumberLabel} onSelectionChange={roomId => this.handleAutosuggest('roomId', roomId)}/>}
+        {showDetails && this.state.roomId && 
                     <div style={{marginTop:16}}>
                     <FormLabel component="legend">Room Number</FormLabel>
                     <Chip
                         avatar={null}
-                        label={roomNumberLabel}
+                        label={roomNumber}
                         style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
-                        onDelete={()=>this.handleAutosuggest('rooms', null)}
+                        onDelete={()=>this.handleAutosuggest('roomId', null)}
                     />
                     </div>
         }
