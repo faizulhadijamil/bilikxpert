@@ -968,7 +968,7 @@ function checkOnlineOffline(){
 export function saveUserData(userId, userData, BeforeuserData=null, currentLoginUserEmail=null, currentLoginUserId=null){
   return function action(dispatch, getState) {
     const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-    var userRef, logRef, paymentRef;
+    var userRef, logRef, paymentRef, roomRef;
     // console.log('thecurrentLoginUserEmail: ', currentLoginUserEmail);
     // console.log('beforeUserData: ', BeforeuserData);
     console.log('userData: ', userData);
@@ -1001,9 +1001,9 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
       // newUserData.gantnerCardNumber = null;
       return userRef.set({
       // ...newUserData,
-      ...userData,
-      updatedAt:timestamp,
-      createdAt:timestamp
+        ...userData,
+        updatedAt:timestamp,
+        createdAt:timestamp
       })
       .then(function() {
           if(userId === 'NEW'){
@@ -1011,8 +1011,10 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
             // dispatch(viewPerson(userRef.id));
             // dispatch(viewNext(userRef.id));
             dispatch(viewPeople());
-            // dispatch(viewHome());
-            // ())
+            if (userData && userData.currentRoomId){
+              roomRef = firestore.collection("rooms").doc(userData.currentRoomId);
+              roomRef.update({isAvailable:false});
+            }
           }else{
             const currentUser = getState().state.has('user') ? getState().state.get('user') : null;
             const currentUserEmail = currentUser && currentUser.has('email') ? currentUser.get('email') : null;

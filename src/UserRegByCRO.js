@@ -329,7 +329,6 @@ class UserRegByCRO extends React.Component {
         name: this.state.name,
         phone: this.state.phone,
         currentBranch: this.state.branch,
-        currentRooms: this.state.roomNumber,
         currentRoomId: this.state.roomId,
         autoMembershipStarts:this.state.autoMembershipStarts? this.state.autoMembershipStarts:moment().tz('Asia/Kuala_Lumpur').format('YYYY-MM-DD'),
         mcId: this.state.mcId,
@@ -490,7 +489,8 @@ class UserRegByCRO extends React.Component {
     const selectedRooms = roomsData && roomsData.filter((x, key)=>{
       // console.log('key rooms: ', key);
       // console.log('x value: ', x);
-      if (key === selectedRoomId){
+      const isAvailable = x.has('isAvailable')? x.get('isAvailable'):true;
+      if ((key === selectedRoomId) && isAvailable){
         roomNumber = x.has('roomNumber')? x.get('roomNumber'):'';
         return true;
       }

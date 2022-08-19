@@ -172,11 +172,11 @@ function getSuggestions(users, inputValue) {
 function getRoomSuggestion (rooms, inputValue){
   let count = 0;
   const filteredRooms = rooms.filter(suggestion => {
-    console.log('inside getroom suggestion: ', suggestion);
+    const isAvailable = suggestion.has('isAvailable')? suggestion.get('isAvailable') : true;
     const roomNumber = suggestion.has('roomNumber') ? suggestion.get('roomNumber') : null;
     const keep =
       // (!inputValue || suggestion.label.toLowerCase().includes(inputValue.toLowerCase())) &&
-      (!inputValue || (roomNumber && roomNumber.toLowerCase().includes(inputValue.toLowerCase()))) &&
+      (isAvailable && (!inputValue || (roomNumber && roomNumber.toLowerCase().includes(inputValue.toLowerCase())))) &&
       count < 5;
 
     if (keep) {
