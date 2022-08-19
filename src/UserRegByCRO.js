@@ -152,7 +152,7 @@ class UserRegByCRO extends React.Component {
       // temporarily disable for trainer image
       // if (((packageId && !image) || (roles && isTrainer))) {
         if (!this.state.continue || !this.state.continue) {
-          console.log('go here... ', this.state);
+          //console.log('go here... ', this.state);
           this.setState({
             continue: true,
             continueRegistration: true
@@ -207,8 +207,8 @@ class UserRegByCRO extends React.Component {
   }
 
   handleAutosuggest = (name, value) => {
-      console.log('handleAutosuggestName:', name);
-      console.log('handleAutosuggestValue:', value);
+      //console.log('handleAutosuggestName:', name);
+      //console.log('handleAutosuggestValue:', value);
     var valueMap = {};
     valueMap[name] = value;
     this.setState({ ...valueMap });
@@ -224,7 +224,7 @@ class UserRegByCRO extends React.Component {
     const isPromo = this.props.match.path === '/promo';
     if (enteredUserId && !isPromo) {
       const checkInOption = (joinOption === 'KLCC')? 'App - Registration (KLCC)':'App - Registration';
-      console.log('checkIn Option: ', checkInOption);
+      //console.log('checkIn Option: ', checkInOption);
       this.props.actions.addCheckIn(enteredUserId, checkInOption);
       setTimeout(() => {
         this.handleClear();
@@ -290,7 +290,7 @@ class UserRegByCRO extends React.Component {
       } else {
         const email = this.state.email;
         this.props.actions.fetchMethodsForEmail(email, (success) => {
-          console.log('fetchMethodsForEmail: ', success);
+          //console.log('fetchMethodsForEmail: ', success);
           this.setState({continue: success});
         });
       }
@@ -299,7 +299,7 @@ class UserRegByCRO extends React.Component {
 
   handleIdentifyPhoneNumber = () => {
     this.props.actions.getUserByPhone(this.state.phone, (response) => {
-        console.log('getUserByPhone response: ', response);
+       // console.log('getUserByPhone response: ', response);
         if (response && response.error){ // phone not exist or member not exist
             // continue to registration, show other field;
 
@@ -309,18 +309,18 @@ class UserRegByCRO extends React.Component {
   }
 
   handleContinueRegister = () => {
-    console.log('handleContinueRegister state: ', this.state);
+   // console.log('handleContinueRegister state: ', this.state);
     // todo error checking...
     if (!this.state.name || (this.state.name && this.state.name.length<5)){
-      console.log('invalid name');
+     // console.log('invalid name');
       return;
     }
     else if (!this.state.phone || (this.state.phone && this.state.phone.length<5)){
-      console.log('invalid phone');
+      //console.log('invalid phone');
       return;
     }
     else if (!this.state.branch){
-      console.log('no branch');
+      //console.log('no branch');
       return;
     }
 
@@ -341,10 +341,10 @@ class UserRegByCRO extends React.Component {
   }
 
   handleContinueWhatsapp = () => {
-    console.log('handleContinueWhatsapp: ', this.state);
+    //console.log('handleContinueWhatsapp: ', this.state);
     // this will generate TAC number
     this.props.actions.generateTAC(this.state.whatsappPhone, (response)=>{
-      console.log('tac response: ', response);
+      //console.log('tac response: ', response);
       this.setState({showTACNumber:true});
     });
   }
@@ -353,12 +353,12 @@ class UserRegByCRO extends React.Component {
     // console.log('handleLogin: ', this.state);
     // console.log('handleProps: ', this.props);
     const email = this.state.email;
-    console.log('theemail: ', email);
+    //console.log('theemail: ', email);
     // this.props.actions.FBLoginv2(email, response=>{
     //   console.log('theresponse: ', response);
     // });
     this.props.actions.FBLogin(email, response=>{
-      console.log('fbLoginResponse: ', response);
+      //console.log('fbLoginResponse: ', response);
       if (response.success && response.user){
         this.setState({fbUserData: response});
         if (response.result.additionalUserInfo){
@@ -386,7 +386,7 @@ class UserRegByCRO extends React.Component {
     //   this.props.actions.signUp(this.state.email, this.state.password, this.state.name, this.state.phone, this.state.mcId, this.state.refSource, this.state.image, this.state.imagePath, this.state.postcode, true);
     // }
     if (this.props.currentUser && this.props.currentUser.get('id')) {
-      console.log('savingData');
+      //console.log('savingData');
       this.props.actions.saveUserData(this.props.currentUser.get('id'), {
         image: this.state.image,
         imagePath: this.state.imagePath
@@ -399,11 +399,11 @@ class UserRegByCRO extends React.Component {
 
   // for FB
   handleResponse = (data) => {
-    console.log('fb data:', data);
+    //console.log('fb data:', data);
   }
 
   handleError = (error) => {
-    console.log('fb error: ', error);
+    //console.log('fb error: ', error);
     this.setState({ error });
   }
 
@@ -419,11 +419,11 @@ class UserRegByCRO extends React.Component {
     const isAdmin = roles && roles.get('admin') === true;
     const isMC = roles && roles.get('mc') === true;
     const isAuthorized = isAdmin || isMC;
-    console.log('theStaffProps: ', this.props.staff);
-    console.log('theUsers: ', this.props.users);
-    console.log('currentUser: ', user);
-    console.log('currentProps: ', this.props);
-    console.log('currentState: ', this.state);
+    // console.log('theStaffProps: ', this.props.staff);
+    // console.log('theUsers: ', this.props.users);
+    // console.log('currentUser: ', user);
+    // console.log('currentProps: ', this.props);
+    // console.log('currentState: ', this.state);
     
     const isStaff = user && user.get('isStaff');
     const currentStaffBranch = user && user.get('staffBranch');
@@ -488,8 +488,8 @@ class UserRegByCRO extends React.Component {
 
     var roomNumber = ''
     const selectedRooms = roomsData && roomsData.filter((x, key)=>{
-      console.log('key rooms: ', key);
-      console.log('x value: ', x);
+      // console.log('key rooms: ', key);
+      // console.log('x value: ', x);
       if (key === selectedRoomId){
         roomNumber = x.has('roomNumber')? x.get('roomNumber'):'';
         return true;
@@ -500,7 +500,7 @@ class UserRegByCRO extends React.Component {
         // }
         // return false;
     }).first();
-    console.log('selectedRooms: ', selectedRooms);
+    //console.log('selectedRooms: ', selectedRooms);
 
     // const branchData = branchId && selectedBranch ;
     // const RoomsData = roomNumber;
@@ -518,7 +518,7 @@ class UserRegByCRO extends React.Component {
     const checkinDisabled = this.state.checkinDisabled;
     const isValidPostCode = this.state.postcode && this.state.postcode.length>=4;
 
-    console.log(isValidEmail, isValidName, isValidPhone, isValidReferralSource, isValidConsultant, !checkinDisabled);
+    //console.log(isValidEmail, isValidName, isValidPhone, isValidReferralSource, isValidConsultant, !checkinDisabled);
     // console.log('refSOurce: ', this.state.refSource);
 
 
@@ -625,7 +625,7 @@ class UserRegByCRO extends React.Component {
    
 
     if (!isLogin && enteredUser) {
-      console.log('not login user & entered user: ', this.state);
+      //console.log('not login user & entered user: ', this.state);
       userItem = (
         <div>
           <Typography type="title" component="h1" gutterBottom color="primary" style={{textAlign:'center'}}>
@@ -670,9 +670,9 @@ class UserRegByCRO extends React.Component {
         null;
 
       if (isLogin) {
-        console.log('user is login')
+        //console.log('user is login')
         if (!this.props.emailNeedsSignUp) {
-          console.log('is login need signed up')
+          //console.log('is login need signed up')
           userItem = (
             <div>
               <Typography type="title" component="h1" gutterBottom color="primary" style={{textAlign:'center'}}>
@@ -870,7 +870,7 @@ class UserRegByCRO extends React.Component {
     } 
     else if (this.state.continue && this.state.continueRegistration) {
 
-      console.log('registartion state: ', this.state);
+      //console.log('registartion state: ', this.state);
 
       const image = this.state.image;
       var editUserAvatar = <PhotoCameraIcon style={{width:128, height:128}} />;
