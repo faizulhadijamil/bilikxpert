@@ -1,0 +1,54 @@
+{
+  "hosting": {
+    "public": "build",
+    "headers": [
+      {
+        "source": "**.@(js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31557600"
+          }
+        ]
+      },
+      {
+        "source": "**.@(jpg|jpeg|gif|png|svg)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31557600"
+          }
+        ]
+      }
+    ],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/oauthcallback",
+        "function": "oauthcallback"
+      },
+      {
+        "source": "/authgoogleapi",
+        "function": "authgoogleapi"
+      },
+      {
+        "source": "/testsheetwrite",
+        "function": "testsheetwrite"
+      }
+    ]
+  },
+  "functions": {
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint"
+    ],
+    "source": "functions"
+  }
+}

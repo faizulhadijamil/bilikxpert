@@ -8,7 +8,6 @@ import 'firebase/auth';
 import 'firebase/storage';
 import 'firebase/functions';
 // import { getAuth, signInWithCustomToken } from "firebase/auth";
-import { getVendProducts } from './selectors';
 // import 'firebase/analytics';
 // const cors = require('cors')({ origin: true });
 
@@ -54,13 +53,13 @@ let unsubscribeReferralCny;
 // for babelAsiaId
 var config = {
   apiKey: "AIzaSyCnQXnlRIFlIZ0tQooH5PW-I54MsHVbxow",
-    authDomain: "faizroom-36b74.firebaseapp.com",
-    databaseURL: "https://faizroom-36b74.firebaseio.com",
-    projectId: roomExpertId,
-    storageBucket: "faizroom-36b74.appspot.com",
-    messagingSenderId: "669544874882",
-    appId: "1:669544874882:web:44a141df4ce90436b9859b",
-    measurementId: "G-CJ5Z1077NM"
+  authDomain: "faizroom-36b74.firebaseapp.com",
+  databaseURL: "https://faizroom-36b74.firebaseio.com",
+  projectId: "faizroom-36b74",
+  storageBucket: "faizroom-36b74.appspot.com",
+  messagingSenderId: "669544874882",
+  appId: "1:669544874882:web:44a141df4ce90436b9859b",
+  measurementId: "G-CJ5Z1077NM"
 };
 
 // initialize firebase
