@@ -178,7 +178,6 @@ const getRooms = (state,props) => state.state && state.state.hasIn(['rooms', 'ro
 export const getRoomsList = createSelector(
   [ getRooms ],
   (rooms) => {
-    console.log('theRoom: ', rooms);
     return rooms || null;
   }
 );
@@ -624,6 +623,469 @@ const getComplementaryMembersItems = createSelector(
     return filteredItemsForUsers(filteredComplimentary, searchText, packages, null, null, filteredStaffId);
   }
 );
+
+export const makeGetHansonMemberItems = () => {
+  return getHansonMemberItems;
+}
+
+const getHansonMemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByHansonMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'vv0qzJtltz6HFrMvUWdF'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByHansonMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetMidahMemberItems = () => {
+  return getMidahMemberItems;
+}
+
+const getMidahMemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByMidahMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'xpaG1rNyXKkiSPGJp9FR'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByMidahMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetMelawatiMemberItems = () => {
+  return getMelawatiMemberItems;
+}
+
+const getMelawatiMemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByMelawatiMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === '1m997jLZxcodDbS5BacQ'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByMelawatiMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetCempakaMemberItems = () => {
+  return getCempakaMemberItems;
+}
+
+const getCempakaMemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByCempakaMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'LQTsMJDhTrJOgxcvOCNZ'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByCempakaMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetIndahMemberItems = () => {
+  return getIndahMemberItems;
+}
+
+const getIndahMemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByIndahMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'MlLy46h9yjD234b1ZBQp'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByIndahMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetMajuMemberItems = () => {
+  return getMajuMemberItems;
+}
+
+const getMajuMemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByMajuMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'nrL156utGX4JPndt0mD4'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByMajuMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetWarisanMemberItems = () => {
+  return getWarisanMemberItems;
+}
+
+const getWarisanMemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByWarisanMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'rk8UuvMpELv4bFKCZfhH'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByWarisanMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetTenagaMemberItems = () => {
+  return getTenagaMemberItems;
+}
+
+const getTenagaMemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByTenagaMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'thPGIInvOOq6paElACDP'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByTenagaMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetWangsa1MemberItems = () => {
+  return getWangsa1MemberItems;
+}
+
+const getWangsa1MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByWangsa1Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === '6jtY4wlwO0XFZm3ZguSB'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByWangsa1Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetWangsa2MemberItems = () => {
+  return getWangsa2MemberItems;
+}
+
+const getWangsa2MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByWangsa2Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === '7tdFOQWIOTrDIZCGtSoC'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByWangsa2Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetWangsa3MemberItems = () => {
+  return getWangsa3MemberItems;
+}
+
+const getWangsa3MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByWangsa3Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === '44q8JVy4NHPYVjTSbemz'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByWangsa3Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetWangsa4MemberItems = () => {
+  return getWangsa4MemberItems;
+}
+
+const getWangsa4MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByWangsa4Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === '2BONsPO56oNyloOgfSuI'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByWangsa4Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetWangsa5MemberItems = () => {
+  return getWangsa5MemberItems;
+}
+
+const getWangsa5MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByWangsa5Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'BfuDPVzSLyvN9d3y4q1d'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByWangsa5Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetWangsa6MemberItems = () => {
+  return getWangsa6MemberItems;
+}
+
+const getWangsa6MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByWangsa6Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'D0PhhSlFxgPfxEaST1DO'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByWangsa6Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetWangsa7MemberItems = () => {
+  return getWangsa7MemberItems;
+}
+
+const getWangsa7MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByWangsa7Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'K8GFRZ1ZcosgQy30qLam'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByWangsa7Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetCahaya1MemberItems = () => {
+  return getCahaya1MemberItems;
+}
+
+const getCahaya1MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByCahaya1Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'PyaWYN81quJCXXh70iNm'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByCahaya1Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetCahaya2MemberItems = () => {
+  return getCahaya2MemberItems;
+}
+
+const getCahaya2MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByCahaya2Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'QHIVYA7TtnVOqDz5yjaP'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByCahaya2Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetCahaya3MemberItems = () => {
+  return getCahaya3MemberItems;
+}
+
+const getCahaya3MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByCahaya3Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'XFqtpQQl3pA4xXF4pGZx'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByCahaya3Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetCahaya4MemberItems = () => {
+  return getCahaya4MemberItems;
+}
+
+const getCahaya4MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByCahaya4Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'ZMYGLyprUnYFxK730QZP'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByCahaya4Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetCahaya5MemberItems = () => {
+  return getCahaya5MemberItems;
+}
+
+const getCahaya5MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByCahaya5Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'gXEIvTJtFhRnxg1a29da'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByCahaya5Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetCahaya6MemberItems = () => {
+  return getCahaya6MemberItems;
+}
+
+const getCahaya6MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByCahaya6Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'lJxU94mtwbrGDZRkKfWc'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByCahaya6Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
+export const makeGetCahaya7MemberItems = () => {
+  return getCahaya7MemberItems;
+}
+
+const getCahaya7MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByCahaya7Member = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'mjCXb93tpZ1HRo8y0pjD'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByCahaya7Member, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
 
 export const makeGetComplementaryMemberItems = () => {
   return getComplementaryMembersItems;
@@ -1194,17 +1656,16 @@ export const makeGetAdminItems = () => {
   return getAdminItems;
 }
 
-const filteredItemsForUsers = (users, searchText, packages, staff, staffId, filteredStaffId, backgroundColor = null) => {
+const filteredItemsForUsers = (users, searchText, packages, staff, staffId, filteredStaffId, backgroundColor = null, rooms = null) => {
   if(!users){
     return null;
   }
   var userItems = [];
   users.toKeyedSeq().forEach((v,k)=>{
     if(userMatchesSearchText(v, k, searchText, filteredStaffId)){
-      userItems.push(itemForMember(v, k, packages, staff, staffId, backgroundColor));
+      userItems.push(itemForMember(v, k, packages, staff, staffId, backgroundColor, rooms));
     }
   });
-
   return userItems;
 }
 
@@ -1233,13 +1694,21 @@ const userMatchesSearchText = (v, k, searchText, filteredStaffId) => {
   return true;
 }
 
-const itemForMember = (member, id, packages, staff = null, staffId = null, backgroundColor=null) =>{
+const itemForMember = (member, id, packages, staff = null, staffId = null, backgroundColor=null, rooms = null) =>{
   const primaryText = member.get('name') || 'No Name';
 
   const packageId = member.get('packageId') || null;
   const packageData = ((packageId && packages) && packages.get(packageId)) || null;
   const packageName = (packageData && packageData.get('name')) || null;
-  var secondaryText = packageName || null;
+  const roomId = (member.get('currentroomId')) || null;
+
+
+  // const roomData = rooms && rooms.get(roomId);
+  // const roomNumber = roomData && roomData.roomNumber;
+
+  console.log('roomData: ', rooms);
+
+  var secondaryText = packageName;
   if(member && member.get('tier')){
     secondaryText = `Tier ${member.get('tier')}`;
   }

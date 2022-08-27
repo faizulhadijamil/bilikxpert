@@ -169,7 +169,7 @@ class People extends React.Component {
       selectedUserId: userId
     })
     this.props.actions.getGantnerLogsByUserId(userId);
-    this.props.actions.getInvoicesByUserId(userId);
+    //this.props.actions.getInvoicesByUserId(userId);
     this.props.actions.getPaymentsByUserId(userId);
     const selectedUser = this.props.users.get(userId);
     const selectedUserRoles = selectedUser && selectedUser.get('roles');
@@ -302,15 +302,15 @@ class People extends React.Component {
             <Grid item xs={12} sm={8}>
               <Grid container style={{marginTop:32}}>
               <Grid item xs={12} sm={12} style = {{marginTop:85}}>
-              {true && <SearchTextInput
+              {/* {true && <SearchTextInput
                 searchLabel = {(isStaff) ? "Search Name, Email, ID" : "Search Trainers"}
                 value = {this.state.searchDisplay}
                 onChange={this.handleSearch('search')}
                 onIconClick={this.handleClickSearchCloseIcon}
                 // style = {normalSearchTextBoxStyle}
                 selectedStaffChip = {selectedStaffChip? selectedStaffChip:null}
-              />}
-                {false && !selectedStaffChip &&
+              />} */}
+                {/* {false && !selectedStaffChip &&
                     <TextField
                       id="search"
                       label={(isStaff) ? "Search Name, Email, ID" : "Search Trainers"}
@@ -331,18 +331,35 @@ class People extends React.Component {
                       style={{borderRadius:3}}
                       onFocus={()=>window.scrollTo(0, 0)}
                     />
-                  }
+                  } */}
             </Grid>
                 {false && isAdmin && this.renderUserList('All Users', 'allUsers', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}
-                {staffLevel6 && this.renderUserList('In Gym Needs Attention (KLCC)', 'inGymNeedsAttentionKLCC', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}
-                {staffLevel6 && this.renderUserList('In Gym Needs Attention (TTDI)', 'inGymNeedsAttentionTTDI', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}
-                {staffLevel6 && this.renderUserList('In Gym (KLCC)', 'inGymKLCC', searchText, selectedStaffId, true, true)}
-                {staffLevel6 && this.renderUserList('In Gym (TTDI)', 'inGymTTDI', searchText, selectedStaffId, true, true)}
+                {staffLevel6 && this.renderUserList('Customers Needs Attention (Hotel)', 'CustomersNeedsAttentionHotel', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}
+                {staffLevel6 && this.renderUserList('Customers Needs Attention (Bilik Sewa)', 'CustomersNeedsAttentionBilikSewa', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}
+                {staffLevel6 && this.renderUserList('Pandan Indah', 'indahMember', searchText, selectedStaffId, true, true)}
+                {staffLevel6 && this.renderUserList('Taman Midah', 'midahMember', searchText, selectedStaffId, true, true)}
                 {true && (isSuperUser || isAdmin) && this.renderUserList('New', 'new', searchText, selectedStaffId, true, false)}
-                {staffLevel6 && this.renderUserList('New visitor KLCC', 'newklcc', searchText, selectedStaffId, true, false)}
-                {staffLevel6 && this.renderUserList('New visitor TTDI', 'newttdi', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Cahaya Hanson', 'hansonMember', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Melawati', 'melawatiMember', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Wangsa Maju 1', 'wangsa1Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Wangsa Maju 2', 'wangsa2Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Wangsa Maju 3', 'wangsa3Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Wangsa Maju 4', 'wangsa4Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Wangsa Maju 5', 'wangsa5Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Wangsa Maju 6', 'wangsa6Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Wangsa Maju 7', 'wangsa6Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Cempaka', 'cempakaMember', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Pandan Cahaya 1', 'cahaya1Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Pandan Cahaya 2', 'cahaya2Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Pandan Cahaya 3', 'cahaya3Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Pandan Cahaya 4', 'cahaya4Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Pandan Cahaya 5', 'cahaya5Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Pandan Cahaya 6', 'cahaya6Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Pandan Cahaya 7', 'cahaya7Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Cahaya Maju', 'majuMember', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Cahaya Warisan', 'warisanMember', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Taman Tenaga', 'tenagaMember', searchText, selectedStaffId, true, false)}
                 {staffLevel2 && this.renderUserList('Active', 'active', searchText, selectedStaffId, true, false)}
-                {staffLevel6 && this.renderUserList('Active KLCC', 'activeKLCC', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Active TTDI', 'activeTTDI', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Billing Today/Overdue', 'expired', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')}
                 {staffLevel6 && this.renderUserList('Billing Today/Overdue (KLCC)', 'expiredKLCC', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')}
@@ -353,11 +370,11 @@ class People extends React.Component {
                     <UserList title ={'Members'} type={'activeExpired'} searchText={searchText} filteredStaffId={selectedStaffId} useNew={true} selectAction={this.handleSelectPerson} />
                   </Grid>
                 }
-                {staffLevel6 &&
+                {/* {staffLevel6 &&
                   <Grid item xs={12} sm={6} lg={4} style={{paddingTop:0, paddingBottom:0}}>
                     <UserList title ={'Freeze'} type={'freeze'} searchText={searchText} filteredStaffId={selectedStaffId} useNew={true} selectAction={this.handleSelectPerson} headerBackgroundColor={'rgb(1, 186, 239)'}/>
                   </Grid>
-                }
+                } */}
                 {true && staffLevel6 && this.renderUserList('Needs Membership Card', 'needsMembershipCard', searchText, selectedStaffId, true, false)}
                 {false && (isAdmin || isCRO) && this.renderUserList('Needs Trainer', 'needsTrainer', searchText, selectedStaffId, true, true)}
                 {false && (isAdmin || isCRO || isTrainer) && this.renderUserList('Needs Induction', 'needsInduction', searchText, selectedStaffId, true, false)}
@@ -366,7 +383,7 @@ class People extends React.Component {
                 {staffLevel6 && this.renderUserList('Cancelled', 'cancelled', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Visitors', 'prospects', searchText, selectedStaffId, true, false)}
                 {roles && this.renderUserList('Staff', 'staffs', searchText, selectedStaffId, true, false)}
-                {staffLevel6 && this.renderUserList('Trainers', 'trainers', searchText, selectedStaffId, true, false)}
+                {/* {staffLevel6 && this.renderUserList('Trainers', 'trainers', searchText, selectedStaffId, true, false)} */}
                 {false && (isSuperUser || isCRO || isSuperVisor || isAdmin || isSeniorCRO) && this.renderUserList('Ops', 'ops', searchText, selectedStaffId, true)}
                 {false && (isSuperUser || isAdmin) && this.renderUserList('Admins', 'admins', searchText, selectedStaffId, true, false)}
               </Grid>

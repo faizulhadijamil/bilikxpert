@@ -11,6 +11,28 @@ import PropTypes from 'prop-types';
 import {
   getFilteredStaffIdState,
   getSearchTextState,
+  makeGetHansonMemberItems,
+  makeGetMidahMemberItems,
+  makeGetMelawatiMemberItems,
+  makeGetCempakaMemberItems,
+  makeGetIndahMemberItems,
+  makeGetMajuMemberItems,
+  makeGetWarisanMemberItems,
+  makeGetTenagaMemberItems,
+  makeGetWangsa1MemberItems,
+  makeGetWangsa2MemberItems,
+  makeGetWangsa3MemberItems,
+  makeGetWangsa4MemberItems,
+  makeGetWangsa5MemberItems,
+  makeGetWangsa6MemberItems,
+  makeGetWangsa7MemberItems,
+  makeGetCahaya1MemberItems,
+  makeGetCahaya2MemberItems,
+  makeGetCahaya3MemberItems,
+  makeGetCahaya4MemberItems,
+  makeGetCahaya5MemberItems,
+  makeGetCahaya6MemberItems,
+  makeGetCahaya7MemberItems,
   makeGetActiveMemberItems,
   makeGetActiveMemberItemsKLCC,
   makeGetActiveMemberItemsTTDI,
@@ -133,8 +155,10 @@ class UserList extends React.Component {
     var newItems = items;
     if (useNew && items) {
       newItems = [];
+     
       // var listMap = {};
       (items) && items.forEach(item => {
+        console.log('theItems123: ', item)
         if (!this.props.showAll && (newItems.length >= this.state.itemsToLoad || (!isOpen && !(items && (items.length < 5))))) {
           return;
         }
@@ -179,7 +203,10 @@ const UserListStyled = withStyles(styles)(UserList);
 const makeMapStateToProps = () => {
   const mapStateToProps = (state, props) => {
     var items;
+    console.log('getPropsType: ', props.type);
     switch (props.type) {
+     
+
       case 'inGymNeedsAttention':{
         const getInGymNeedsAttentionItems = makeGetInGymNeedsAttentionItems();
         items = getInGymNeedsAttentionItems(state, props);
@@ -230,6 +257,116 @@ const makeMapStateToProps = () => {
       case 'active':{
         const getActiveMembersItems = makeGetActiveMemberItems();
         items = getActiveMembersItems(state, props)
+        break;
+      }
+      case 'hansonMember':{
+        const getCahayaHansonItems = makeGetHansonMemberItems();
+        items = getCahayaHansonItems(state, props)
+        break;
+      }
+      case 'melawatiMember':{
+        const getMelawatiItems = makeGetMelawatiMemberItems();
+        items = getMelawatiItems(state, props)
+        break;
+      }     
+      case 'midahMember':{
+        const getMidahItems = makeGetMidahMemberItems();
+        items = getMidahItems(state, props)
+        break;
+      }      
+      case 'cempakaMember':{
+        const getCempakaItems = makeGetCempakaMemberItems();
+        items = getCempakaItems(state, props)
+        break;
+      }
+      case 'indahMember':{
+        const getIndahItems = makeGetIndahMemberItems();
+        items = getIndahItems(state, props)
+        break;
+      }
+      case 'majuMember':{
+        const getMajuItems = makeGetMajuMemberItems();
+        items = getMajuItems(state, props)
+        break;
+      }
+      case 'warisanMember':{
+        const getWarisanItems = makeGetWarisanMemberItems();
+        items = getWarisanItems(state, props)
+        break;
+      }
+      case 'tenagaMember':{
+        const getTenagaItems = makeGetTenagaMemberItems();
+        items = getTenagaItems(state, props)
+        break;
+      }
+      case 'wangsa1Member':{
+        const getWangsa1Items = makeGetWangsa1MemberItems();
+        items = getWangsa1Items(state, props)
+        break;
+      }
+      case 'wangsa2Member':{
+        const getWangsa2Items = makeGetWangsa2MemberItems();
+        items = getWangsa2Items(state, props)
+        break;
+      }
+      case 'wangsa3Member':{
+        const getWangsaMaju3Items = makeGetWangsa3MemberItems();
+        items = getWangsaMaju3Items(state, props)
+        break;
+      }
+      case 'wangsa4Member':{
+        const getWangsaMaju4Items = makeGetWangsa4MemberItems();
+        items = getWangsaMaju4Items(state, props)
+        break;
+      }
+      case 'wangsa5Member':{
+        const getWangsaMaju5Items = makeGetWangsa5MemberItems();
+        items = getWangsaMaju5Items(state, props)
+        break;
+      }
+      case 'wangsa6Member':{
+        const getWangsaMaju6Items = makeGetWangsa6MemberItems();
+        items = getWangsaMaju6Items(state, props)
+        break;
+      }
+      case 'wangsa7Member':{
+        const getWangsaMaju7Items = makeGetWangsa7MemberItems();
+        items = getWangsaMaju7Items(state, props)
+        break;
+      }
+      case 'cahaya1Member':{
+        const getCahaya1Items = makeGetCahaya1MemberItems();
+        items = getCahaya1Items(state, props)
+        break;
+      }
+      case 'cahaya2Member':{
+        const getCahaya2Items = makeGetCahaya2MemberItems();
+        items = getCahaya2Items(state, props)
+        break;
+      }
+      case 'cahaya3Member':{
+        const getCahaya3Items = makeGetCahaya3MemberItems();
+        items = getCahaya3Items(state, props)
+        break;
+      }
+      case 'cahaya4Member':{
+        const getCahaya4Items = makeGetCahaya4MemberItems();
+        items = getCahaya4Items(state, props)
+        break;
+      }
+      case 'cahaya5Member':{
+        const getCahaya5Items = makeGetCahaya5MemberItems();
+        items = getCahaya5Items(state, props)
+        break;
+      }
+      case 'cahaya6Member':{
+        const getCahaya6Items = makeGetCahaya6MemberItems();
+        items = getCahaya6Items(state, props)
+        break;
+      }
+      case 'cahaya7Member':{
+        const getCahaya7Items = makeGetCahaya7MemberItems();
+        items = getCahaya7Items(state, props)
         break;
       }
       case 'activeKLCC':{
