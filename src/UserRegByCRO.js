@@ -298,14 +298,15 @@ class UserRegByCRO extends React.Component {
   }
 
   handleIdentifyPhoneNumber = () => {
-    this.props.actions.getUserByPhone(this.state.phone, (response) => {
-       // console.log('getUserByPhone response: ', response);
-        if (response && response.error){ // phone not exist or member not exist
-            // continue to registration, show other field;
+    this.setState({showDetails:true});
+    // this.props.actions.getUserByPhone(this.state.phone, (response) => {
+    //    // console.log('getUserByPhone response: ', response);
+    //     if (response && response.error){ // phone not exist or member not exist
+    //         // continue to registration, show other field;
 
-            this.setState({showDetails:true});
-        }
-    });
+    //         this.setState({showDetails:true});
+    //     }
+    // });
   }
 
   handleContinueRegister = () => {
@@ -337,15 +338,6 @@ class UserRegByCRO extends React.Component {
 
     // this.props.actions.saveUserData('NEW_REG', userData);
     this.props.actions.saveUserData('NEW', userData);
-  }
-
-  handleContinueWhatsapp = () => {
-    //console.log('handleContinueWhatsapp: ', this.state);
-    // this will generate TAC number
-    this.props.actions.generateTAC(this.state.whatsappPhone, (response)=>{
-      //console.log('tac response: ', response);
-      this.setState({showTACNumber:true});
-    });
   }
 
   handleLoginFB = () => {

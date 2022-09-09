@@ -82,7 +82,7 @@ if (firebase.auth().isSignInWithEmailLink(window.location.href)) {
   firebase.auth().signInWithEmailLink(email, window.location.href)
     .then(function(result) {
       // Clear email from storage.
-      console.log(email, result);
+      //console.log(email, result);
       window.localStorage.removeItem('emailForSignIn');
       // You can access the new user via result.user
       // Additional user info profile not available via:
@@ -159,12 +159,12 @@ export function bootstrap(){
       firebase.firestore().enablePersistence()
         .then(() => {
             // Initialize Cloud Firestore through firebase
-            console.log('enablepersistence')
+            //console.log('enablepersistence')
             firestore = firebase.firestore();
         })
         .catch(err => {
             firestore = firebase.firestore();
-            console.log('firestore persistence error: ', err);
+            //console.log('firestore persistence error: ', err);
             // if (err.code == 'failed-precondition') {
             //     // Multiple tabs open, persistence can only be enabled
             //     // in one tab at a a time.
@@ -177,41 +177,34 @@ export function bootstrap(){
         }).then(()=>{
           dispatch(checkIfNative());
           const pathname = getState().router.location.pathname;
-          console.log('pathname: ', pathname);
+          //console.log('pathname: ', pathname);
           const strArray = pathname.split("/");
-          console.log('strArray: ', strArray);
+          //console.log('strArray: ', strArray);
           const qty = strArray && strArray.length === 4? strArray[3]:1 // default
-          console.log('theQty: ', qty);
+          //console.log('theQty: ', qty);
 
           // console.log('pathname.indexOf: ', pathname.indexOf(`/${bookbabelexclusiveclassPathName}`));
 
           if(pathname.indexOf('/payments/') !== -1 || pathname.indexOf('/paymentsPB/') !== -1 || pathname.indexOf('/PaymentsAdyenDropIn/') !== -1 || pathname.indexOf('/paymentsadyendropin/') !== -1){
             const pathToReplace = pathname.indexOf('/payments/') !== -1 ? '/payments/' : '/PaymentsAdyenDropIn/'
-            console.log('pathToReplace: ', pathToReplace);
+            //console.log('pathToReplace: ', pathToReplace);
             const invoiceId = pathname.replace(pathToReplace, '');
             dispatch(getInvoiceAndDataById(invoiceId));
             // dispatch(verifyAuth()); //commented on 31/1/2020;
           }
           else if (pathname.indexOf('/buypt') !== -1){
-            console.log('buyPT path');
+            //console.log('buyPT path');
             dispatch(verifyAuth());
           }
-          else if (pathname.indexOf(`/${bookbabelexclusiveclassPathName}`) !== -1){
-            console.log('bookbabelexlusiveclass path');
-            const bookingId = strArray && strArray.length >= 3? strArray[2]:null // default
-            console.log('theQty: ', qty);
-            // dispatch(getUser());
-            dispatch(verifyAuth(bookingId));
-            // dispatch(verifyAuthPhone());
-          }
+          
           else if(pathname.indexOf('/buy/') !== -1 || (pathname.indexOf('/buy') !== -1) || pathname.indexOf('/buypromo/') !== -1 || pathname.indexOf('/buypromo') !== -1){
             const pathToReplace = pathname.indexOf('/buy/') !== -1 ? '/buy/' : '/buypromo/'
-            console.log('pathToReplace: ', pathToReplace);
+            //console.log('pathToReplace: ', pathToReplace);
             var vendProductId = pathname.replace(pathToReplace, '');
             var vendProductQty = 1; //default
-            console.log('vendProductId: ', vendProductId);
+            //console.log('vendProductId: ', vendProductId);
             const vendStrSplit = vendProductId.split("/");
-            console.log('vendStrSplit: ', vendStrSplit);
+            //console.log('vendStrSplit: ', vendStrSplit);
             if (vendStrSplit && vendStrSplit.length === 2){
               vendProductId = vendStrSplit[0];
               vendProductQty = vendStrSplit[1];
@@ -220,54 +213,54 @@ export function bootstrap(){
             // dispatch(getAllVendProducts());
           }
           else if (pathname.indexOf('/angpau') !== -1){
-            console.log('pathname CNY');
+            //console.log('pathname CNY');
             // dispatch(getCnyreferral());
             // dispatch(getUsers())
           }
           else if (pathname.indexOf('/klccexperience') !== -1){
-            console.log('pathname klccexperience');
+            //console.log('pathname klccexperience');
             // dispatch(getCnyreferral());
             // dispatch(getUsers())
           }
           else if (pathname.indexOf('/CNYangpow') !== -1){
-            console.log('pathname CNY');
+            //console.log('pathname CNY');
             dispatch(getCnyreferral());
             dispatch(getUsers())
           }
           else if (pathname.indexOf('/registrationwhatsapp') !== -1){
-            console.log('registrationwhatsapp');
+            //.log('registrationwhatsapp');
             dispatch(viewWhatsappRegistration());
           }
           else if (pathname.indexOf('/registration') !== -1){
-            console.log('self registration');
+           // console.log('self registration');
             dispatch(viewSelfRegistration());
             // viewSelfRegistration();
             // viewLogin();
           }
           else if (pathname.indexOf('/paymentreport') !== -1){
-            console.log('pathname payment report');
+            //console.log('pathname payment report');
             dispatch(getPayments());
             dispatch(getUsers());
           }
           else if (pathname.indexOf('/testPage') !== -1 || pathname.indexOf('/join') !== -1 || pathname.indexOf('/vidconf') !== -1 || pathname.indexOf('/zoom') !== -1 || pathname.indexOf('/verifyzoom') !== -1 || pathname.indexOf('/fblogin') !== -1){
-            console.log('pathname test Page');
+            //.log('pathname test Page');
             // dispatch(getUser());
           }
           else if ((pathname.indexOf('/report') !== -1)||(pathname.indexOf('/userreport') !== -1)){
-            console.log('pathname report');
+            //console.log('pathname report');
             // dispatch(getCnyreferral());
             dispatch(getPackages());
             dispatch(getFreezePayments());
             dispatch(getUsers());
           }
           else if (pathname.indexOf('/renewmembership') !== -1 || pathname.indexOf('/renewmembership/') !== -1){
-            console.log('renewmembership path');
+            //console.log('renewmembership path');
           }
           else if (pathname.indexOf('/createclass') !== -1){
-            console.log('createclass path');
+            //console.log('createclass path');
           }
           else{
-            console.log('verifyAuth...')
+            //console.log('verifyAuth...')
             dispatch(verifyAuth());
           }
           dispatch(getBranches());
@@ -285,13 +278,13 @@ export function bootstrap(){
 export function login(email, password, handleLoginFailed){
   return function action(dispatch, getState) {
     dispatch(showMessage("Logging in..."));
-    console.log('try to login....')
+    //console.log('try to login....')
     firebase.auth().signInWithEmailAndPassword(email, password)
     .then(function(user) {
         dispatch(showMessage("Logged in!"));
         const userId = user.user.uid;
-        console.log("Logged in!", user);
-        console.log('userId: ', user.user.uid);
+        // console.log("Logged in!", user);
+        // console.log('userId: ', user.user.uid);
         // dispatch(viewNext());
         dispatch(viewNext(userId));
         // dispatch(setUser(user));
@@ -324,11 +317,11 @@ export function whLogin(uid, userData, customToken, handleResponse){
     if (uid){
       unsubscribeCurrentUser = firestore && firestore.collection("users").doc(uid).onSnapshot(doc => {
         if(!doc.exists){
-          console.log('userDoc missing', uid);
+          //console.log('userDoc missing', uid);
         }else{
-          console.log('!!!exists', doc.data());
+          //console.log('!!!exists', doc.data());
           firebase.auth().signInWithCustomToken(customToken).then((userCredential)=>{
-            console.log('userCredential: ', userCredential);
+            //console.log('userCredential: ', userCredential);
           }).catch(error=>{
             var errorMessage = error.message;
             handleResponse({error:errorMessage});
@@ -375,7 +368,7 @@ export function FBLogin(email, handleResponse){
         const firstName = additionalUserInfo.profile.first_name;
         const lastName = additionalUserInfo.profile.last_name;
 
-        console.log('theresult: ', result);
+        //console.log('theresult: ', result);
         // This gives you a Facebook Access Token. You can use it to access the Facebook API.
         const accessToken = credential.accessToken;
         const userEmail = user.email;
@@ -388,7 +381,7 @@ export function FBLogin(email, handleResponse){
             userDoc = querySnapshot.docs[0];
             userData = userDoc.data();
 
-            console.log('userData: ', userData);
+           // console.log('userData: ', userData);
             //   if(name){
             //     userData.name = name;
             //   }
@@ -405,7 +398,7 @@ export function FBLogin(email, handleResponse){
 
             }
             else{
-              console.log('user is not exist, create user in DB');
+             //console.log('user is not exist, create user in DB');
               userData = {
                 email:userEmail,
                 fbPhotoURL: `https://graph.facebook.com/${additionalUserInfo.profile.id}/picture?type=large`,
@@ -437,7 +430,7 @@ export function FBLogin(email, handleResponse){
 
         }
         else{
-          console.log('member already sign in n grant access using FB')
+          //console.log('member already sign in n grant access using FB')
         }
 
         handleResponse({success:true, accessToken:accessToken, user, result});
@@ -472,7 +465,7 @@ export function FBLogin(email, handleResponse){
               }).then(function() {
                 // Facebook account successfully linked to the existing Firebase user.
                 // goToApp();
-                console.log('go to app')
+               // console.log('go to app')
               });
               return;
             }
@@ -573,7 +566,7 @@ export function signUp(email, password, name, phone, mcId, referralSource, image
 
     }).then(function(user){
 
-      console.log('signup userId: ', user);
+      //console.log('signup userId: ', user);
       dispatch(setSigningUp(false));
       dispatch(showMessage("Signed Up!"));
       
@@ -595,11 +588,11 @@ export function fetchUserDataByEmail(email, handleResponse){
     const fetchUserForEmailPromise = firestore.collection('users').where('email', '==', email).limit(1).get();
 
     Promise.all([fetchSignInMethodsPromise, fetchUserForEmailPromise]).then(results=>{
-      console.log('result: ', results);
+      //console.log('result: ', results);
       const methods = results[0];
       const userDoc = results[1] && results[1].docs && results[1].docs[0];
       const user = userDoc && results[1].docs[0].data();
-      console.log(methods, userDoc && userDoc.id);
+      //console.log(methods, userDoc && userDoc.id);
       // existing user
       if(methods && methods.length > 0 && (methods.includes('password') || methods.includes('facebook.com')) && user){
         handleResponse({success:true, user});
@@ -621,7 +614,7 @@ export function getUserDataByEmail(email, handleResponse){
     const fetchUserForEmailPromise = firestore.collection('users').where('email', '==', email).limit(1).get();
 
     Promise.all([fetchUserForEmailPromise]).then(results=>{
-      console.log('result: ', results);
+      //console.log('result: ', results);
       const userDoc = results[0] && results[0].docs && results[0].docs[0];
       const user = userDoc && results[0].docs[0].data();
       // existing user
@@ -645,7 +638,7 @@ export function getUsernRefDataByEmail(email, refEmail, handleResponse){
     const fetchRefUserForEmailPromise = firestore.collection('users').where('email', '==', refEmail).limit(1).get();
 
     Promise.all([fetchUserForEmailPromise, fetchRefUserForEmailPromise]).then(results=>{
-      console.log('result: ', results);
+      //console.log('result: ', results);
       const userDoc = results[0] && results[0].docs && results[0].docs[0];
       const user = userDoc && results[0].docs[0].data();
       const userRefDoc = results[1] && results[1].docs && results[1].docs[0];
@@ -699,8 +692,8 @@ export function generateTAC(whatsappNumber, handleResponse){
     // });
 
     return sendTACviaMessageBird({whatsappNumber}).then(result=>{
-      console.log('theresult: ', result);
-      console.log('whatsapp number: ', whatsappNumber);
+      //console.log('theresult: ', result);
+      //console.log('whatsapp number: ', whatsappNumber);
       const data = result.data;
       const tacNumber = data && data.tacNumber;
       // dispatch(showMessage(result));
@@ -721,7 +714,7 @@ export function generateTAC(whatsappNumber, handleResponse){
     }).catch(error=>{
       // dispatch(setAddingInvoice(false));
       // dispatch(showMessage(error));
-      console.log('error creating the tac')
+      //console.log('error creating the tac')
       handleResponse({error});
     });
 
@@ -751,25 +744,25 @@ export function verifyTAC(tacNumberFromApp, whatsappNumber, handleResponse){
       });
 
       if (userData){
-        console.log('existing member: ', userData);
+        //console.log('existing member: ', userData);
         // if existing, still need to show tac? need to reconfirm with boon
 
       }
       else{
-        console.log('new member, send tac number');
+        //console.log('new member, send tac number');
         // save it to user collection
         firestore.collection('users').add({
           whatsappNumber, // todo add +60 (country code)
           createdAt:timestamp
         }).then((user)=>{
           userId = user.id;
-          console.log('the saved user: ', userId);
+          //console.log('the saved user: ', userId);
           let token = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2lkZW50aXR5dG9vbGtpdC5nb29nbGVhcGlzLmNvbS9nb29nbGUuaWRlbnRpdHkuaWRlbnRpdHl0b29sa2l0LnYxLklkZW50aXR5VG9vbGtpdCIsImlhdCI6MTYzMDMxMjI3OCwiZXhwIjoxNjMwMzE1ODc4LCJpc3MiOiJmaXJlYmFzZS1hZG1pbnNkay1pbDd5NEBldXBob3JpYS03OGIyYy5pYW0uZ3NlcnZpY2VhY2NvdW50LmNvbSIsInN1YiI6ImZpcmViYXNlLWFkbWluc2RrLWlsN3k0QGV1cGhvcmlhLTc4YjJjLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwidWlkIjoiaGpha3NoZGtzamFkZmFpenVsMTIzNDU2In0.UnFi7GFzdt4dVJL9hlS6HSDNg9BerLkvdykJ_Aye7o2xb0mK-vxzi2mja3FUuMHbDeePMR_8bbz3uwY6E9Q-COhMkfRMvtdBuU7e79lVWVLgVlnKs2MLz10eZZNqaXk4r4EbX0DtxQPGZZpEtUW2poOFudhy7wZnj7IDGE4QyB_0OZ2lVHbgojq2YSge9bkXR2AIr4GOlzzKBOz1ftmUV2BTJGQMCxHH9-SuAsYoIL7SP99A4lfvGcbBNg8XWkrzqqVVzjgc8puq8IfTME6jEbpZhVHU_3gn2491Nkr4PCMBtYOqD9GZPFVyqydRJp41BR6tvRwhxxYu3UytguKFkg';
           dispatch(showMessage("Logging in..."));
           firebase.auth().signInWithCustomToken(token)
           .then((userCredential) => {
             dispatch(showMessage("Logged in!"));
-            console.log('userCredential: ', userCredential);
+            //console.log('userCredential: ', userCredential);
             // Signed in
             var user = userCredential.user;
 
@@ -777,7 +770,7 @@ export function verifyTAC(tacNumberFromApp, whatsappNumber, handleResponse){
             // ...
           })
           .catch((error) => {
-            console.log('error: ', error);
+            //console.log('error: ', error);
             var errorCode = error.code;
             var errorMessage = error.message;
             // ...
@@ -811,24 +804,24 @@ export function verifyTAC(tacNumberFromApp, whatsappNumber, handleResponse){
         const data = doc.data();
         const tacNumber = data && data.tacNumber;
         const createdAt = data && data.createdAt;
-        console.log('tacData: ', data);
-        console.log('tacNumberFromApp: ', tacNumberFromApp.toString());
+        //console.log('tacData: ', data);
+        //console.log('tacNumberFromApp: ', tacNumberFromApp.toString());
         if (tacNumber && (parseInt(tacNumber) === parseInt(tacNumberFromApp)) && createdAt 
             && moment(getTheDate(createdAt)).isSameOrAfter(moment().subtract(1, 'minutes'))
             ){
-          console.log('matchedTAC: ', tacNumber);
+          //console.log('matchedTAC: ', tacNumber);
           tacArray.push(tacNumber);
         }
       });
 
       if (tacArray && tacArray.length>=1){
-        console.log('userId: ', userId);
+        //console.log('userId: ', userId);
         if (userId){
           firebase.auth().createCustomToken(userId).then(customToken=>{
             // send token to uid
-            console.log('custom token: ', customToken);
+            //console.log('custom token: ', customToken);
           }).catch((error)=>{
-            console.log('Error creating custom token:', error);
+           // console.log('Error creating custom token:', error);
           });
         }
        
@@ -846,7 +839,7 @@ export function verifyTAC(tacNumberFromApp, whatsappNumber, handleResponse){
 export function fetchMethodsForEmail(email, handleCompletion){
   return function action(dispatch, getState) {
     dispatch(setFetchingEmail(true));
-    console.log('fetchMethodsForEmail...: ', email);
+    //console.log('fetchMethodsForEmail...: ', email);
     // setTimeout(()=>{
     //   dispatch(setNeedsSignUp(false));
     //   dispatch(setFetchingEmail(false));
@@ -856,11 +849,11 @@ export function fetchMethodsForEmail(email, handleCompletion){
     const fetchUserForEmailPromise = firestore.collection('users').where('email', '==', email).limit(1).get();
 
     Promise.all([fetchSignInMethodsPromise, fetchUserForEmailPromise]).then(results=>{
-      console.log('result: ', results);
+      //console.log('result: ', results);
       const methods = results[0];
       const userDoc = results[1] && results[1].docs && results[1].docs[0];
       const user = userDoc && results[1].docs[0].data();
-      console.log(methods, userDoc && userDoc.id);
+      //console.log(methods, userDoc && userDoc.id);
       // existing user
       if(methods && methods.length > 0 && methods.includes('password')){
         if(user){
@@ -872,10 +865,10 @@ export function fetchMethodsForEmail(email, handleCompletion){
       // new user
       else{
         if(user){
-          console.log('user dont need to sign up details: ', user);
+          //.log('user dont need to sign up details: ', user);
           dispatch(setNeedsSignUpDetails(false));
         }else{
-          console.log('user need to sign up details: ', user);
+          //console.log('user need to sign up details: ', user);
           dispatch(setNeedsSignUpDetails(true));
         }
         dispatch(setNeedsSignUp(true));
@@ -953,12 +946,12 @@ function isValidDate(d) {
 function checkOnlineOffline(){
   var isOnline = true
 	window.ononline = (event) => {
-    	console.log("Back Online");
+    	//console.log("Back Online");
       isOnline=true;
 	};
   
 	window.onoffline = (event) => {
-   		console.log("Connection Lost");
+   		//console.log("Connection Lost");
        isOnline=false;
 	};
   return isOnline;
@@ -970,16 +963,16 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
     var userRef, logRef, paymentRef, roomRef;
     // console.log('thecurrentLoginUserEmail: ', currentLoginUserEmail);
     // console.log('beforeUserData: ', BeforeuserData);
-    console.log('userData: ', userData);
-    console.log('saveUserData action....');
+    //console.log('userData: ', userData);
+    //console.log('saveUserData action....');
     const isOnline = checkOnlineOffline();
-    console.log('isOnline faizul?: ', isOnline);
+    //console.log('isOnline faizul?: ', isOnline);
     window.ononline = (event) => {
-    	console.log("internet Back Online")
+    	//console.log("internet Back Online")
 	  };
   
     window.onoffline = (event) => {
-        console.log("internet Connection Lost")
+        //console.log("internet Connection Lost")
     };
     // window.addEventListener("offline", () => {
     //   console.log('save userdata OFFLINE.....');
@@ -1055,7 +1048,7 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
           paymentRef.where('referredUserId', '==', userId).get().then(function(querySnapshot){
             querySnapshot.forEach(function(doc){
               doc.ref.delete().then(function(){
-                console.log('referral data deleted');
+               // console.log('referral data deleted');
               });
             });
           });
@@ -1112,7 +1105,7 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
         logRef.add(logData)
       })
       .catch(function(error) {
-          console.log('error: ', error);
+          //console.log('error: ', error);
           dispatch(showMessage(error.message));
           logRef.add({
             executerId: currentLoginUserId,
@@ -1130,9 +1123,9 @@ export function unTerminate(userId, userData, BeforeuserData=null, currentLoginU
   return function action(dispatch, getState) {
     const timestamp = firebase.firestore.FieldValue.serverTimestamp();
     var userRef, logRef, paymentRef;
-    console.log('thecurrentLoginUserEmail: ', currentLoginUserEmail);
-    console.log('beforeUserData: ', BeforeuserData);
-    console.log('userData: ', userData);
+    //console.log('thecurrentLoginUserEmail: ', currentLoginUserEmail);
+   // console.log('beforeUserData: ', BeforeuserData);
+   // console.log('userData: ', userData);
 
     dispatch(showMessage("Unterminate the user"));
     userRef = firestore.collection("users").doc(userId);
@@ -1143,7 +1136,7 @@ export function unTerminate(userId, userData, BeforeuserData=null, currentLoginU
       cancellationReason : firebase.firestore.FieldValue.delete(),
       cancellationCreatedAt : firebase.firestore.FieldValue.delete(),
     }).then(()=>{
-      console.log('User unterminated!')
+      //console.log('User unterminated!')
       dispatch(showMessage("User unterminated!"));
     }).then(function(){
       const logData = {
@@ -1162,7 +1155,7 @@ export function unTerminate(userId, userData, BeforeuserData=null, currentLoginU
       logRef.add(logData)
     }).catch((e)=>{
       dispatch(showMessage(e.message));
-      console.log('unterminated error')
+      //console.log('unterminated error')
     })
   }
 }
@@ -1212,12 +1205,12 @@ export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, en
 
     if (classId && daysOfWeek && daysOfWeek.length > 0 && trainerId && trainerId.length > 0 && time && time.length === 5 && startDate && startDate.length === 10 && endDate && endDate.length === 10 && duration > 0){
       dispatch(showMessage("Scheduling class..."));
-      console.log('Scheduling class...');
-      console.log('daysOfWeek: ', daysOfWeek);
-      console.log('theTime: ', time);
-      console.log('startDate: ', startDate);
-      console.log('endDate: ', endDate);
-      console.log('duration: ', duration);
+     // console.log('Scheduling class...');
+     //console.log('daysOfWeek: ', daysOfWeek);
+     // console.log('theTime: ', time);
+     // console.log('startDate: ', startDate);
+     // console.log('endDate: ', endDate);
+     // console.log('duration: ', duration);
 
       const startMoment = moment(startDate).toDate();
       const endMoment = moment(endDate).hours(23).minutes(59).seconds(59).toDate();
@@ -1228,10 +1221,10 @@ export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, en
 
       var sessions = [];
       daysOfWeek.forEach(day=>{
-        console.log('Day',day);
+      //  console.log('Day',day);
         var startExactMoment = moment(startMoment).days(day).hours(hour).minutes(minute).seconds(0).milliseconds(0);
-        console.log('startExactMoment: ', startExactMoment);
-        console.log('startMoment: ', startMoment);
+      //  console.log('startExactMoment: ', startExactMoment);
+       // console.log('startMoment: ', startMoment);
 
         // console.log(startExactMoment.toDate(),
         //   startExactMoment.valueOf() >= startMoment.valueOf());
@@ -1242,8 +1235,8 @@ export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, en
 
         var startsAtMoment = moment(startExactMoment);
         var endsAtMoment = moment(startExactMoment).add(duration, 'm');
-        console.log('endsAtMoment: ', endsAtMoment);
-        console.log('endMoment: ', endMoment);
+      //  console.log('endsAtMoment: ', endsAtMoment);
+       // console.log('endMoment: ', endMoment);
         while (endsAtMoment.valueOf() < endMoment.valueOf()) {
           //add sessions
           sessions.push({startsAt:startsAtMoment.toDate(), endsAt:endsAtMoment.toDate()});
@@ -1253,7 +1246,7 @@ export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, en
 
       });
 
-      console.log('sessions:', sessions);
+      //console.log('sessions:', sessions);
 
       if(sessions.length > 0){
 
@@ -1749,9 +1742,9 @@ export function getUser(uid, handleResponse){
     if (uid){
       unsubscribeCurrentUser = firestore && firestore.collection("users").doc(uid).onSnapshot(doc => {
         if(!doc.exists){
-          console.log('userDoc missing', uid);
+          //console.log('userDoc missing', uid);
         }else{
-          console.log('!!!exists', doc.data());
+         // console.log('!!!exists', doc.data());
           handleResponse(doc.data());
           // dispatch(setUser(doc));
         }
@@ -1768,9 +1761,9 @@ export function setUserByUserId(uid, handleResponse){
     if (uid){
       unsubscribeCurrentUser = firestore && firestore.collection("users").doc(uid).onSnapshot(doc => {
         if(!doc.exists){
-          console.log('userDoc missing', uid);
+         // console.log('userDoc missing', uid);
         }else{
-          console.log('!!!exists', doc.data());
+         // console.log('!!!exists', doc.data());
           handleResponse(doc.data());
           dispatch(setUser(doc));
         }
@@ -1789,12 +1782,12 @@ export function getUserByEmail(email, handleResponse){
     }
     unsubscribeCurrentUser = firestore.collection("users").where('email', '==', email).onSnapshot(function(querySnapshot) {
       if (querySnapshot.empty){
-        console.log('querySnapshot is empty');
+        //console.log('querySnapshot is empty');
         handleResponse({error:true, message:'no member found'});
       }
       else{
         querySnapshot.forEach(function(doc) {
-          console.log(doc.id, doc.data());
+          //console.log(doc.id, doc.data());
           if (doc.data()){
             handleResponse(doc.data());
             dispatch(setUser(doc));
@@ -1825,12 +1818,12 @@ export function getUserByPhone(phone, handleResponse){
     }
     unsubscribeCurrentUser = firestore.collection("users").where('phone', '==', phone).onSnapshot(function(querySnapshot) {
       if (querySnapshot.empty){
-        console.log('querySnapshot is empty');
+        //console.log('querySnapshot is empty');
         handleResponse({error:true, message:'no member found'});
       }
       else{
         querySnapshot.forEach(function(doc) {
-          console.log('phone exist...', doc.id, doc.data());
+         // console.log('phone exist...', doc.id, doc.data());
           if (doc.data()){
             handleResponse(doc.data());
             dispatch(setUser(doc));
@@ -2145,7 +2138,7 @@ export function getBranches(){
 }
 
 export function setBranches(branches) {
-  console.log('setting the branches...', branches);
+  //console.log('setting the branches...', branches);
   return {
     type: 'SET_BRANCHES',
     branches
@@ -2169,7 +2162,7 @@ export function getRooms(){
 }
 
 export function setRooms(rooms) {
-  console.log('setting the rooms...', rooms);
+ // console.log('setting the rooms...', rooms);
   return {
     type: 'SET_ROOMS',
     rooms
@@ -2331,13 +2324,44 @@ export function setGantnerLogsByUserId(gantnerLogs, userId) {
   };
 }
 
-export function addCheckIn(userId, deviceId = 'App - Manual'){
+export function addCheckInOut(userId){
+  return function action(dispatch, getState) {
+ 
+    const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+    if(userId && userId.length > 0){
+      const user = getState().state.has('users') ? getState().state.getIn(['users', 'usersById', userId]) : null;
+      if(user && user.get('currentRoomId')){ // to check out
+        const currentRoomId = (user && user.get('currentRoomId'))
+        firestore.collection("users").doc(userId).update({
+          currentRoomId : null,
+          cancellationDate:timestamp
+        }).then(()=>{
+          firestore.collection('rooms').doc(currentRoomId).update({
+            isAvailable:false
+          })
+        }).then(()=>{
+          dispatch(showMessage("User has been checked out"));
+        }).catch(error=>{
+          dispatch(showMessage(`Error check out member: ${error}`));
+        })
+        
+      }
+      else{
+        //todo:   to check in
+      }
+    }
+  }
+}
+
+export function addCheckOut(userId, deviceId = 'App - Manual'){
   return function action(dispatch, getState) {
     var summaryCheckInMap = {};
     var gantnerLogsByUserIdObj = {};
     const timestamp = firebase.firestore.FieldValue.serverTimestamp();
     const gantnerDate = moment().tz('Asia/Kuala_Lumpur').format('YYYYMMDD');
     const gantnerTime = moment().tz('Asia/Kuala_Lumpur').format('HH:mm:ss');
+    var roomRef,userData;
 
     if(userId && userId.length > 0){
       const checkInData = {
@@ -2349,39 +2373,10 @@ export function addCheckIn(userId, deviceId = 'App - Manual'){
         registered:true,
         userId:userId
       }
-      // const devicelocation = (deviceId.includes("KLCC"))?'KLCC':'TTDI';
-      
-      // if (!gantnerLogsByUserIdObj[userId]){
-      //   gantnerLogsByUserIdObj[userId]={};
-      // }
-      // if(!gantnerLogsByUserIdObj[userId][gantnerDate]){
-      //   gantnerLogsByUserIdObj[userId][gantnerDate] = {};
-      // }
-      // if(!gantnerLogsByUserIdObj[userId][gantnerDate][devicelocation]){
-      //   gantnerLogsByUserIdObj[userId][gantnerDate][devicelocation] = [gantnerTime];
-      // }
-      
-      // console.log('gantnerLogsByUserIdObj: ', gantnerLogsByUserIdObj);
-      // firestore.collection('gantnerLogsByUser').doc(userId).update(gantnerLogsByUserIdObj[userId])
-      // .then(()=>{
-      //   console.log('Gantner logs by user Id added!')
-      //   dispatch(showMessage("Gantner logs by user Id added!"));
-      // }).catch((e)=>{
-      //   dispatch(showMessage(e.message));
-      // })
-      
-      
 
-      // console.log('checkinData: ', checkInData);
-      firestore.collection("gantnerLogs").add(checkInData);
-      const user = getState().state.has('users') ? getState().state.getIn(['users', 'usersById', userId]) : null;
-      if(user && user.get('packageId') && !user.get('membershipStarts')){
-        firestore.collection("users").doc(userId).update({
-          membershipStarts : timestamp
-        });
-      }
-      if(deviceId && deviceId.indexOf('App - Registration') !== -1 ){
-        dispatch(showMessage("Thanks! You've been checked in."));
+      if (userData && userData.currentRoomId){
+        roomRef = firestore.collection("rooms").doc(userData.currentRoomId);
+        roomRef.update({isAvailable:true});
       }
     }
   }
@@ -2389,7 +2384,7 @@ export function addCheckIn(userId, deviceId = 'App - Manual'){
 
 export function getCardToRegister(userId){
   return function action(dispatch, getState) {
-    console.log('getting card');
+   // console.log('getting card');
     if(unsubscribeCardToRegister){
       unsubscribeCardToRegister();
     }
@@ -2427,14 +2422,14 @@ export function getCardToRegister(userId){
       // console.log('gotten card'); // get data from cache
       if(getState().state.has('cardToRegister') === false){
         //add cardToRegister to state
-        console.log('no card yet card');
+       //console.log('no card yet card');
         dispatch(setCardToRegister(null));
       }else{
-        console.log('found card');
+        //console.log('found card');
         
         // console.log('querySnapShot: ', querySnapshot);
         querySnapshot.forEach(function(doc) {
-          console.log("Add Card Log", doc.id, doc.data());
+         // console.log("Add Card Log", doc.id, doc.data());
           // console.log(doc.data().cardNumber, doc.id, doc.data());
           dispatch(setCardToRegister(doc.data().cardNumber));
         });
@@ -2484,7 +2479,7 @@ export function getCardToRegisterTest(){
 }
 
 export function setCardToRegister(cardNumber) {
-  console.log('setting the card to register: ', cardNumber);
+  //console.log('setting the card to register: ', cardNumber);
   return {
     type: 'SET_CARD_TO_REGISTER',
     cardNumber
@@ -2506,7 +2501,7 @@ export function removeGantnerCard(userId) {
       dispatch(showMessage("Removing userData.."));
       return firestore.collection('users').doc(userId).update({gantnerCardNumber:firebase.firestore.FieldValue.delete()})
       .then(()=>{
-        console.log('Gantner Card Removed!')
+       // console.log('Gantner Card Removed!')
         dispatch(showMessage("Gantner Card Removed!"));
       }).catch((e)=>{
         dispatch(showMessage(e.message));
@@ -2525,7 +2520,7 @@ export function transferPayment (currentUserId, transferUserId){
 
       paymentsQuery.get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
-            console.log(doc.id, " => ", doc.data());
+           // console.log(doc.id, " => ", doc.data());
             // Build doc ref from doc.id
             firestore.collection("payments").doc(doc.id).update({userId: transferUserId});
         })
@@ -2549,7 +2544,7 @@ export function transferGantner (currentUserId, transferUserId){
 
       paymentsQuery.get().then(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
-            console.log(doc.id, " => ", doc.data());
+            //console.log(doc.id, " => ", doc.data());
             // Build doc ref from doc.id
             firestore.collection("gantnerLogs").doc(doc.id).update({userId: transferUserId});
         })
@@ -2625,7 +2620,7 @@ export function addFreeze(userId, freezeDate, freezeQuantity = 1, terminatedUser
       return batch.commit().then(()=>{
         !terminatedUser? dispatch(showMessage("Added Freeze!")):dispatch(showMessage("Added Terminated Freeze!"));
       }).then(()=>{
-        console.log('adding freeze log!');
+       // console.log('adding freeze log!');
         logRef.add({
           executerId: currentLoginUserId,
           executerEmail: currentLoginUserEmail,
@@ -2654,7 +2649,7 @@ export function addFreeze(userId, freezeDate, freezeQuantity = 1, terminatedUser
       return batch.commit().then(()=>{
         dispatch(showMessage("Added 14 days Freeze!"));
       }).then(()=>{
-        console.log('adding freeze log!');
+       // console.log('adding freeze log!');
         logRef.add({
           executerId: currentLoginUserId,
           executerEmail: currentLoginUserEmail,
@@ -2679,7 +2674,7 @@ export function addSpecialFreeze(userId, freezeDate, freezeQuantity = 1, dayQty 
   return function action(dispatch, getState) {
     const timestamp = firebase.firestore.FieldValue.serverTimestamp();
     const logRef = firestore.collection("logs");
-    console.log('dayQty: ', dayQty);
+    //console.log('dayQty: ', dayQty);
     if(userId && userId.length > 0 && freezeDate && freezeQuantity > 0 && freezeQuantity < 12){
       dispatch(showMessage("Adding Freeze.."));
       const batch = firestore.batch();
@@ -2699,7 +2694,7 @@ export function addSpecialFreeze(userId, freezeDate, freezeQuantity = 1, dayQty 
       return batch.commit().then(()=>{
         dispatch(showMessage("Added Freeze!"));
       }).then(()=>{
-        console.log('adding freeze log!');
+        //console.log('adding freeze log!');
         logRef.add({
           executerId: currentLoginUserId,
           executerEmail: currentLoginUserEmail,
@@ -2729,7 +2724,7 @@ export function removeFreeze(freezeId, userId, freezeStartMoment = null, executo
         dispatch(showMessage("Removed Freeze!"));
       })
       .then(()=>{
-        console.log('adding freeze log!');
+        //console.log('adding freeze log!');
 
         if (freezeStartMoment && executorId && executorEmail && userId){
           logRef.add({
@@ -2785,7 +2780,7 @@ export function getBookingsByTrainerId(userId){
     if (unsubscribeParticularUserIdBookings) {
       unsubscribeParticularUserIdBookings();
     }
-    console.log('get booking by trainer id...');
+    //console.log('get booking by trainer id...');
     // const user = getState().state.get('user');
     // const roles = user && user.get('roles');
     // const isTrainer = roles && roles.get('trainer') === true;
@@ -3122,7 +3117,7 @@ export function getPaymentsByUserIdv2(userId){
       firestore.collection("payments").where('userId', '==', userId).where('type', '==', 'membership').onSnapshot(function(querySnapshot) {
         querySnapshot.forEach(function(doc) {
             const data = doc.data();
-            console.log('thePaymentData: ', doc.data());
+            //console.log('thePaymentData: ', doc.data());
             if((data.source === 'vend' || data.source === 'pbonline') && (data.status === 'FAILED' || data.status === 'VOIDED')){
               return;
             }
@@ -3297,7 +3292,7 @@ export function addInvoiceForAngpau(email, name, phone, nric, refSource, achieve
     const addInvoiceForAngpau2022 = firebase.functions().httpsCallable('addInvoiceForAngpau');
     return addInvoiceForAngpau2022({email, name, phone, nric, refSource, achieveTargetSource, selectedPkgId, refererEmail, refererName}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
-      console.log('invoiceId: ', invoiceId);
+     // console.log('invoiceId: ', invoiceId);
       if(invoiceId){
         dispatch(getInvoiceAndDataById(invoiceId));
         handleResponse(invoiceRef.data);
@@ -3320,7 +3315,7 @@ export function addInvoiceForFLX(email, name, phone, nric, refSource, achieveTar
     const addInvoiceForProductFLX = firebase.functions().httpsCallable('addInvoiceForFLX');
     return addInvoiceForProductFLX({email, name, phone, nric, refSource, achieveTargetSource, selectedVendPkgId}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
-      console.log('invoiceId: ', invoiceId);
+     // console.log('invoiceId: ', invoiceId);
       if(invoiceId){
         dispatch(getInvoiceAndDataById(invoiceId));
         handleResponse(invoiceRef.data);
@@ -3343,7 +3338,7 @@ export function addInvoiceForPT(name, email, phone, vendProductId, selectedAppoi
     const addInvoiceForProductPT = firebase.functions().httpsCallable('addInvoiceForProductPT');
     return addInvoiceForProductPT({name, email, phone, vendProductId, selectedAppointType, selectedTime,}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
-      console.log('invoiceId: ', invoiceId);
+    //  console.log('invoiceId: ', invoiceId);
       if(invoiceId){
         dispatch(getInvoiceAndDataById(invoiceId));
         handleResponse(invoiceRef.data);
@@ -3364,10 +3359,10 @@ export function addInvoiceForSpinBikeRental(firstName, lastName, email, icNumber
   return function action(dispatch, getState) {
     dispatch(setAddingInvoice(true));
     const addInvoiceForProductSpinBikeRental = firebase.functions().httpsCallable('addInvoiceForSpinBikeRental');
-    console.log('theInput: ', firstName, lastName, email, icNumber, qty, deliveryAddress, deliveryCity, deliveryCountry, phone, landedOrCondo, deliveryNotes, vendProductId);
+   // console.log('theInput: ', firstName, lastName, email, icNumber, qty, deliveryAddress, deliveryCity, deliveryCountry, phone, landedOrCondo, deliveryNotes, vendProductId);
     return addInvoiceForProductSpinBikeRental({firstName, lastName, email, icNumber, qty, deliveryAddress, deliveryCity, deliveryCountry, phone, landedOrCondo, deliveryNotes, vendProductId}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
-      console.log('invoiceId: ', invoiceId);
+      //console.log('invoiceId: ', invoiceId);
       if(invoiceId){
         dispatch(getInvoiceAndDataById(invoiceId));
         handleResponse({success:true, invoiceId: invoiceRef.data});
@@ -3391,10 +3386,10 @@ export function addInvoiceForVClass(name, email, phone, vendProductId, selectedC
   return function action(dispatch, getState) {
     dispatch(setAddingInvoice(true));
     const addInvoiceForProductVClass = firebase.functions().httpsCallable('addInvoiceForVClass');
-    console.log('theInput: ', name, email, phone, vendProductId, selectedClass, trainerName, selectedAMPM, selectedDay);
+    //console.log('theInput: ', name, email, phone, vendProductId, selectedClass, trainerName, selectedAMPM, selectedDay);
     return addInvoiceForProductVClass({name, email, phone, vendProductId, selectedClass, trainerName, selectedAMPM, selectedDay}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
-      console.log('invoiceId: ', invoiceId);
+     // console.log('invoiceId: ', invoiceId);
       if(invoiceId){
         dispatch(getInvoiceAndDataById(invoiceId));
         handleResponse({success:true, invoiceId: invoiceRef.data});
@@ -3420,7 +3415,7 @@ export function addInvoiceForVWellness(selectedTrainer, selectedCoach, email, na
     const addInvoiceForVWellness = firebase.functions().httpsCallable('addInvoiceForVWellness');
     return addInvoiceForVWellness({selectedTrainer, selectedCoach, email, name, phone, ighandlename, selectedAMPM, selectedDay, vendProductId}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
-      console.log('invoiceId: ', invoiceId);
+     // console.log('invoiceId: ', invoiceId);
       if(invoiceId){
         dispatch(getInvoiceAndDataById(invoiceId));
         handleResponse({success:true, invoiceId: invoiceRef.data});
@@ -3446,7 +3441,7 @@ export function addInvoiceForBabelDance(name, email, phone, vendProductId, class
     const addInvoiceForBabelDance = firebase.functions().httpsCallable('addInvoiceForBabelDance');
     return addInvoiceForBabelDance({name, email, phone, vendProductId, classDate, classTime, quantity, classRemark, ighandleName, instructorName, city, selectedMemberOption, classId, classType}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
-      console.log('invoiceIdBabelDance: ', invoiceId);
+     // console.log('invoiceIdBabelDance: ', invoiceId);
       if(invoiceId){
         dispatch(getInvoiceAndDataById(invoiceId));
         handleResponse({success:true, invoiceId: invoiceRef.data});
@@ -3471,7 +3466,7 @@ export function addInvoiceForPTv2(name, email, phone, quantity, vendProductId, t
     const addInvoiceForProductVT = firebase.functions().httpsCallable('addInvoiceForProductVT');
     return addInvoiceForProductVT({name, email, phone, quantity, vendProductId, trainerName, selectedAMPM, selectedDay}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
-      console.log('invoiceId: ', invoiceId);
+     // console.log('invoiceId: ', invoiceId);
       if(invoiceId){
         dispatch(getInvoiceAndDataById(invoiceId));
         handleResponse(invoiceRef.data);
@@ -3493,7 +3488,7 @@ export function addInvoiceForVT(name, email, phone, vendProductId, trainerName, 
     const addInvoiceForProductVT = firebase.functions().httpsCallable('addInvoiceForProductVT');
     return addInvoiceForProductVT({name, email, phone, vendProductId, trainerName, selectedAMPM, selectedDay}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
-      console.log('invoiceId: ', invoiceId);
+      //console.log('invoiceId: ', invoiceId);
       if(invoiceId){
         dispatch(getInvoiceAndDataById(invoiceId));
         handleResponse(invoiceRef.data);
@@ -3533,7 +3528,7 @@ export function addInvoiceForProduct(name, email, phone, vendProductId, classNam
 export function addInvoiceForProductv2(name, email, phone, vendProductId, className, classDate, quantity = 1, rm20DanceClassRemark, ighandlename = null, matchedPromo = {}){
   return function action(dispatch, getState) {
     dispatch(setAddingInvoice(true));
-    console.log('matchedPromo: ', matchedPromo);
+   // console.log('matchedPromo: ', matchedPromo);
     const addInvoiceForProductCF = firebase.functions().httpsCallable('addInvoiceForProductv2');
     return addInvoiceForProductCF({name, email, phone, vendProductId, className, classDate, quantity, rm20DanceClassRemark, ighandlename, matchedPromo}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
@@ -3577,7 +3572,7 @@ export function addInvoiceForProducts(name, email, phone, vendProductIds){
     dispatch(setAddingInvoice(true));
     const addInvoiceForProductsCF = firebase.functions().httpsCallable('addInvoiceForProducts');
     return addInvoiceForProductsCF({name, email, phone, vendProductIds}).then(invoiceRef=>{
-      console.log('invoiceRef: ', invoiceRef);
+     // console.log('invoiceRef: ', invoiceRef);
       const invoiceId = invoiceRef.data;
       if(invoiceId){
         // console.log('inv', invoiceId);
@@ -3599,7 +3594,7 @@ export function addInvoiceForMembership(name, email, phone, icnumber = null, ref
     dispatch(setAddingInvoice(true));
     const addInvoiceForMembership = firebase.functions().httpsCallable('addInvoiceForMembership');
     return addInvoiceForMembership({name, email, phone, icnumber, refSource, postcode, mcId, vendProductIds}).then(invoiceRef=>{
-      console.log('invoiceRef: ', invoiceRef);
+     // console.log('invoiceRef: ', invoiceRef);
       const invoiceId = invoiceRef.data;
       if(invoiceId){
         // console.log('inv', invoiceId);
@@ -3623,7 +3618,7 @@ export function addInvoiceForMembershipv2(name, email, phone, icnumber = null, r
     dispatch(setAddingInvoice(true));
     const addInvoiceForMembership = firebase.functions().httpsCallable('addInvoiceForMembershipv2');
     return addInvoiceForMembership({name, email, phone, icnumber, refSource, postcode, mcId, vendProductIds, promoType, achieveTarget}).then(invoiceRef=>{
-      console.log('invoiceRef: ', invoiceRef);
+     // console.log('invoiceRef: ', invoiceRef);
       const invoiceId = invoiceRef.data;
       if(invoiceId){
         // console.log('inv', invoiceId);
@@ -3646,7 +3641,7 @@ export function addInvoiceForFreezeMembership(name, email, phone, icnumber = nul
     dispatch(setAddingInvoice(true));
     const addInvoiceForMembership = firebase.functions().httpsCallable('addInvoiceForFreezeMembership');
     return addInvoiceForMembership({name, email, phone, icnumber, refSource, postcode, mcId, vendProductIds}).then(invoiceRef=>{
-      console.log('invoiceRef: ', invoiceRef);
+     // console.log('invoiceRef: ', invoiceRef);
       const invoiceId = invoiceRef.data;
       if(invoiceId){
         // console.log('inv', invoiceId);
@@ -3669,7 +3664,7 @@ export function addInvoiceForFreezeMembershipv2(email, name, vendProductId, free
     dispatch(setAddingInvoice(true));
     const addInvoiceForMembership = firebase.functions().httpsCallable('addInvoiceForFreezeMembershipv2');
     return addInvoiceForMembership({email, name, vendProductId, freezeDate}).then(invoiceRef=>{
-      console.log('invoiceRef: ', invoiceRef);
+    // console.log('invoiceRef: ', invoiceRef);
       const invoiceId = invoiceRef.data;
       if(invoiceId){
         // console.log('inv', invoiceId);
@@ -3690,7 +3685,7 @@ export function addInvoiceForRecurring(name, email, phone, icnumber = null, refS
     dispatch(setAddingInvoice(true));
     const addInvoiceForProducts = firebase.functions().httpsCallable('addInvoiceForProducts');
     return addInvoiceForProducts({name, email, phone, icnumber, refSource, postcode, mcId, vendProductIds}).then(invoiceRef=>{
-      console.log('invoiceRef: ', invoiceRef);
+     // console.log('invoiceRef: ', invoiceRef);
       const invoiceId = invoiceRef.data;
       if(invoiceId){
         // console.log('inv', invoiceId);
@@ -3717,7 +3712,7 @@ export function addClass(name, description, instructorName, maxCapacity, venue, 
     const addClass = firebase.functions().httpsCallable('addClass');
     return addClass({name, description, instructorName, maxCapacity, venue, classDuration, availableDate, classDate, expiredDate, vendProductId}).then(classRef=>{
       const classId = classRef.data;
-      console.log('classId: ', classId);
+     //console.log('classId: ', classId);
       if(classId){
         // dispatch(getInvoiceAndDataById(invoiceId));
         handleResponse({success:true, classData: classRef.data, classId: classRef.id});
@@ -3744,20 +3739,20 @@ export function addRecurring(userId){
     return userRef.update({
       hasRecurring : true
     }).then(()=>{
-      console.log('added hasRecurring to the user')
+      //console.log('added hasRecurring to the user')
     }).catch((e)=>{
-      console.log('error hasRecurring: ', e);
+      //console.log('error hasRecurring: ', e);
     })
   }
 }
 
 export function getPaymentSession(paymentSessionData, handleResponse){
   return function action(dispatch, getState) {
-    console.log('paymentSessionData: ', paymentSessionData);
+    //console.log('paymentSessionData: ', paymentSessionData);
     // var paymentData = {};
     const createPaymentSessionCF = firebase.functions().httpsCallable('createPaymentSession');
     return createPaymentSessionCF(paymentSessionData).then(response=>{
-      console.log('createPaymentSessionCFResponse:', response);
+      //console.log('createPaymentSessionCFResponse:', response);
       // if (response && response.data && response.data.paymentSession){
       //   // firestore.collection("users").doc()
       // }
@@ -3765,7 +3760,7 @@ export function getPaymentSession(paymentSessionData, handleResponse){
       
       handleResponse(response);
     }).catch(error=>{
-      console.log('errorPaymentSession: ', error);
+      //console.log('errorPaymentSession: ', error);
       handleResponse(error);
     });
   }
@@ -3777,7 +3772,7 @@ export function makeAdyenDropInPayment(paymentSessionData, handleResponse){
     // var paymentData = {};
     const createPaymentSessionCF = firebase.functions().httpsCallable('createPaymentSession');
     return createPaymentSessionCF(paymentSessionData).then(response=>{
-      console.log('createPaymentSessionCFResponse:', response);
+      //console.log('createPaymentSessionCFResponse:', response);
       // if (response && response.data && response.data.paymentSession){
       //   // firestore.collection("users").doc()
       // }
@@ -3785,7 +3780,7 @@ export function makeAdyenDropInPayment(paymentSessionData, handleResponse){
       
       handleResponse(response);
     }).catch(error=>{
-      console.log('errorPaymentSession: ', error);
+      //console.log('errorPaymentSession: ', error);
     });
   }
 }
@@ -3797,7 +3792,7 @@ export function getAllZoomUsers(handleResponse){
     // var paymentData = {};
     const getAllZoomUsersHttp = firebase.functions().httpsCallable('getAllZoomUsers');
     return getAllZoomUsersHttp().then(response=>{
-      console.log('getAdyenPaymentMethodResponse:', response);
+     // console.log('getAdyenPaymentMethodResponse:', response);
       // if (response && response.data && response.data.paymentSession){
       //   // firestore.collection("users").doc()
       // }
@@ -3805,7 +3800,7 @@ export function getAllZoomUsers(handleResponse){
       
       handleResponse(response);
     }).catch(error=>{
-      console.log('errorgetAll users: ', error);
+     // console.log('errorgetAll users: ', error);
       handleResponse(error);
     });
   }
@@ -3817,7 +3812,7 @@ export function getPaymentMethod(handleResponse){
     // var paymentData = {};
     const getAdyenPaymentMethod = firebase.functions().httpsCallable('getAdyenPaymentMethods');
     return getAdyenPaymentMethod().then(response=>{
-      console.log('getAdyenPaymentMethodResponse:', response);
+      //console.log('getAdyenPaymentMethodResponse:', response);
       // if (response && response.data && response.data.paymentSession){
       //   // firestore.collection("users").doc()
       // }
@@ -3825,7 +3820,7 @@ export function getPaymentMethod(handleResponse){
       
       handleResponse(response);
     }).catch(error=>{
-      console.log('errorgetAdyenPaymentMethod: ', error);
+     // console.log('errorgetAdyenPaymentMethod: ', error);
     });
   }
 }
@@ -3849,7 +3844,7 @@ export function getRecurringList(paymentSessionData, handleResponse){
       
       handleResponse(response);
     }).catch(error=>{
-      console.log('listRecurringDetailsError: ', error);
+      //console.log('listRecurringDetailsError: ', error);
     });
   }
 }
@@ -3870,13 +3865,13 @@ export function getVendProductByProdId(vendProductId, handleResponse){
           // dispatch(setVendProducts(vendProducts, quantity));
         }
         else{
-          console.log('vend product does not exist');
+          //console.log('vend product does not exist');
           handleResponse({success:false, error: 'vend product does not exist'});
         }
       });
     }
     else{
-      console.log('no vendProductId');
+     // console.log('no vendProductId');
     }
   }
 }
@@ -3904,12 +3899,12 @@ export function getVendProductId(vendProductId, quantity=1){
           dispatch(setVendProducts(vendProducts, quantity));
         }
         else{
-          console.log('vend product does not exist');
+         // console.log('vend product does not exist');
         }
       });
     }
     else{
-      console.log('no vendProductId');
+      //console.log('no vendProductId');
     }
   }
 }
@@ -3926,7 +3921,7 @@ export function viewVendItem(vendProductId, promo = false, email){
     dispatch(getVendProductId(vendProductId));
     const emailString = email ? `?email=${email}` : ``
     var newPath = `/buy${promo? 'promo' : ''}/${vendProductId}${emailString?emailString:''}`;
-    console.log('newPath: ', newPath);
+    //console.log('newPath: ', newPath);
     if(getState().router.location.pathname !== newPath){
       dispatch(push(newPath));
     }
@@ -3945,7 +3940,7 @@ export function viewNext(userId = null, bookingId = null){
     // var nextPath = `/userprofile`;
     var nextPath = `/next`; // default
 
-    console.log('viewNextUserId: ', userId);
+    //console.log('viewNextUserId: ', userId);
     if (userId){
       firestore.collection("users").doc(userId).onSnapshot(doc => {
         if(doc.exists){
@@ -3975,7 +3970,7 @@ export function viewNext(userId = null, bookingId = null){
           }
         }
         else{
-          console.log('users doesnt exist');
+         // console.log('users doesnt exist');
         }
       });
     }
@@ -4232,7 +4227,7 @@ export function goBackOnce(){
 export function verifyAuth(bookingId = null) {
   return function action(dispatch, getState) {
       firebase.auth().onAuthStateChanged(user => {
-        console.log("auth",user);
+       //console.log("auth",user);
         // dispatch(setUser(user));
         dispatch(unsubscribeAll());
         if(!user){
@@ -4246,7 +4241,7 @@ export function verifyAuth(bookingId = null) {
             getState().router.location.pathname.indexOf('buyaug20promo') === 1 ||
             getState().router.location.pathname.indexOf(bookbabelexclusiveclassPathName) === 1
           ){
-            console.log('no user yet')
+           // console.log('no user yet')
             return
           }
           else if(getState().router.location.pathname.indexOf('buy') === -1 && 
@@ -4261,7 +4256,7 @@ export function verifyAuth(bookingId = null) {
             getState().router.location.pathname.indexOf('registration') === -1 &&
             getState().router.location.pathname.indexOf('paymentreport') === -1)
             {
-              console.log('view login page')
+             // console.log('view login page')
               dispatch(viewLogin());
             }
           return;
@@ -4273,7 +4268,7 @@ export function verifyAuth(bookingId = null) {
             // dispatch(logout());
             dispatch(viewLogin());
           }else{
-            console.log(user.uid, '!!!! exists', doc.data());
+            //console.log(user.uid, '!!!! exists', doc.data());
             const userData = doc.data();
             // const isAdmin = userData.roles ? userData.roles.admin : false;
             // const isMC = userData.roles ? userData.roles.mc : false;
@@ -4310,7 +4305,7 @@ export function verifyAuth(bookingId = null) {
               // dispatch(getPayments());
               // only superUser is allowed for now
               if (isSuperUser){
-                console.log('superUser: ', isSuperUser);
+                //console.log('superUser: ', isSuperUser);
                 // dispatch(getPayments());
                 // dispatch(getCnyreferral());
                 // dispatch(getPackages());
@@ -4351,14 +4346,14 @@ export function verifyAuth(bookingId = null) {
             // else if ((pathname.indexOf('buypt') === 1) || (pathname.indexOf('babellive')===1) || (pathname.indexOf('babelathome')===1) || (pathname.indexOf('buyaug20promo')===1)){
               // console.log('buyptTest');
             if ((pathname.indexOf('buypt') === 1) || (pathname.indexOf('babellive')===1) || (pathname.indexOf('babelathome')===1) || (pathname.indexOf('buyaug20promo')===1)){
-              console.log('buyptTest');
+              //console.log('buyptTest');
             }
             else if (pathname.indexOf(bookbabelexclusiveclassPathName) === 1){
-              console.log('user in book babel exclusive path: ', userData);
+              //console.log('user in book babel exclusive path: ', userData);
               // dispatch(getBookingsByUserId(uid));
               dispatch(getBookingsByTrainerId(uid));
               if (bookingId){
-                console.log('url contains bookingId: ', bookingId);
+               // console.log('url contains bookingId: ', bookingId);
                 dispatch(viewBookExclusiveId(bookingId));
               }
               // if (pathname.indexOf('trainer') === 1){
@@ -4373,17 +4368,17 @@ export function verifyAuth(bookingId = null) {
             }
             // else if(!packageId && !isStaff && pathname.indexOf('payments') === -1 && pathname.indexOf('buy') === -1){
             else if(!isStaff && pathname.indexOf('payments') === -1 && pathname.indexOf('buy') === -1){
-              console.log(pathname, 'true');
+              //console.log(pathname, 'true');
               const email = (userData && userData.email) || '';
               // dispatch(viewJoin(email));
              
               dispatch(viewNext(uid));
             }else if (pathname.indexOf('bfmreport') === 1){
-              console.log('pathname: ', pathname);
+             // console.log('pathname: ', pathname);
               // dispatch(viewNext());
             }
             else{
-              console.log('NEXTTTT');
+            //  console.log('NEXTTTT');
               dispatch(viewNext(uid));
             }
           }

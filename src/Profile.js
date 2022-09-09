@@ -1,4 +1,3 @@
-
 import {PhotoCamera} from '@material-ui/icons/PhotoCamera';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';

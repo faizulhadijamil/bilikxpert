@@ -286,7 +286,7 @@ class People extends React.Component {
     return (
       <div className={classes.container}>
         <MenuAppBar />
-        {/* <Grid container spacing={10}>
+        { <Grid container spacing={10}>
           <Grid item xs={12} sm={8} >
           {true && <SearchTextInput
               searchLabel = {(isStaff) ? "Search Name, Email, ID" : "Search Trainers"}
@@ -297,20 +297,20 @@ class People extends React.Component {
               selectedStaffChip = {selectedStaffChip? selectedStaffChip:null}
             />}
           </Grid>
-        </Grid> */}
+        </Grid> }
           <Grid container spacing={10}>
             <Grid item xs={12} sm={8}>
               <Grid container style={{marginTop:32}}>
               <Grid item xs={12} sm={12} style = {{marginTop:85}}>
-              {/* {true && <SearchTextInput
+              {true && <SearchTextInput
                 searchLabel = {(isStaff) ? "Search Name, Email, ID" : "Search Trainers"}
                 value = {this.state.searchDisplay}
                 onChange={this.handleSearch('search')}
                 onIconClick={this.handleClickSearchCloseIcon}
                 // style = {normalSearchTextBoxStyle}
                 selectedStaffChip = {selectedStaffChip? selectedStaffChip:null}
-              />} */}
-                {/* {false && !selectedStaffChip &&
+              />} 
+                 {false && !selectedStaffChip &&
                     <TextField
                       id="search"
                       label={(isStaff) ? "Search Name, Email, ID" : "Search Trainers"}
@@ -331,7 +331,7 @@ class People extends React.Component {
                       style={{borderRadius:3}}
                       onFocus={()=>window.scrollTo(0, 0)}
                     />
-                  } */}
+                  } 
             </Grid>
                 {false && isAdmin && this.renderUserList('All Users', 'allUsers', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}
                 {staffLevel6 && this.renderUserList('Customers Needs Attention (Hotel)', 'CustomersNeedsAttentionHotel', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}

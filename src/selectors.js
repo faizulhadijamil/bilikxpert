@@ -348,6 +348,28 @@ export const makeGetInGymMap = () =>{
   return getInGymMap;
 }
 
+const getCheckIn = createSelector(
+  [getGantnerLogs],
+  (gantnerLogs) =>{
+    return checkIn(gantnerLogs) || null;
+  }
+)
+
+export const makeGetCheckIn = () =>{
+  return getCheckIn;
+}
+
+const getCheckOut = createSelector(
+  [getGantnerLogs],
+  (gantnerLogs) =>{
+    return checkOut(gantnerLogs) || null;
+  }
+)
+
+export const makeGetCheckOut = () =>{
+  return getCheckOut;
+}
+
 const inGymMap = (gantnerLogs) =>{
   var inGymMap = {};
   gantnerLogs && gantnerLogs.toKeyedSeq().forEach((v, k) => {
@@ -366,9 +388,27 @@ const inGymMap = (gantnerLogs) =>{
   return inGymMap;
 }
 
+const checkIn = (gantnerLogs) =>{
+  var checkIn = {};
+  gantnerLogs && gantnerLogs.toKeyedSeq().forEach((v, k) => {
+    const userId = v.get('userId');
+  });
+  return checkIn;
+}
+
+const checkOut = (gantnerLogs) =>{
+  var checkOut = {};
+  gantnerLogs && gantnerLogs.toKeyedSeq().forEach((v, k) => {
+    const userId = v.get('userId');
+  });
+  return checkOut;
+}
+
 const inGymArray = (gantnerLogs) =>{
   var map = inGymMap(gantnerLogs);
   var inGym = Object.entries(map);
+  var cin = checkIn(gantnerLogs);
+  var cout = checkOut(gantnerLogs);
   inGym.reverse();
   return inGym;
 }

@@ -26,8 +26,12 @@ import {
   getCardToRegisterState,
   getPackagesList,
   makeGetAllUsers,
+  makeGetBranch,
+  makeGetRoom,
   makeGetCurrentUser,
   makeGetInGymMap,
+  makeGetCheckIn,
+  makeGetCheckOut,
   makeGetSelectedUserGantnerLogs,
   makeGetSelectedUserInvoices,
   makeGetSelectedUserOrLastCheckedIn,
@@ -164,6 +168,12 @@ class PersonCard extends React.Component {
     // editUserDialogOpen: true,
     editUserId: null,
     editUserData: {},
+    currentBranch: {},
+    currentRoomId: {},
+    branchLabel: {},
+    branchName: {},
+    roomNumberLabel: {},
+    roomNumber: {},
     currentUserData: {},
     userId: null,
     search: '',
@@ -237,11 +247,16 @@ class PersonCard extends React.Component {
 
     if (this.props.uploadedImageURL || this.props.uploadedImagePath) {
       var editUserData = this.state.editUserData;
+      var currentBranch = this.state.currentBranch;
+      var currentRoomId = this.state.currentRoomId;
+      const branchLabel = 'Branch';
+      const roomNumberLabel = 'Room Number';
       editUserData.image = this.props.uploadedImageURL;
       editUserData.imagePath = this.props.uploadedImagePath;
       this.setState({
         editUserData: {
-          ...editUserData
+          ...editUserData,
+
         },
       });
       this.props.actions.setUploadedImage(null, null);
@@ -295,7 +310,7 @@ class PersonCard extends React.Component {
     //   editUserId: userId
     // });
     // saveUserData
-    console.log('unterminate state: ', this.state);
+    //console.log('unterminate state: ', this.state);
     // this.props.actions.saveUserData(userId, this.state.editUserData, this.state.currentUserData, this.state.currentLoginUseremail, this.state.currentLoginUserId);
     // this.props.actions.unTerminate(userId);
     this.props.actions.unTerminate(userId, this.state.editUserData, this.state.currentUserData, this.state.currentLoginUseremail, this.state.currentLoginUserId);
@@ -412,7 +427,7 @@ class PersonCard extends React.Component {
         this.setState({showAddFreezeBtn:true, showBuyFreezeBtn:false});
       }
       else if (value === '50'||value===50){
-        console.log('enabling freeze button');
+        //console.log('enabling freeze button');
         value = 1;
         // show the buy page or show buy button
         this.setState({showAddFreezeBtn:false, showBuyFreezeBtn:true});
@@ -429,7 +444,7 @@ class PersonCard extends React.Component {
       //   // show the buy page
       // }
       else {
-        console.log('show button')
+        //console.log('show button')
         value = parseInt(value);
         this.setState({showAddFreezeBtn:true, showBuyFreezeBtn:false});
       }
@@ -449,8 +464,8 @@ class PersonCard extends React.Component {
     const selectedUser = this.props.selectedUser || null;
     const selectedEmail = selectedUser && selectedUser.get('email')? selectedUser.get('email'):null;
 
-    console.log('freezeDate: ', freezeDate);
-    console.log('freezeData: ', freezeData);
+    //console.log('freezeDate: ', freezeDate);
+   // console.log('freezeData: ', freezeData);
 
     if (!freezeDate){
       this.setState({showError:true});
@@ -502,17 +517,34 @@ class PersonCard extends React.Component {
     var currentUserData = this.state.currentUserData;
     var editUserData = this.state.editUserData;
     editUserData[name] = value;
+
+    const branchesData = this.props.branch || null;
+    const branchSize = branchesData && branchesData.size;
+    const branchId = this.state.branch || null;
+    const branchLabel = 'Branch';
+    const roomNumberLabel = 'Room Number';
+    const roomsData = this.props.rooms || null;
+    const selectedRoomId = this.state.roomId;
+   
+    var branchName = ''
     this.setState({
       editUserData: { ...editUserData
       },
       currentUserData: {
-        ...currentUserData
+        ...currentUserData,
       }
     });
+    const roomNumberTextInput = 
+    <TextField
+      margin="dense" id="rooms" label={roomNumberLabel} type="text" fullWidth
+      onChange={this.handleChange('rooms')} autoComplete='off' required
+      onInput = {(e) =>{ e.target.value = Math.max(0, parseInt(e.target.value)).toString().slice(0,5)}}
+    />;
   }
 
+
   handleSaveEdit = () => {
-    console.log('handleSaveEdit: ', this.state);
+    //console.log('handleSaveEdit: ', this.state);
 
     // window.ononline = (event) => {
     // 	console.log("Back Online")
@@ -532,7 +564,7 @@ class PersonCard extends React.Component {
 
     // window.addEventListener("online", () => {
 
-      console.log('ONLINE.....')
+      //console.log('ONLINE.....')
       // setOnlineStatus(true);
       const cardToRegister = this.props.cardToRegister;
       if(Object.getOwnPropertyNames(this.state.editUserData).length>0) {
@@ -556,8 +588,8 @@ class PersonCard extends React.Component {
           //   // todo: remove the current invoice
 
           // }
-          console.log('editUserData: ', this.state.editUserData);
-          console.log('currentUserData: ', this.state.currentUserData);
+          //console.log('editUserData: ', this.state.editUserData);
+          //console.log('currentUserData: ', this.state.currentUserData);
 
           this.props.actions.saveUserData(this.state.editUserId, this.state.editUserData, this.state.currentUserData, this.state.currentLoginUseremail, this.state.currentLoginUserId);
         }
@@ -580,7 +612,7 @@ class PersonCard extends React.Component {
       addingTempCard: isTemporary,
       addingCard: !isTemporary
     });
-    console.log('cardToRegisterHandleRegisterCard: ', this.props.cardToRegister);
+    //console.log('cardToRegisterHandleRegisterCard: ', this.props.cardToRegister);
     if (this.props.cardToRegister) {
       // console.log('remove card to register');
       this.props.actions.removeCardToRegister();
@@ -692,9 +724,9 @@ class PersonCard extends React.Component {
   };
 
   handleSwitch = (event, checked) =>{
-    console.log('event: ', event);
-    console.log('event.target.name: ', event.target.name);
-    console.log('checked: ', checked);
+    //console.log('event: ', event);
+   // console.log('event.target.name: ', event.target.name);
+   // console.log('checked: ', checked);
     // console.log('editUserData: ', this.state.editUserData);
     this.setState({...this.state.editUserData, [event.target.name]:event.target.checked});
   }
@@ -757,7 +789,7 @@ class PersonCard extends React.Component {
 
     if (countFreeFreeze <= 0){
       freezeOptions = [<option key={'1monthPay'} value={'50'}>{'1 month (RM50)'}</option>];
-      console.log('show buy freeze button')
+      //.log('show buy freeze button')
       // showAddFreezeBtn = true;
       showBuyFreezeBtn = true;
       // this.state.showBuyFreezeBtn = true;
@@ -905,6 +937,8 @@ class PersonCard extends React.Component {
     const staffBranch = user && user.get('staffBranch');
     const isTTDIStaff = roles && staffBranch && (staffBranch === 'TTDI');
     const isKLCCStaff = roles && staffBranch && (staffBranch === 'KLCC');
+    const branchLabel = 'Branch';
+    const roomNumberLabel = 'Room Number';
 
     // define the staff level
     const staffLevel0 = isSuperUser;
@@ -918,6 +952,41 @@ class PersonCard extends React.Component {
     // console.log('staffRole: ', roles);
     // console.log('staffLevel6: ', staffLevel6);
     // var roleText = this.convertRoleToText(roles);
+
+
+    const branchesData = this.props.branch || null;
+    const branchSize = branchesData && branchesData.size;
+    const branchId = this.state.branch || null;
+
+    const roomsData = this.props.rooms || null;
+    const selectedRoomId = this.state.roomId;
+   
+    var branchName = ''
+    const selectedBranch = branchesData && branchesData.filter((x, key)=>{
+        if (key === branchId){
+            branchName = x.has('name')? x.get('name'):'';
+            return true;
+        }
+        return false;
+    }).first();
+
+    var roomNumber = ''
+    const selectedRooms = roomsData && roomsData.filter((x, key)=>{
+      // console.log('key rooms: ', key);
+      // console.log('x value: ', x);
+      const isAvailable = x.has('isAvailable')? x.get('isAvailable'):true;
+      if ((key === selectedRoomId) && isAvailable){
+        roomNumber = x.has('roomNumber')? x.get('roomNumber'):'';
+        return true;
+      }
+        // if (key === branchId){
+        //     branchName = x.has('rooms')? x.get('roomNumber'):'';
+        //     return true;
+        // }
+        // return false;
+    }).first();
+
+
     
     const complimentaryPkg = 'yKLfNYOPzXHoAiknAT24';
     const complimentaryPromoPkg = 'L6sJtsKG68LpEUH3QeD4';
@@ -984,6 +1053,8 @@ class PersonCard extends React.Component {
     // console.log(this.props.selectedUserOrLastCheckedInId);
     const inGymMap = this.props.inGymMap;
     const packages = this.props.packages;
+    const checkIn = this.props.checkIn;
+    const checkOut = this.props.checkOut;
 
     // const selectedUserInGym = inGymMap && inGymMap[selectedUserId];
     // console.log('selectedUserInGym: ', selectedUserInGym);
@@ -1150,7 +1221,6 @@ class PersonCard extends React.Component {
     const selectedUserJoinDate = userData && userData.has('joinDate') && userData.get('joinDate') ? moment(getTheDate(userData.get('joinDate'))).format('Do MMM YYYY') : null;
     var idForLastVisit = selectedUserId || null;
     var selectedUserLastVisit = (idForLastVisit && inGymMap && inGymMap[idForLastVisit]) ? moment(inGymMap[idForLastVisit]).format('Do MMM YYYY') : null;
-    console.log('covid19FreeAt: ', userData && userData.get('covid19FreeAt') && moment(getTheDate(userData.get('covid19FreeAt'))).diff(moment(), 'days'));
     const showCovid19Btn = (userData && userData.get('covid19DeclarationAt') && (moment(getTheDate(userData.get('covid19DeclarationAt'))).add(14, 'days').isSameOrAfter(moment()))) ? false:true;
     
     var userVisitItems = [];
@@ -1315,6 +1385,8 @@ class PersonCard extends React.Component {
     const currentUserPkgId = editUser && editUser.has('packageId') ? editUser.get('packageId') : '';
     const editUserPackageName = editUserPackage && editUserPackage.get('name');
 
+    const selectedUserRoomId =  userData && userData.has('currentRoomId') ? userData.get('currentRoomId') : null; 
+   // console.log('selectedUserRoomId: ', selectedUserRoomId)
     return (
       <div className={classes.container}>
             {true && staffLevel6 && 
@@ -1367,63 +1439,23 @@ class PersonCard extends React.Component {
                       }
                       </List>
                     }
-                    {(staffLevel4 && userData && !selectedUserCancelled && selectedUserId && selectedUserId.length > 0 && !(editUser || editUserId === 'NEW')) && (!this.state.addingCard && !this.state.addingTempCard) &&
-                      <Button key={'checkInOutTTDI'} className={classes.addButton} onClick={()=>this.props.actions.addCheckIn(selectedUserId)}>
-                        {(inGymMap && !inGymMap[selectedUserId]) ? 'Check In - TTDI' : 'Check Out - TTDI'}
+                    {(staffLevel4 && userData && selectedUserId && selectedUserId.length > 0 && selectedUserRoomId) &&
+                      <Button key={'checkInOutRoom'} className={classes.addButton} onClick={()=>this.props.actions.addCheckInOut(selectedUserId)}>
+                        {'Check Out'}
                       </Button>
                     }
-                    {(staffLevel4 && userData && !selectedUserCancelled && selectedUserId && selectedUserId.length > 0 && !(editUser || editUserId === 'NEW')) && (!this.state.addingCard && !this.state.addingTempCard) &&
-                      <Button key={'checkInOutKLCC'} className={classes.addButton} onClick={()=>this.props.actions.addCheckIn(selectedUserId, 'App - Manual (KLCC)')}>
-                        { (inGymMap && !inGymMap[selectedUserId]) ? 'Check In - KLCC' : 'Check Out - KLCC'}
+                    {false && (staffLevel4 && userData && !selectedUserCancelled && selectedUserId && selectedUserId.length > 0 && !(editUser || editUserId === 'NEW')) && (!this.state.addingCard && !this.state.addingTempCard) &&
+                      <Button key={'checkIn'} className={classes.addButton} onClick={()=>this.props.actions.addCheckIn(selectedUserId, 'App - Manual')}>
+                        { (checkIn && !checkIn[selectedUserId]) ? 'Check In ' : 'Check Out '}
                       </Button>
                     }
-                    {(staffLevel4 && showCovid19Btn && userData && !selectedUserCancelled && selectedUserId && selectedUserId.length > 0 && !(editUser || editUserId === 'NEW')) &&
-                      <Button key={'covid19form'} className={classes.addButton} onClick={()=>{this.props.actions.viewCovid19Form(selectedUserId)}}>
-                        {'COVID19 FORM'}
+
+                    {false && (staffLevel4 && userData && !selectedUserCancelled && selectedUserId && selectedUserId.length > 0 && !(editUser || editUserId === 'NEW')) && (!this.state.addingCard && !this.state.addingTempCard) &&
+                      <Button key={'checkOut'} className={classes.addButton} onClick={()=>this.props.actions.addCheckOut(selectedUserId, 'App - Manual')}>
+                        { (checkOut && !checkOut[selectedUserId]) ? 'Check Out ' : 'Check In '}
                       </Button>
                     }
-                    {(staffLevel4 && userData && !selectedUserCancelled && selectedUserPackageId && !selectedUserGantnerCardNumber && !isRegisteringCard && !this.state.addingTempCard && !(editUser || editUserId === 'NEW')) &&
-                      <Button key={'membershipCard'} className={classes.addButton} onClick={()=>{
-                          if(!editUserGantnerCardNumber){
-                            this.handleRegisterCard();
-                          }else{
-                            this.handleSaveCard();
-                          }
-                        }
-                      }>
-                        {editUserGantnerCardNumber ? 'Save Card' : 'Add Membership Card'}
-                      </Button>
-                    }
-                    {(staffLevel4 && userData && selectedUserPackageId && selectedUserId && selectedUserGantnerCardNumber && !isRegisteringCard && !this.state.addingTempCard && !(editUser || editUserId === 'NEW')) &&
-                      <Button key={'membershipRemoveCard'} className={classes.addButton} onClick={()=>{this.removeMembershipCard(selectedUserId)}
-                      }>
-                        {'remove card'}
-                      </Button>
-                    }
-                    
-                    {(staffLevel4 && userData && !selectedUserCancelled && selectedUserId && userData && !isRegisteringCard && !this.state.addingCard && !(editUser || editUserId === 'NEW')) &&
-                      <Button key={'tempMembershipCard'} className={classes.addButton} onClick={()=>{
-                          if(!editUserGantnerCardNumber){
-                            this.handleRegisterCard(true);
-                          }else{
-                            this.handleSaveCard(true);
-                          }
-                        }
-                      }>
-                        {editUserGantnerCardNumber ? 'Save Temp Card' : (userData && userData.get('tempCardNumber') && userData.get('tempCardAddedAt') && moment(userData.get('tempCardAddedAt')).isSame(moment(), 'day') ? 'Change Temp Card' : 'Add Temp Card')}
-                      </Button>
-                    }
-                    {(staffLevel4 && userData && (!selectedUserGantnerCardNumber || this.state.addingTempCard) && !isRegisteringCard && !(editUser || editUserId === 'NEW')
-                    && editUserGantnerCardNumber) &&
-                      <Button key={'cancelMembershipCard'} className={classes.addButton} onClick={()=>this.cancelRegisterCard()}>
-                        {'Cancel'}
-                      </Button>
-                    }
-                    {(staffLevel4) && (userData && (!selectedUserGantnerCardNumber || this.state.addingTempCard) && isRegisteringCard && !(editUser || editUserId === 'NEW')) &&
-                      <Button key={'registerMembershipCard'} className={classes.addButton} onClick={()=>this.cancelRegisterCard()}>
-                        {'Please tap card to reader'} <CircularProgress style={{color:'white'}}/>
-                      </Button>
-                    }
+
 
                     {(staffLevel6 && userData && selectedUserId && selectedUserId.length > 0 && !(editUser || editUserId === 'NEW') && (!this.state.addingCard && !this.state.addingTempCard)) &&
                       <Button key={'editButton'} className={classes.addButton} onClick={()=>
@@ -1489,6 +1521,7 @@ class PersonCard extends React.Component {
                   </CardContent>
                 </Card>
             }
+            
           {(editUser || editUserId === 'NEW') &&
             <Dialog key={'editDialog'} open={this.state.editDialogOpen} onClose={this.handleClose}>
               {this.props.isNative &&
@@ -1567,7 +1600,7 @@ class PersonCard extends React.Component {
                         onChange={(event, checked) => {
                           
                           var editUserData = this.state.editUserData;
-                          console.log('theState: ', this.state);
+                          //console.log('theState: ', this.state);
                           var isStaff = editUserData.isStaff;
                           
                           if(!isStaff){
@@ -1579,7 +1612,7 @@ class PersonCard extends React.Component {
                           }
                          
                           isStaff = checked;
-                          console.log('memberIsStaff: ', isStaff, checked);
+                          //console.log('memberIsStaff: ', isStaff, checked);
                         
                           // this.setState({ editUserData:{...editUserData, isStaff}});
                           if (checked){
@@ -1994,7 +2027,7 @@ class PersonCard extends React.Component {
                     </RadioGroup>
                   </FormControl>
                 </FormGroup>}
-                {staffLevel4 && !isSelectedUserStaff && !trainerId &&
+                {/* {staffLevel4 && !isSelectedUserStaff && !trainerId &&
                   <IntegrationAutosuggest key='trainers' selections='trainers' placeholder='Trainer' onSelectionChange={selectedUserId => this.handleAutosuggest('trainerId', selectedUserId)}/>
                 }
                 {staffLevel4 && !isSelectedUserStaff && trainerId &&
@@ -2007,8 +2040,8 @@ class PersonCard extends React.Component {
                     onDelete={()=>this.handleAutosuggest('trainerId', null)}
                     />
                   </div>
-                }
-                {staffLevel4 && !isSelectedUserStaff && !mcId &&
+                } */}
+                {/* {staffLevel4 && !isSelectedUserStaff && !mcId &&
                   <IntegrationAutosuggest key='mc' selections='membershipConsultants' placeholder='Membership Consultant' onSelectionChange={selectedUserId => this.handleAutosuggest('mcId', selectedUserId)}/>
                 }
                 {staffLevel4 && !isSelectedUserStaff && mcId &&
@@ -2024,8 +2057,8 @@ class PersonCard extends React.Component {
                       }}
                     />
                   </div>
-                }
-                {staffLevel4 && !isSelectedUserStaff && !referredByUserId &&
+                } */}
+                {/* {staffLevel4 && !isSelectedUserStaff && !referredByUserId &&
                   <IntegrationAutosuggest key='referral' selections='activeMembers' placeholder='Referred By Member' onSelectionChange={selectedUserId => this.handleAutosuggest('referredByUserId', selectedUserId)}/>
                 }
                 {staffLevel4 && !isSelectedUserStaff && referredByUserId &&
@@ -2038,8 +2071,8 @@ class PersonCard extends React.Component {
                     onDelete={()=>this.handleAutosuggest('referredByUserId', null)}
                     />
                   </div>
-                }
-                {staffLevel4 && !isSelectedUserStaff && <TextField
+                } */}
+                {/* {staffLevel4 && !isSelectedUserStaff && <TextField
                   id="package"
                   select
                   defaultValue={currentUserPkgId}
@@ -2057,8 +2090,8 @@ class PersonCard extends React.Component {
                   }}
                 >
                   {packageOptions}
-                </TextField>}
-                {staffLevel4 && !isSelectedUserStaff && <TextField
+                </TextField>} */}
+                {/* {staffLevel4 && !isSelectedUserStaff && <TextField
                   id="goal"
                   select
                   defaultValue={editUser && editUser.has('achieveTarget') ? editUser.get('achieveTarget') : null}
@@ -2075,8 +2108,8 @@ class PersonCard extends React.Component {
                   }}
                 >
                   {achieveTargetOptions}
-                </TextField>}
-                {(editUserPackage && false) &&
+                </TextField>} */}
+                {/* {(editUserPackage && false) &&
                   <div>
                   <TextField
                     margin="dense"
@@ -2151,8 +2184,8 @@ class PersonCard extends React.Component {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                />}
-                {false && <FormGroup>
+                />} */}
+                {/* {false && <FormGroup>
                 <FormControlLabel
                   control={
                     <Switch
@@ -2166,7 +2199,33 @@ class PersonCard extends React.Component {
                   }
                   label={'Induction Done'}
                 />
-                </FormGroup>}
+                </FormGroup>} */}
+                
+        {staffLevel4 && !this.state.branch && <IntegrationAutosuggest selections='branches' placeholder={branchLabel} onSelectionChange={branch => this.handleAutosuggest('branch', branch)}/>}
+        {staffLevel4 && this.state.branch && 
+            <div style={{marginTop:16}}>
+            <FormLabel component="legend">Branch</FormLabel>
+            <Chip
+                avatar={null}
+                label={branchName}
+                style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                onDelete={()=>this.handleAutosuggest('branch', null)}
+            />
+            </div>
+        }
+        
+        {staffLevel4 && !this.state.roomId && <IntegrationAutosuggest selections='rooms' branchId={this.state.branch} placeholder={roomNumberLabel} onSelectionChange={roomId => this.handleAutosuggest('roomId', roomId)}/>}
+        {staffLevel4 && this.state.roomId && 
+                    <div style={{marginTop:16}}>
+                    <FormLabel component="legend">Room Number</FormLabel>
+                    <Chip
+                        avatar={null}
+                        label={roomNumber}
+                        style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                        onDelete={()=>this.handleAutosuggest('roomId', null)}
+                    />
+                    </div>
+        }
               {staffLevel4 && !isSelectedUserStaff && editUserMembershipStarts &&
                   <TextField
                     id="startDate"
@@ -2303,8 +2362,10 @@ class PersonCard extends React.Component {
               raised 
               onClick={()=>this.handleSaveEdit()}
               disabled = {!this.state.editUserData.cancellationDate}
+              roomRef = {roomRef.update({isAvailable:false})}
               >
               {'Save'}
+              
             </Button>
             </DialogActions>
           </Dialog>
@@ -2337,6 +2398,10 @@ const makeMapStateToProps = () => {
   const getUsers = makeGetAllUsers();
   const getStaff = makeGetStaff();
   const getInGymMap = makeGetInGymMap();
+  const getCheckIn = makeGetCheckIn();
+  const getCheckOut = makeGetCheckOut();
+    const getBranch = makeGetBranch();
+    const getRooms = makeGetRoom();
   const getSelectedUserGantnerLogs = makeGetSelectedUserGantnerLogs();
   const getSelectedUserInvoices = makeGetSelectedUserInvoices();
   const getUserFreeze = makeGetSelectedUserFreeze();
@@ -2352,6 +2417,10 @@ const makeMapStateToProps = () => {
       staff: getStaff(state, props),
       packages: getPackagesList(state, props),
       inGymMap: getInGymMap(state, props),
+      checkIn: getCheckIn(state, props),
+      checkOut: getCheckOut(state, props),
+      branch: getBranch(state, props),
+      rooms: getRooms(state, props),
       selectedUserGanterLogs: getSelectedUserGantnerLogs(state, props),
       selectedUserInvoiceId: getSelectedUserInvoices(state, props),
       userFreeze: getUserFreeze(state, props),

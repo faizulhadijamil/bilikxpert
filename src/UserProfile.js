@@ -38,7 +38,7 @@
   import IntegrationAutosuggest from './IntegrationAutosuggest';
   import MenuAppBar from './MenuAppBar';
   import UserPayments from './UserPayments';
-  const {FB, FacebookApiException} = require('fb');
+  // const {FB, FacebookApiException} = require('fb');
 
   // import * as firebase from 'firebase';
   // import 'firebase/firestore';
@@ -270,16 +270,6 @@ let checkoutValid = false;
       // console.log('currentUserId: ', currentUserId);
 
       this.props.actions.getPaymentsByUserId(currentUserId);
-      // FB.init({
-      //   appId      : '476078559432892',
-      //   status     : true,
-      //   xfbml      : true,
-      //   version    : 'v2.7' // or v2.6, v2.5, v2.4, v2.3
-      // });
-      // FB.login(function(response) {
-      //   console.log('theresponse:', response);
-      // }, {scope: 'user_birthday'});
-      // this.nearestAvailableSlot(this.state.bookingDate, this.state.bookingStart, this.state.bookingDuration);
     }
   
     componentWillUnmount() {
