@@ -171,9 +171,10 @@ class PersonCard extends React.Component {
     currentBranch: {},
     currentRoomId: {},
     branchLabel: {},
-    branchName: {},
-    roomNumberLabel: {},
-    roomNumber: {},
+    branchName: null,
+    roomNumberLabel: '',
+    roomNumber: '',
+    branch:'',
     currentUserData: {},
     userId: null,
     search: '',
@@ -247,10 +248,6 @@ class PersonCard extends React.Component {
 
     if (this.props.uploadedImageURL || this.props.uploadedImagePath) {
       var editUserData = this.state.editUserData;
-      var currentBranch = this.state.currentBranch;
-      var currentRoomId = this.state.currentRoomId;
-      const branchLabel = 'Branch';
-      const roomNumberLabel = 'Room Number';
       editUserData.image = this.props.uploadedImageURL;
       editUserData.imagePath = this.props.uploadedImagePath;
       this.setState({
@@ -514,19 +511,13 @@ class PersonCard extends React.Component {
   }
 
   handleAutosuggest = (name, value) => {
+    // console.log('handleAutosuggestName: ', name);
+    // console.log('handleAutosuggestValue: ', value);
+
     var currentUserData = this.state.currentUserData;
     var editUserData = this.state.editUserData;
     editUserData[name] = value;
-
-    const branchesData = this.props.branch || null;
-    const branchSize = branchesData && branchesData.size;
-    const branchId = this.state.branch || null;
-    const branchLabel = 'Branch';
-    const roomNumberLabel = 'Room Number';
-    const roomsData = this.props.rooms || null;
-    const selectedRoomId = this.state.roomId;
    
-    var branchName = ''
     this.setState({
       editUserData: { ...editUserData
       },
@@ -534,12 +525,6 @@ class PersonCard extends React.Component {
         ...currentUserData,
       }
     });
-    const roomNumberTextInput = 
-    <TextField
-      margin="dense" id="rooms" label={roomNumberLabel} type="text" fullWidth
-      onChange={this.handleChange('rooms')} autoComplete='off' required
-      onInput = {(e) =>{ e.target.value = Math.max(0, parseInt(e.target.value)).toString().slice(0,5)}}
-    />;
   }
 
 
@@ -590,8 +575,15 @@ class PersonCard extends React.Component {
           // }
           //console.log('editUserData: ', this.state.editUserData);
           //console.log('currentUserData: ', this.state.currentUserData);
-
-          this.props.actions.saveUserData(this.state.editUserId, this.state.editUserData, this.state.currentUserData, this.state.currentLoginUseremail, this.state.currentLoginUserId);
+          var editUserData = {...this.state.editUserData}
+          if (this.state.editUserData.branch){
+            editUserData = {...this.state.editUserData, currentBranch:this.state.editUserData.branch}
+          }
+          if (this.state.editUserData.roomId){
+            editUserData = {...this.state.editUserData, currentRoomId:this.state.editUserData.roomId}
+          }
+          
+          this.props.actions.saveUserData(this.state.editUserId, editUserData, this.state.currentUserData, this.state.currentLoginUseremail, this.state.currentLoginUserId);
         }
         this.handleClose();
       }
@@ -935,8 +927,6 @@ class PersonCard extends React.Component {
     const isSeniorCRO = roles && (roles === 'seniorCRO');
     const isShared = roles && (roles === 'shared');
     const staffBranch = user && user.get('staffBranch');
-    const isTTDIStaff = roles && staffBranch && (staffBranch === 'TTDI');
-    const isKLCCStaff = roles && staffBranch && (staffBranch === 'KLCC');
     const branchLabel = 'Branch';
     const roomNumberLabel = 'Room Number';
 
@@ -957,36 +947,10 @@ class PersonCard extends React.Component {
     const branchesData = this.props.branch || null;
     const branchSize = branchesData && branchesData.size;
     const branchId = this.state.branch || null;
+    console.log('theBranchId: ', branchId);
 
     const roomsData = this.props.rooms || null;
     const selectedRoomId = this.state.roomId;
-   
-    var branchName = ''
-    const selectedBranch = branchesData && branchesData.filter((x, key)=>{
-        if (key === branchId){
-            branchName = x.has('name')? x.get('name'):'';
-            return true;
-        }
-        return false;
-    }).first();
-
-    var roomNumber = ''
-    const selectedRooms = roomsData && roomsData.filter((x, key)=>{
-      // console.log('key rooms: ', key);
-      // console.log('x value: ', x);
-      const isAvailable = x.has('isAvailable')? x.get('isAvailable'):true;
-      if ((key === selectedRoomId) && isAvailable){
-        roomNumber = x.has('roomNumber')? x.get('roomNumber'):'';
-        return true;
-      }
-        // if (key === branchId){
-        //     branchName = x.has('rooms')? x.get('roomNumber'):'';
-        //     return true;
-        // }
-        // return false;
-    }).first();
-
-
     
     const complimentaryPkg = 'yKLfNYOPzXHoAiknAT24';
     const complimentaryPromoPkg = 'L6sJtsKG68LpEUH3QeD4';
@@ -1006,8 +970,36 @@ class PersonCard extends React.Component {
     const editUserFirstVisit = editUser && editUser.has('membershipStarts') && editUser.get('membershipStarts') ? getTheDate(editUser.get('membershipStarts')) : null;
     var editUserMembershipStarts = editUserStartDate ? editUserStartDate : editUserFirstVisit;
     const editUserAutoBilling = editUser && editUser.has('autoMembershipEnds') && editUser.get('autoMembershipEnds') ? getTheDate(editUser.get('autoMembershipEnds')) : (editUser && editUser.has('membershipEnds') && editUser.get('membershipEnds') ? getTheDate(editUser.get('membershipEnds')) : null);
+    const editUserCurrentBranchId = (editUser && editUser.has('currentBranch'))? editUser.get('currentBranch'):null;
+    // console.log('editUserCurrentBranchId: ', editUserCurrentBranchId);
+    // console.log('editUserData: ', this.state.editUserData);
 
     // console.log('selectedStaffRole: ', editUser && editUser.get('staffRole'));
+
+    var branchName = '';
+    const selectedBranch = branchesData && branchesData.filter((x, key)=>{
+        if (key === editUserCurrentBranchId){
+            branchName = x.has('name')? x.get('name'):'';
+            return true;
+        }
+        return false;
+    }).first();
+
+    // console.log('selectedRoomId: ', selectedRoomId);
+    var roomNumber = ''
+    const selectedRooms = roomsData && roomsData.filter((x, key)=>{
+      const isAvailable = x.has('isAvailable')? x.get('isAvailable'):true;
+      if ((key === selectedRoomId) && isAvailable){
+        roomNumber = x.has('roomNumber')? x.get('roomNumber'):'';
+        //console.log('roomNumber: ', roomNumber);
+        return true;
+      }
+        // if (key === branchId){
+        //     branchName = x.has('rooms')? x.get('roomNumber'):'';
+        //     return true;
+        // }
+        // return false;
+    }).first();
 
     var memberId;
     if (editUser) {
@@ -1222,7 +1214,7 @@ class PersonCard extends React.Component {
     var idForLastVisit = selectedUserId || null;
     var selectedUserLastVisit = (idForLastVisit && inGymMap && inGymMap[idForLastVisit]) ? moment(inGymMap[idForLastVisit]).format('Do MMM YYYY') : null;
     const showCovid19Btn = (userData && userData.get('covid19DeclarationAt') && (moment(getTheDate(userData.get('covid19DeclarationAt'))).add(14, 'days').isSameOrAfter(moment()))) ? false:true;
-    
+
     var userVisitItems = [];
     if (true) {
       const selectedUserGanterLogs = this.props.selectedUserGanterLogs ? this.props.selectedUserGanterLogs.sort((a, b) => {
@@ -1385,8 +1377,41 @@ class PersonCard extends React.Component {
     const currentUserPkgId = editUser && editUser.has('packageId') ? editUser.get('packageId') : '';
     const editUserPackageName = editUserPackage && editUserPackage.get('name');
 
-    const selectedUserRoomId =  userData && userData.has('currentRoomId') ? userData.get('currentRoomId') : null; 
-   // console.log('selectedUserRoomId: ', selectedUserRoomId)
+    const selectedUserRoomId = userData && userData.has('currentRoomId') ? userData.get('currentRoomId') : null; 
+   // console.log('selectedBranch: ', selectedBranch);
+    const selectedUserBranchName = selectedBranch && selectedBranch.get('name'); 
+    const editUserBranchId = this.state.editUserData.branch;
+   
+    const editUserRoomId = editUser && editUser.get('currentRoomId');
+
+    var editUserBranchName = '';
+    const editUserBranch = branchesData && branchesData.filter((x, key)=>{
+      if (key === editUserBranchId){
+        editUserBranchName = x.has('name')? x.get('name'):'';
+          return true;
+      }
+      return false;
+  }).first();
+
+  var editUserRoomNumber;
+  const editRoomData = roomsData && roomsData.filter((x,y)=>{
+    if (y === editUserRoomId){
+      editUserRoomNumber = x.get('roomNumber');
+      return true;
+    }
+  });
+
+  const editUserDataRoomId = editUserData && editUserData.roomId;
+  var editUserDataRoomNumber;
+  roomsData && roomsData.filter((x,y)=>{
+    if (y === editUserDataRoomId){
+      editUserDataRoomNumber = x.get('roomNumber');
+      return true;
+    }
+  });
+
+    
+    // console.log('selectedUserRoomId: ', selectedUserRoomId)
     return (
       <div className={classes.container}>
             {true && staffLevel6 && 
@@ -2201,28 +2226,41 @@ class PersonCard extends React.Component {
                 />
                 </FormGroup>} */}
                 
-        {staffLevel4 && !this.state.branch && <IntegrationAutosuggest selections='branches' placeholder={branchLabel} onSelectionChange={branch => this.handleAutosuggest('branch', branch)}/>}
-        {staffLevel4 && this.state.branch && 
+        {staffLevel4 && (this.state.showBranchDetails) && <IntegrationAutosuggest selections='branches' placeholder={branchLabel} onSelectionChange={branch => {
+          this.handleAutosuggest('branch', branch);
+          this.setState({showBranchDetails:false})
+          
+          }}/>}
+        {staffLevel4 && !this.state.showBranchDetails && 
             <div style={{marginTop:16}}>
             <FormLabel component="legend">Branch</FormLabel>
             <Chip
                 avatar={null}
-                label={branchName}
+                label={editUserBranchName? editUserBranchName: selectedUserBranchName? selectedUserBranchName:null }
                 style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
-                onDelete={()=>this.handleAutosuggest('branch', null)}
+                onDelete={()=>{
+                  this.handleAutosuggest('branch', null)
+                  this.setState({showBranchDetails:true});
+                }}
             />
             </div>
         }
         
-        {staffLevel4 && !this.state.roomId && <IntegrationAutosuggest selections='rooms' branchId={this.state.branch} placeholder={roomNumberLabel} onSelectionChange={roomId => this.handleAutosuggest('roomId', roomId)}/>}
-        {staffLevel4 && this.state.roomId && 
+        {staffLevel4 && this.state.showRoomNumber && <IntegrationAutosuggest selections='rooms' branchId={this.state.branch? this.state.branch:editUserCurrentBranchId? editUserCurrentBranchId:editUserBranchId} placeholder={roomNumberLabel} onSelectionChange={roomId => {
+          this.handleAutosuggest('roomId', roomId)
+          this.setState({showRoomNumber:false});
+          }}/>}
+        {staffLevel4 && !this.state.showRoomNumber &&
                     <div style={{marginTop:16}}>
                     <FormLabel component="legend">Room Number</FormLabel>
                     <Chip
                         avatar={null}
-                        label={roomNumber}
+                        label={editUserDataRoomNumber? editUserDataRoomNumber:editUserRoomNumber?editUserRoomNumber:''}
                         style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
-                        onDelete={()=>this.handleAutosuggest('roomId', null)}
+                        onDelete={()=>{
+                          this.handleAutosuggest('roomId', null);
+                          this.setState({showRoomNumber:true})
+                        }}
                     />
                     </div>
         }
@@ -2362,7 +2400,7 @@ class PersonCard extends React.Component {
               raised 
               onClick={()=>this.handleSaveEdit()}
               disabled = {!this.state.editUserData.cancellationDate}
-              roomRef = {roomRef.update({isAvailable:false})}
+              // roomRef = {roomRef.update({isAvailable:false})}
               >
               {'Save'}
               
