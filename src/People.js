@@ -362,8 +362,8 @@ class People extends React.Component {
                 {staffLevel2 && this.renderUserList('Active', 'active', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Active TTDI', 'activeTTDI', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Billing Today/Overdue', 'expired', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')}
-                {staffLevel6 && this.renderUserList('Billing Today/Overdue (KLCC)', 'expiredKLCC', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')}
-                {staffLevel6 && this.renderUserList('Billing Today/Overdue (TTDI)', 'expiredTTDI', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')}
+                {/* {staffLevel6 && this.renderUserList('Billing Today/Overdue (KLCC)', 'expiredKLCC', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')}
+                {staffLevel6 && this.renderUserList('Billing Today/Overdue (TTDI)', 'expiredTTDI', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')} */}
 
                 {false &&
                   <Grid item xs={12} sm={6} lg={4} style={{paddingTop:0, paddingBottom:0}}>

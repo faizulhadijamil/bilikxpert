@@ -380,11 +380,12 @@ class UserRegByCRO extends React.Component {
       //console.log('savingData');
       this.props.actions.saveUserData(this.props.currentUser.get('id'), {
         image: this.state.image,
+        uploadImage: this.state.uploadImage,
         imagePath: this.state.imagePath
       });
     } else {
       // every new registration will have to key in too
-      this.props.actions.signUp(this.state.email, this.state.password, this.state.name, this.state.phone, this.state.mcId, this.state.refSource, this.state.image, this.state.imagePath, this.state.postcode, true);
+      this.props.actions.signUp(this.state.email, this.state.password, this.state.name, this.state.phone, this.state.mcId, this.state.refSource, this.state.image, this.state.imagePath, this.state.uploadImage, this.state.postcode, true);
     }
   }
 
@@ -430,6 +431,15 @@ class UserRegByCRO extends React.Component {
     const phoneNumberLabel = 'Phone Number';
     const postCodeLabel = 'Where are you from? (Just the postcode would do)';
     const roomNumberLabel = 'Room Number';
+
+    var editUserImage = editUserAvatar && editUserAvatar.has('image') ? editUserAvatar.get('image') : null;
+    if (this.state.editUserData && this.state.editUserData.image) {
+      editUserImage = this.state.editUserData.image;
+    }
+    var editUserAvatar = <PhotoCameraIcon style={{width:64, height:64}} />;
+    if (editUserImage) {
+      editUserAvatar = <Avatar style={{width:64, height:64, marginLeft:'auto', marginRight:'auto'}} src={editUserImage} />;
+    }
 
     if(this.state.slideshowOpen && isPromo){return <OnboardingCarousel handleClose={()=>this.setState({slideshowOpen:false})}/>}
 
@@ -938,11 +948,26 @@ class UserRegByCRO extends React.Component {
           (mcImage ? (<Avatar src={mcImage} />) : (<Avatar>{mcName.charAt(0).toUpperCase()}</Avatar>)) :
           null;
 
+         // console.log('register', this.state.continueRegistration);
+
       userItem = (
         <div>
           <Typography type="display1" component="h1" color="primary" style={{textAlign:'center', marginBottom:32}}>
             Welcome to BilikXpert
           </Typography>
+
+          <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+                  <input accept="/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
+                    <label htmlFor="icon-button-file" >
+                      <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}}>
+                        {this.state.image ? 'Change Photo' : 'Upload Photo' }
+                        {this.props.isUploadingImage &&
+                          <CircularProgress style={{color:'white', marginLeft:8}}/>
+                        }
+                      </Button>
+                    </label>
+                  </div>
+
           {false && <TextField
             id="email"
             label="Please enter your email address"
@@ -953,6 +978,7 @@ class UserRegByCRO extends React.Component {
             style = {{marginBottom:5}}
           />}
          
+
          {phoneTextInput}
          {showDetails && nameTextInput}
          {showDetails && emailTextInput}
@@ -998,7 +1024,6 @@ class UserRegByCRO extends React.Component {
             </div>
         }
 
-
           <StdButton
             text = {'Continue'}
             key = {'continue'}
@@ -1010,7 +1035,8 @@ class UserRegByCRO extends React.Component {
                 else{
                     return this.handleContinueRegister()
                 }
-                
+                //console.log('continue ', this.state.continueRegistration);
+
             }}
             // showCircularProgress = {this.props.isFetchingEmail}
           />
