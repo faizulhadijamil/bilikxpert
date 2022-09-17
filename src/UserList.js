@@ -158,7 +158,7 @@ class UserList extends React.Component {
      
       // var listMap = {};
       (items) && items.forEach(item => {
-        console.log('theItems123: ', item)
+        // console.log('theItems123: ', item)
         if (!this.props.showAll && (newItems.length >= this.state.itemsToLoad || (!isOpen && !(items && (items.length < 5))))) {
           return;
         }
@@ -203,10 +203,7 @@ const UserListStyled = withStyles(styles)(UserList);
 const makeMapStateToProps = () => {
   const mapStateToProps = (state, props) => {
     var items;
-    console.log('getPropsType: ', props.type);
     switch (props.type) {
-     
-
       case 'inGymNeedsAttention':{
         const getInGymNeedsAttentionItems = makeGetInGymNeedsAttentionItems();
         items = getInGymNeedsAttentionItems(state, props);

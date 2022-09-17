@@ -180,8 +180,12 @@ class UserRegByCRO extends React.Component {
 
       const imageFile = event.target.files[0];
       if (imageFile) {
+        // console.log('imageFile: ', imageFile);
         this.props.actions.uploadImage(imageFile, (imageURL, imagePath) => {
           if (imageURL) {
+            // console.log('imageURL: ', imageURL);
+            // console.log('imagePath: ', imagePath);
+
             updatedState.image = imageURL;
             updatedState.imagePath = imagePath;
             updatedState.completeRegistration = true;
@@ -310,7 +314,7 @@ class UserRegByCRO extends React.Component {
   }
 
   handleContinueRegister = () => {
-   // console.log('handleContinueRegister state: ', this.state);
+   console.log('handleContinueRegister state: ', this.state);
     // todo error checking...
     if (!this.state.name || (this.state.name && this.state.name.length<5)){
      // console.log('invalid name');
@@ -333,7 +337,8 @@ class UserRegByCRO extends React.Component {
         currentRoomId: this.state.roomId,
         autoMembershipStarts:this.state.autoMembershipStarts? this.state.autoMembershipStarts:moment().tz('Asia/Kuala_Lumpur').format('YYYY-MM-DD'),
         mcId: this.state.mcId,
-        nric: this.state.nric  
+        nric: this.state.nric,
+        ...this.state  
     }
 
     // this.props.actions.saveUserData('NEW_REG', userData);
@@ -366,16 +371,6 @@ class UserRegByCRO extends React.Component {
   handleChangeJoinOptions = (event, value) => {this.setState({ joinOption:value });};
 
   handleCompleteSignUp = () => {
-
-    // if () {
-    // console.log('get the props....', this.props);
-    // const fromCV19Page = this.props.location && this.props.location.pathname && this.props.location.pathname.indexOf('covidform');
-    // console.log('isFromCV19Page: ', fromCV19Page);
-
-    // if (fromCV19Page !== -1){
-    //   console.log('isFromCV19Page: ', fromCV19Page);
-    //   this.props.actions.signUp(this.state.email, this.state.password, this.state.name, this.state.phone, this.state.mcId, this.state.refSource, this.state.image, this.state.imagePath, this.state.postcode, true);
-    // }
     if (this.props.currentUser && this.props.currentUser.get('id')) {
       //console.log('savingData');
       this.props.actions.saveUserData(this.props.currentUser.get('id'), {
@@ -411,11 +406,6 @@ class UserRegByCRO extends React.Component {
     const isAdmin = roles && roles.get('admin') === true;
     const isMC = roles && roles.get('mc') === true;
     const isAuthorized = isAdmin || isMC;
-    // console.log('theStaffProps: ', this.props.staff);
-    // console.log('theUsers: ', this.props.users);
-    // console.log('currentUser: ', user);
-    // console.log('currentProps: ', this.props);
-    // console.log('currentState: ', this.state);
     
     const isStaff = user && user.get('isStaff');
     const currentStaffBranch = user && user.get('staffBranch');
@@ -489,8 +479,6 @@ class UserRegByCRO extends React.Component {
 
     var roomNumber = ''
     const selectedRooms = roomsData && roomsData.filter((x, key)=>{
-      // console.log('key rooms: ', key);
-      // console.log('x value: ', x);
       const isAvailable = x.has('isAvailable')? x.get('isAvailable'):true;
       if ((key === selectedRoomId) && isAvailable){
         roomNumber = x.has('roomNumber')? x.get('roomNumber'):'';
@@ -625,6 +613,11 @@ class UserRegByCRO extends React.Component {
     //     </div>
     // );
    
+    const image = this.state.image;
+    var editUserAvatar = <PhotoCameraIcon style={{width:128, height:128}} />;
+    if (image) {
+      editUserAvatar = <Avatar style={{width:128, height:128, marginLeft:'auto', marginRight:'auto'}} src={image} />;
+    }
 
     if (!isLogin && enteredUser) {
       //console.log('not login user & entered user: ', this.state);
@@ -663,8 +656,6 @@ class UserRegByCRO extends React.Component {
 
       const mcId = this.state.mcId;
       const mc = mcId && staff && staff.get(mcId) ? staff.get(mcId) : null;
-      // console.log('themcId: ', staff);
-      // console.log('themc: ', mc);
       const mcName = mc && mc.has('name') ? mc.get('name') : null;
       const mcImage = mc && mc.has('image') ? mc.get('image') : null;
       const mcAvatar = mcImage || (mcName && mcName.length > 0) ?
@@ -874,12 +865,6 @@ class UserRegByCRO extends React.Component {
 
       //console.log('registartion state: ', this.state);
 
-      const image = this.state.image;
-      var editUserAvatar = <PhotoCameraIcon style={{width:128, height:128}} />;
-      if (image) {
-        editUserAvatar = <Avatar style={{width:128, height:128, marginLeft:'auto', marginRight:'auto'}} src={image} />;
-      }
-
       // console.log('isNative: ', this.props.isNative);
       
       userItem = (
@@ -940,6 +925,7 @@ class UserRegByCRO extends React.Component {
     } 
     else {
     
+      // console.log('theimage state: ', this.state);
         const mcId = this.state.mcId;
         const mc = mcId && staff && staff.get(mcId) ? staff.get(mcId) : null;
         const mcName = mc && mc.has('name') ? mc.get('name') : null;
@@ -956,17 +942,26 @@ class UserRegByCRO extends React.Component {
             Welcome to BilikXpert
           </Typography>
 
-          <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
-                  <input accept="/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
-                    <label htmlFor="icon-button-file" >
-                      <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}}>
-                        {this.state.image ? 'Change Photo' : 'Upload Photo' }
-                        {this.props.isUploadingImage &&
-                          <CircularProgress style={{color:'white', marginLeft:8}}/>
-                        }
-                      </Button>
-                    </label>
-                  </div>
+          <div>
+            {this.state.imageURLToUpload}
+            <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+              <IconButton color="primary" component="span" style={{marginTop:32, marginBottom:48}} disabled={this.props.isUploadingImage} onClick={()=>this.props.actions.useNativeCamera()}>
+                {editUserAvatar}
+              </IconButton>
+            </div>
+            <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+              <input accept="/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
+              <label htmlFor="icon-button-file" >
+                <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}}>
+                  {this.state.image ? 'Change Photo' : 'Upload Photo' }
+                  {this.props.isUploadingImage &&
+                    <CircularProgress style={{color:'white', marginLeft:8}}/>
+                  }
+                </Button>
+              </label>
+            </div>
+          </div>
+         
 
           {false && <TextField
             id="email"

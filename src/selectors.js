@@ -1746,8 +1746,6 @@ const itemForMember = (member, id, packages, staff = null, staffId = null, backg
   // const roomData = rooms && rooms.get(roomId);
   // const roomNumber = roomData && roomData.roomNumber;
 
-  console.log('roomData: ', rooms);
-
   var secondaryText = packageName;
   if(member && member.get('tier')){
     secondaryText = `Tier ${member.get('tier')}`;

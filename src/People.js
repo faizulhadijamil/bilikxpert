@@ -286,18 +286,6 @@ class People extends React.Component {
     return (
       <div className={classes.container}>
         <MenuAppBar />
-        { <Grid container spacing={10}>
-          <Grid item xs={12} sm={8} >
-          {true && <SearchTextInput
-              searchLabel = {(isStaff) ? "Search Name, Email, ID" : "Search Trainers"}
-              value = {this.state.searchDisplay}
-              onChange={this.handleSearch('search')}
-              onIconClick={this.handleClickSearchCloseIcon}
-              // style = {normalSearchTextBoxStyle}
-              selectedStaffChip = {selectedStaffChip? selectedStaffChip:null}
-            />}
-          </Grid>
-        </Grid> }
           <Grid container spacing={10}>
             <Grid item xs={12} sm={8}>
               <Grid container style={{marginTop:32}}>
