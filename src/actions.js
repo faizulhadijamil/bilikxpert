@@ -2338,7 +2338,7 @@ export function addCheckInOut(userId){
           cancellationDate:timestamp
         }).then(()=>{
           firestore.collection('rooms').doc(currentRoomId).update({
-            isAvailable:false
+            isAvailable:true
           })
         }).then(()=>{
           dispatch(showMessage("User has been checked out"));
