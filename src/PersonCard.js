@@ -1557,13 +1557,25 @@ class PersonCard extends React.Component {
                     </IconButton>
                   </div>
                   <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
-                    <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}} onClick={()=>this.props.actions.useNativeLibrary()}>
+              <input accept="/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
+              <label htmlFor="icon-button-file" >
+                <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}}>
+                  {this.state.image ? 'Change Photo' : 'Upload Photo' }
+                  {this.props.isUploadingImage &&
+                    <CircularProgress style={{color:'white', marginLeft:8}}/>
+                  }
+                </Button>
+              </label>
+            </div>
+                  {/* <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+                <input accept="image/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
+                  <label htmlFor="icon-button-file" >
+                    <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}}>
                       {this.state.image ? 'Change Photo' : 'Upload Photo' }
-                      {this.props.isUploadingImage &&
-                        <CircularProgress style={{color:'white', marginLeft:8}}/>
-                      }
+                      {this.props.isUploadingImage && <CircularProgress style={{color:'white', marginLeft:8}}/>}
                     </Button>
-                  </div>
+                  </label>
+                </div> */}
                 </div>
               }
               {!this.props.isNative &&
