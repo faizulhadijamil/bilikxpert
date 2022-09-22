@@ -1,4 +1,4 @@
-import {PhotoCamera} from '@material-ui/icons/PhotoCamera';
+import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {withStyles, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
@@ -721,8 +721,9 @@ class Profile extends React.Component {
     const canSaveImage = canChangeImage && this.state.image && this.state.image !== (userData && userData.has('image') && userData.get('image') ? userData.get('image') : null);
     const selectedUserImage = image ? image : (userData && userData.has('image') ? userData.get('image') : null);
     const selectedUserAvatar = selectedUserImage || (selectedUserName && selectedUserName.length > 0) ?
-      (selectedUserImage ? (<Avatar src={selectedUserImage} style={{marginLeft:'auto', marginRight:'auto', width:128, height:128, fontSize:'3.5rem'}} />) : (<PhotoCamera style={{width:128, height:128, color:'#fff'}}/>)) :
-      null;
+      (selectedUserImage ? (<Avatar src={selectedUserImage} style={{marginLeft:'auto', marginRight:'auto', width:128, height:128, fontSize:'3.5rem'}} />) : 
+     (<PhotoCamera style={{width:128, height:128, color:'#fff'}}/>)) 
+      :null;
 
     const selectedUserRoles = userData && userData.get('roles');
     const selectedUserIsAdmin = selectedUserRoles && selectedUserRoles.get('admin') === true;
@@ -1037,13 +1038,14 @@ class Profile extends React.Component {
     // bookings && console.log(bookings.toJS());
     // console.log(this.props.state && this.props.state.hasIn(['bookings', 'bookingsById']));
 
+    console.log('canChangeImage:' , canChangeImage);
 
     return (
       <div>
         <MenuAppBar/>
-          <div className={classes.container}>
+          {true && <div className={classes.container}>
             <Card style={{boxShadow:null, marginLeft:0}} className={classes.card} elevation={0}>
-            <CardContent classes={{root:classes.cardRoot}}>
+            {true && <CardContent classes={{root:classes.cardRoot}}>
                 {!userData &&
                   <div style={{backgroundColor:'#062845', paddingTop:96, paddingBottom:32, height:240}} />
                 }
@@ -1172,7 +1174,7 @@ class Profile extends React.Component {
                   <CircularProgress style={{margin:'auto', display:'block', marginTop:32, height:64, width:64}}/>
                 }
                 <BabelLogo/>
-              </CardContent>
+            </CardContent>}
               {(!booking && selectedUserIsTrainer && !this.state.hideBookings) &&
                 <div className={classes.bottomBar} style={bottomBarStyle}>
                   <div className={classes.bottomRow}>
@@ -1229,7 +1231,7 @@ class Profile extends React.Component {
                 </div>
               }
             </Card>
-          </div>
+          </div>}
           <Dialog key={'scheduleDialog'} open={this.state.scheduleDialogOpen} onClose={this.handleClose}>
 
               <DialogTitle>{'Available For PT'}</DialogTitle>
