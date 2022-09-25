@@ -256,8 +256,11 @@ export function bootstrap(){
           else if (pathname.indexOf('/renewmembership') !== -1 || pathname.indexOf('/renewmembership/') !== -1){
             //console.log('renewmembership path');
           }
-          else if (pathname.indexOf('/createclass') !== -1){
-            //console.log('createclass path');
+          else if (pathname.indexOf('/createInvoice') !== -1){
+            console.log('createInvoice path');
+            dispatch(getRooms);
+            dispatch(getBranches());
+            // dispatch(getUsers());
           }
           else{
             //console.log('verifyAuth...')
@@ -3285,6 +3288,29 @@ export function addUsers(users) {
   };
 }
 
+// for user invoice rental
+export function addInvoiceRental (userId, handleResponse){
+  return function action(dispatch, getState) {
+    dispatch(setAddingInvoice(true));
+    const addInvoiceForRental = firebase.functions().httpsCallable('addInvoiceForRental');
+    return addInvoiceForRental({userId}).then(invoiceRef=>{
+      const invoiceId = invoiceRef.data;
+     // console.log('invoiceId: ', invoiceId);
+      if(invoiceId){
+        dispatch(getInvoiceAndDataById(invoiceId));
+        handleResponse(invoiceRef.data);
+        const newPath = `/payments/${invoiceId}`;
+        if(getState().router.location.pathname !== newPath){
+          dispatch(push(newPath));
+        }
+      }
+      dispatch(setAddingInvoice(false));
+    }).catch(error=>{
+      dispatch(setAddingInvoice(false));
+    });
+  }
+}
+
 // for angpau
 export function addInvoiceForAngpau(email, name, phone, nric, refSource, achieveTargetSource, selectedPkgId, refererEmail, refererName, handleResponse){
   return function action(dispatch, getState) {
@@ -4043,6 +4069,21 @@ export function viewPerson(userId, bookingId){
     if(bookingId){
       newPath = `${newPath}?bid=${bookingId}`;
     }
+    if(getState().router.location.pathname !== newPath){
+      dispatch(push(newPath));
+    }
+  }
+}
+
+// view new invoice
+export function viewNewInvoice(userId){
+  return function action(dispatch, getState) {
+    const currentUserId = getState().state.getIn(['user', 'id']) || null;
+    const showUserId = userId || currentUserId;
+    if(!showUserId){
+      return;
+    }
+    const newPath = `/createinvoice/${showUserId}`;
     if(getState().router.location.pathname !== newPath){
       dispatch(push(newPath));
     }
