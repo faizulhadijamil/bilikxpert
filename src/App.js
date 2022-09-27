@@ -45,7 +45,7 @@ import UserProfile from './UserProfile';
 // import testPage from './testPage';
 // import Members from './Members';
 // import vendProductPage from './vendProductPage';
-// import createInvoice from './superUserPage/createInvoice';
+import createInvoice from './CreateInvoice';
 // import renewMembershipPage from './buyPage/renewMembership';
 // import buyMembershipPage from './buyPage/buyMembership';
 import buyVirtualPT from './buyPage/buyVirtualPT3';
@@ -236,7 +236,7 @@ class App extends Component {
             {/* <Route exact path='/vendproductpage' component={vendProductPage} /> */}
             {/* <Route path='/referral' component={Referral} /> */}
             {/* <Route path='/cnyangpow' component={CNYangpow} /> */}
-            {/* <Route path='/createInvoice' component={createInvoice} /> */}
+            <Route path='/createinvoice' component={createInvoice} />
             <Route exact path='/people' component={People} />
             {<Route path='/people/:userId' component={Person} />}
             {/* <Route exact path='/member' component={Members} /> */}

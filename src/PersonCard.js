@@ -5,12 +5,8 @@ import {FormLabel, FormControl, FormGroup, FormControlLabel, Avatar, Button,
   Switch, TextField, Typography, IconButton, CircularProgress
 } from '@material-ui/core';
 
-import {
-  bindActionCreators
-} from 'redux';
-import {
-  connect
-} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 import {withStyles} from '@material-ui/core';
 
 import AddIcon from '@material-ui/icons/Add';
@@ -712,7 +708,11 @@ class PersonCard extends React.Component {
   };
 
   handleAddInvoice = (selectedUserId) => {
-    window.open(`/createInvoice/${selectedUserId}`, '_blank');
+    // window.open(`/createInvoice/${selectedUserId}`, '_blank');
+    // this.props.actions.addInvoiceRental(selectedUserId, (response)=>{
+    //   console.log('addInvoiceRentalresponse: ', response);
+    // });
+    this.props.actions.viewNewInvoice(selectedUserId);
   };
 
   handleSwitch = (event, checked) =>{
