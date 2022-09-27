@@ -21,6 +21,8 @@ import {
   makeGetCurrentUser,
   makeGetCurrentUserGantnerLogs,
   makeGetSelectedUser,
+  makeGetCheckIn,
+  makeGetCheckOut,
   makeGetSelectedUserGantnerLogs,
   makeGetSessions,
   makeGetBookings
@@ -678,6 +680,7 @@ class Profile extends React.Component {
     this.handleClose();
   }
 
+
   render() {
     const {
       classes
@@ -697,6 +700,9 @@ class Profile extends React.Component {
     const selectedUserMembershipCard = userData && userData.has('membershipCard') && userData.get('membershipCard') ? userData.get('membershipCard') : null;
     const selectedUserPhone = userData && userData.has('phone') && userData.get('phone') ? userData.get('phone') : null;
     const selectedUserEmail = userData && userData.has('email') && userData.get('email') ? userData.get('email') : null;
+
+
+
     // const selectedUserPackageId = userData && userData.has('packageId') ? userData.get('packageId') : null;
     // const selectedUserPackageData = selectedUserPackageId && packages && packages.has(selectedUserPackageId) ? packages.get(selectedUserPackageId) : null;
     // const selectedUserPackageName = selectedUserPackageData && selectedUserPackageData.get('name');
@@ -732,6 +738,7 @@ class Profile extends React.Component {
     const selectedUserIsStaff = selectedUserIsAdmin || selectedUserIsTrainer || selectedUserIsOps;
     const selectedUserTrainerBio = selectedUserIsTrainer && userData && userData.get('bio');
     const selectedUserTrainerTier = selectedUserIsTrainer && userData && userData.get('tier');
+    
 
     var days = [];
     if (true) {
@@ -1059,6 +1066,7 @@ class Profile extends React.Component {
                             null}
                         </IconButton>
                       </div>
+                      
                     }
                     {(canChangeImage && this.props.isNative) &&
                       <div>
@@ -1158,6 +1166,22 @@ class Profile extends React.Component {
                     }
                   </div>
                 }
+
+                    {/* {( userData && selectedUserId && selectedUserId.length > 0 && selectedUserRoomId) &&
+                      <Button key={'checkInOutRoom'} className={classes.addButton} onClick={()=>this.props.actions.addCheckInOut(selectedUserId)}>
+                        {'Check Out'}
+                      </Button>
+                    }
+
+                    {( userData && selectedUserId && selectedUserId.length > 0 && !(editUser || editUserId === 'NEW') && (!this.state.addingCard && !this.state.addingTempCard)) &&
+                      <Button key={'editButton'} className={classes.addButton} onClick={()=>
+                      {
+                        this.handleEdit(selectedUserId)
+                        // this.handleShowEditDialog(selectedUserId)
+                      }}>
+                        {'Edit'}
+                      </Button>
+                    } */}
 
                 {(!selectedUserIsTrainer && days.length === 0) &&
                   <GridList key={'timelineGrid'} className={classes.gridList} spacing={16} cellHeight='auto'>
