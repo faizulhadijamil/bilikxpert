@@ -1,7 +1,7 @@
 
   import {bindActionCreators} from 'redux';
   import {connect} from 'react-redux';
-  import {withStyles, Button, Typography, Card, CardMedia, TextField
+  import {withStyles, Button, Typography, Card, CardMedia, TextField, CircularProgress, IconButton, Avatar
   } from '@material-ui/core';
   
   import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -12,10 +12,12 @@
   import RemoveIcon from '@material-ui/icons/Remove';
   import moment from 'moment';
   import BabelLogo from './BabelLogo';
+  import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
+
   
   import PropTypes from 'prop-types';
   
-  import {makeGetStaff,  makeGetCurrentUser, makeGetSelectedUser, makeGetAllUsers} from './selectors';
+  import {makeGetStaff,  makeGetCurrentUser, makeGetSelectedUser, makeGetAllUsers,  makeGetBranch, makeGetRoom} from './selectors';
   import * as Actions from './actions';
 
   // import ReactPixel from 'react-facebook-pixel';
@@ -272,16 +274,22 @@ var ismobile = window.innerWidth<=550?true:false;
 
   let lastScrollY = 0;
 
-  const vBuyAug2020Single = '83d318ff-64ab-3cc8-9ba4-98f740bc48f2'; // need to change
-  const vBuyAug2020AllAccess = '211aad2d-0a2a-fdc7-d79a-7eabc28d5994'; // need to change
-
   class CreateInvoice extends React.Component {
   
     state = {
         currentSelectedUserId:null,
-      email: '',
+        currentSelectedRoomId:null,
+      email: null,
       name: '',
       phone: '',
+      currentBranch: '',
+      currentRoomId: '',
+      package: '',
+      deposit: '',
+      roomPrice: '',
+      startDate: '',
+      endDate: '',
+      mcId:null,
       icnumber: '',
       className: '',
       classDate: '',
@@ -312,6 +320,15 @@ var ismobile = window.innerWidth<=550?true:false;
             this.setState({currentSelectedUserId:pathStringSplit[2]});
         }
     }
+  //   componentWillMount() {
+  //     const pathname = this.props.location && this.props.location.pathname;
+  //     console.log('pathname: ', pathname);
+  //     const pathStringSplit = pathname && pathname.split("/");
+  //     console.log('pathStringSplit: ', pathStringSplit);
+  //     if (pathStringSplit && pathStringSplit.length===3){
+  //         this.setState({currentSelectedRoomId:pathStringSplit[2]});
+  //     }
+  // }
   
     componentWillUnmount() {
         // window.removeEventListener('scroll', this.handleScroll);
@@ -362,15 +379,57 @@ var ismobile = window.innerWidth<=550?true:false;
         console.log('selectedUserId: ', selectedUserId);
         console.log('currentState: ', this.state);
         const {currentSelectedUserId} = this.state;
+        //const {currentSelectedRoomId} = this.state;
+
         const users = this.props.users || null;
         const selectedUserData = users && users.get(currentSelectedUserId);
+
+        const {currentSelectedBranchId} = this.state;
+        console.log('currentSelectedBranchId: ', currentSelectedBranchId);
+
+        const branch = this.props.branch || null;
+        const selectedUserCurrentBranch = (selectedUserData && selectedUserData.has('currentBranch'))? selectedUserData.get('currentBranch'):this.state.branch;
+        const selectedBranchData = branch && branch.get(selectedUserCurrentBranch);
+        console.log('selectedBranchData: ', selectedBranchData);
+        const selectedUserBranchName = (selectedBranchData && selectedBranchData.has('name'))? selectedBranchData.get('name'):'';
+        console.log('selectedUserBranchName: ', selectedUserBranchName);
+        const rooms = this.props.rooms || null;
+        //const selectedCurrentRoomNumber = rooms && rooms.get(currentSelectedRoomNumber);
+        //const selectedRoomData = users && users.get(currentSelectedUserId);
+        //const currentRoomId = users && users.get(currentRoomId);
         console.log('selectedUserData: ', selectedUserData);
-        const selectedUserEmail = (selectedUserData && selectedUserData.has('email'))? selectedUserData.get('email'):this.state.email;
+        const selectedUserEmail = this.state.email? this.state.email:(selectedUserData && selectedUserData.has('email'))? selectedUserData.get('email'):'';
         const selectedUserName = (selectedUserData && selectedUserData.has('name'))? selectedUserData.get('name'):this.state.name;
         const selectedUserPhone = (selectedUserData && selectedUserData.has('phone'))? selectedUserData.get('phone'):this.state.phone;
+        const selectedUserRoomNumber = (selectedUserData && selectedUserData.has('currentRoomId'))? selectedUserData.get('currentRoomId'):this.state.roomId;
+        const selectedUserPackage = this.state.package? this.state.package:(selectedUserData && selectedUserData.has('package'))? selectedUserData.get('package'):'Monthly';
+        const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedUserData && selectedUserData.has('monthlyDeposit'))? selectedUserData.get('monthlyDeposit'):'RM100';
+        //  const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedRoomData && selectedRoomData.has('monthlyDeposit'))? selectedRoomData.get('monthlyDeposit'):'';
+        const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedUserData && selectedUserData.has('monthlyPrice'))? selectedUserData.get('monthlyPrice'):'RM650';
+        //const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedRoomData && selectedRoomData.has('monthlyPrice'))? selectedRoomData.get('monthlyPrice'):'RM650';
+        const selectedUserStartDate = this.state.startDate? this.state.startDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? selectedUserData.get('autoMembershipStarts'):'';
+        console.log('selectedUserStartDate: ', selectedUserStartDate);
 
-        console.log('selectedUserName: ', selectedUserName);
-        console.log('selectedUserPhone: ', selectedUserPhone);
+        // var endDate = new Date();
+        // endDate.setDate(endDate.get('autoMembershipStarts') + 30);
+        // const selectedUserEndDate = this.state.endDate? this.state.endDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? new Date((selectedUserData.get('autoMembershipStarts'))).getMonth()+1:null;
+        const selectedUserEndDate = this.state.endDate? this.state.endDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYY-MM-DD'):moment().format('YYYY-MM-DD');
+        console.log('autoMembershipStarts: ', selectedUserData && selectedUserData.has('autoMembershipStarts') && moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYYMMDD'))
+        const selectedUserCRO = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('mcId'):this.state.mcId;
+
+        //  console.log('selectedUserCurrentBranch: ', selectedUserCurrentBranch);
+        //  console.log('selectedUserRoomNumber: ', selectedUserRoomNumber);
+
+        // console.log('selectedUserName: ', selectedUserName);
+        // console.log('selectedUserPhone: ', selectedUserPhone);
+        var editUserImage = editUserAvatar && editUserAvatar.has('image') ? editUserAvatar.get('image') : null;
+        if (this.state.editUserData && this.state.editUserData.image) {
+          editUserImage = this.state.editUserData.image;
+        }
+        var editUserAvatar = <PhotoCameraIcon style={{width:64, height:64}} />;
+        if (editUserImage) {
+          editUserAvatar = <Avatar style={{width:64, height:64, marginLeft:'auto', marginRight:'auto'}} src={editUserImage} />;
+        }
 
       return (
         <div className={classes.container}>
@@ -379,13 +438,34 @@ var ismobile = window.innerWidth<=550?true:false;
                 className={classes.media}
                 image={require('./assets/bilikxpert_logos_black.png')}
             />
-            <div>   
+            <div>
+
+            <div>
+            {this.state.imageURLToUpload}
+            <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+              <IconButton color="primary" component="span" style={{marginTop:32, marginBottom:48}} disabled={this.props.isUploadingImage} onClick={()=>this.props.actions.useNativeCamera()}>
+                {editUserAvatar}
+              </IconButton>
+            </div>
+            <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+              <input accept="/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
+              <label htmlFor="icon-button-file" >
+                <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}}>
+                  {this.state.image ? 'Change Photo' : 'Upload Photo' }
+                  {this.props.isUploadingImage &&
+                    <CircularProgress style={{color:'white', marginLeft:8}}/>
+                  }
+                </Button>
+              </label>
+            </div>
+          </div>
             <TextField
                 margin="dense"
                 id="email"
                 label="Email Address"
                 type="email"
                 defaultValue={selectedUserEmail}
+                value={selectedUserEmail}
                 fullWidth
                 onChange={this.handleChange('email')}
                 // disabled={!roles || isShared || isTrainer}
@@ -414,6 +494,92 @@ var ismobile = window.innerWidth<=550?true:false;
                 disabled={true}
                 required
               />
+              <TextField
+                margin="dense"
+                id="branch"
+                label="Branch"
+                defaultValue={selectedUserBranchName}
+                value={selectedUserBranchName}
+                fullWidth
+                onChange={this.handleChange('currentBranchName')}
+                disabled={true}
+                // required
+              />
+              <TextField
+                margin="dense"
+                id="roomNumber"
+                label="Room Number"
+                defaultValue={selectedUserRoomNumber}
+                value={selectedUserRoomNumber}
+                fullWidth
+                onChange={this.handleChange('currentRoomId')}
+                disabled={true}
+                required
+              />
+              <TextField
+                margin="dense"
+                id="package"
+                label="Package"
+                defaultValue={selectedUserPackage}
+                value={selectedUserPackage}
+                fullWidth
+                onChange={this.handleChange('package')}
+                required
+              />
+              <TextField
+                margin="dense"
+                id="deposit"
+                label="Deposit"
+                defaultValue={selectedUserDeposit}
+                value={selectedUserDeposit}
+                fullWidth
+                onChange={this.handleChange('monthlyDeposit')}
+                required
+              />
+              <TextField
+                margin="dense"
+                id="roomPrice"
+                label="Room Price"
+                type="price"
+                defaultValue={selectedRoomPrice}
+                value={selectedRoomPrice}
+                fullWidth
+                onChange={this.handleChange('roomPrice')}
+                required
+              />
+              <TextField
+                margin="dense"
+                id="startDate"
+                label="Start Date"
+                type="date"
+                defaultValue={selectedUserStartDate}
+                value={selectedUserStartDate}
+                fullWidth
+                onChange={this.handleChange('startDate')}
+                required
+              />
+              <TextField
+                margin="dense"
+                id="endDate"
+                label="End Date"
+                type="date"
+                defaultValue={selectedUserEndDate}
+                value={selectedUserEndDate}
+                fullWidth
+                onChange={this.handleChange('endDate')}
+                required
+              />
+              <TextField
+                margin="dense"
+                id="mcId"
+                label="Customer's Relation Officer"
+                defaultValue={selectedUserCRO}
+                value={selectedUserCRO}
+                fullWidth
+                onChange={this.handleChange('mcId')}
+                disabled={true}
+                // required
+              />
             </div>
             </Card>
             <BabelLogo hideLogo={true}/>
@@ -439,13 +605,17 @@ var ismobile = window.innerWidth<=550?true:false;
       const getCurrentUser = makeGetCurrentUser();
       const getSelectedUser = makeGetSelectedUser();
       const getUsers = makeGetAllUsers()
+      const getBranch = makeGetBranch();
+      const getRooms = makeGetRoom();
       return {
         isAddingInvoice: state && state.state && state.state.get('isAddingInvoice') ? true : false,
         currentUser: getCurrentUser(state, props),
         selectedUser: getSelectedUser(state,props),
         // vendProducts: getVendProducts(state, props),
         staff: getStaff(state, props),
-        users: getUsers(state, props)
+        users: getUsers(state, props),
+        branch: getBranch(state, props),
+        rooms: getRooms(state, props)
       }
     }
     return mapStateToProps
