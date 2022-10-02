@@ -14,6 +14,7 @@
   import BabelLogo from './BabelLogo';
   import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 
+  import StdButton from './components/StdButton';
   
   import PropTypes from 'prop-types';
   
@@ -387,25 +388,41 @@ var ismobile = window.innerWidth<=550?true:false;
         const {currentSelectedBranchId} = this.state;
         console.log('currentSelectedBranchId: ', currentSelectedBranchId);
 
+        const {currentSelectedRoomNumber} = this.state;
+        console.log('currentSelectedRoomNumber: ', currentSelectedRoomNumber);
+
+        const {currentSelectedUserDeposit} = this.state;
+
         const branch = this.props.branch || null;
         const selectedUserCurrentBranch = (selectedUserData && selectedUserData.has('currentBranch'))? selectedUserData.get('currentBranch'):this.state.branch;
         const selectedBranchData = branch && branch.get(selectedUserCurrentBranch);
-        console.log('selectedBranchData: ', selectedBranchData);
+        //console.log('selectedBranchData: ', selectedBranchData);
         const selectedUserBranchName = (selectedBranchData && selectedBranchData.has('name'))? selectedBranchData.get('name'):'';
-        console.log('selectedUserBranchName: ', selectedUserBranchName);
+        //console.log('selectedUserBranchName: ', selectedUserBranchName);
+
         const rooms = this.props.rooms || null;
+        const selectedUserCurrentRoom = (selectedUserData && selectedUserData.has('currentRoomId'))? selectedUserData.get('currentRoomId'):this.state.roomId;
+        const selectedRoomData = rooms && rooms.get(selectedUserCurrentRoom);
+        //console.log('selectedRoomData: ', selectedRoomData);
+        const selectedUserRoomNumber = (selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('roomNumber'):'';
+        //console.log('selectedUserRoomNumber: ', selectedUserRoomNumber);
+
+        const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('monthlyDeposit'):'';
+       // console.log('selectedUserDeposit: ', selectedUserDeposit);
+
         //const selectedCurrentRoomNumber = rooms && rooms.get(currentSelectedRoomNumber);
         //const selectedRoomData = users && users.get(currentSelectedUserId);
         //const currentRoomId = users && users.get(currentRoomId);
-        console.log('selectedUserData: ', selectedUserData);
+        //console.log('selectedUserData: ', selectedUserData);
         const selectedUserEmail = this.state.email? this.state.email:(selectedUserData && selectedUserData.has('email'))? selectedUserData.get('email'):'';
         const selectedUserName = (selectedUserData && selectedUserData.has('name'))? selectedUserData.get('name'):this.state.name;
         const selectedUserPhone = (selectedUserData && selectedUserData.has('phone'))? selectedUserData.get('phone'):this.state.phone;
-        const selectedUserRoomNumber = (selectedUserData && selectedUserData.has('currentRoomId'))? selectedUserData.get('currentRoomId'):this.state.roomId;
+        
         const selectedUserPackage = this.state.package? this.state.package:(selectedUserData && selectedUserData.has('package'))? selectedUserData.get('package'):'Monthly';
-        const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedUserData && selectedUserData.has('monthlyDeposit'))? selectedUserData.get('monthlyDeposit'):'RM100';
+        
         //  const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedRoomData && selectedRoomData.has('monthlyDeposit'))? selectedRoomData.get('monthlyDeposit'):'';
-        const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedUserData && selectedUserData.has('monthlyPrice'))? selectedUserData.get('monthlyPrice'):'RM650';
+        const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('monthlyPrice'):'';
+        //console.log('selectedRoomPrice: ', selectedRoomPrice);
         //const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedRoomData && selectedRoomData.has('monthlyPrice'))? selectedRoomData.get('monthlyPrice'):'RM650';
         const selectedUserStartDate = this.state.startDate? this.state.startDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? selectedUserData.get('autoMembershipStarts'):'';
         console.log('selectedUserStartDate: ', selectedUserStartDate);
@@ -414,11 +431,15 @@ var ismobile = window.innerWidth<=550?true:false;
         // endDate.setDate(endDate.get('autoMembershipStarts') + 30);
         // const selectedUserEndDate = this.state.endDate? this.state.endDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? new Date((selectedUserData.get('autoMembershipStarts'))).getMonth()+1:null;
         const selectedUserEndDate = this.state.endDate? this.state.endDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYY-MM-DD'):moment().format('YYYY-MM-DD');
-        console.log('autoMembershipStarts: ', selectedUserData && selectedUserData.has('autoMembershipStarts') && moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYYMMDD'))
-        const selectedUserCRO = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('mcId'):this.state.mcId;
-
+        //console.log('autoMembershipStarts: ', selectedUserData && selectedUserData.has('autoMembershipStarts') && moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYYMMDD'))
+        //const selectedUserCRO = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('name'):this.state.mcId;
+        //console.log('selectedUserCRO: ', selectedUserCRO);
         //  console.log('selectedUserCurrentBranch: ', selectedUserCurrentBranch);
-        //  console.log('selectedUserRoomNumber: ', selectedUserRoomNumber);
+        const selectedUserCRO = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('mcId'):this.state.mcId;
+        const selectedCROData = users && users.get(selectedUserCRO);
+        //console.log('selectedRoomData: ', selectedRoomData);
+        const selectedUserMcId = (selectedUserData && selectedUserData.has('mcId'))? selectedCROData.get('name'):'';
+        //console.log('selectedUserRoomNumber: ', selectedUserRoomNumber);
 
         // console.log('selectedUserName: ', selectedUserName);
         // console.log('selectedUserPhone: ', selectedUserPhone);
@@ -512,7 +533,7 @@ var ismobile = window.innerWidth<=550?true:false;
                 defaultValue={selectedUserRoomNumber}
                 value={selectedUserRoomNumber}
                 fullWidth
-                onChange={this.handleChange('currentRoomId')}
+                onChange={this.handleChange('roomNumber')}
                 disabled={true}
                 required
               />
@@ -573,19 +594,30 @@ var ismobile = window.innerWidth<=550?true:false;
                 margin="dense"
                 id="mcId"
                 label="Customer's Relation Officer"
-                defaultValue={selectedUserCRO}
-                value={selectedUserCRO}
+                defaultValue={selectedUserMcId}
+                value={selectedUserMcId}
                 fullWidth
                 onChange={this.handleChange('mcId')}
                 disabled={true}
                 // required
               />
+            
+            <StdButton
+            text = {'Continue'}
+            key = {'continue'}
+            onClick={()=>{
+
+            }}
+          />
+              
             </div>
             </Card>
             <BabelLogo hideLogo={true}/>
         </div>
 
+
       );
+      
     }
   }
   
