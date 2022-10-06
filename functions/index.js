@@ -6,6 +6,8 @@ const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
 
+const timestamp = admin.firestore.FieldValue.serverTimestamp();
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
@@ -41,4 +43,38 @@ exports.helloWorldLocal = functions.https.onRequest((request, response) => {
 exports.helloWorldLocal2 = functions.https.onRequest((request, response) => {
   functions.logger.info("Hello logs!2222", {structuredData: true});
   response.send("Hello from Firebase!222");
+});
+
+exports.addInvoiceForRental = functions.https.onCall((data, context) => {
+  const userId = data.userId;
+  const branchId = data.branchId; 
+  const roomId = data.roomId; 
+  const packages = data.packages;
+  const monthlyDeposit = data.monthlyDeposit;
+  const roomPrice = data.roomPrice;
+  const startDate = data.startDate; 
+  const endDate = data.endDate; 
+  const mcId = data.mcId; 
+  const paymentType = data.paymentType? data.paymentType:'CASH';
+  const paymentStatus = data.paymentStatus? data.paymentStatus:'PAID'; 
+  const remark = data.remark;
+
+  if (!userId || !branchId || !roomId || !packages || !monthlyDeposit || !roomPrice || !startDate || !endDate || !mcId || !paymentType || !paymentStatus){
+    console.log('data missing....')
+    return Promise.resolve();
+  }
+
+  console.log('adding rental invoice....');
+  const invoiceData = {
+    createdAt:timestamp,
+    userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark
+  };
+
+  return admin.firestore().collection('invoices').add(invoiceData).then(invoiceRef=>{
+    console.log('Added invoice', invoiceRef.id);
+    return invoiceRef.id;
+  }).catch((error)=>{
+    console.log('Error', error.message);
+    return Promise.resolve();
+  });
 });

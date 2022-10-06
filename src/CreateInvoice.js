@@ -298,6 +298,8 @@ var ismobile = window.innerWidth<=550?true:false;
       checked:false,
       refSource: null,
       mcId: null,
+      paymentType:'Cash',
+      paymentStatus:'PAID',
 
       mainImgUrl:null,
       bottomImgUrl:null,
@@ -373,12 +375,12 @@ var ismobile = window.innerWidth<=550?true:false;
         const currentUser = this.props.currentUser;
         const roles = currentUser && currentUser.get('roles');
         const selectedUser = this.props.selectedUser;
-        console.log('currentUser: ', currentUser);
-        console.log('selectedUser: ', selectedUser);
+        // console.log('currentUser: ', currentUser);
+        // console.log('selectedUser: ', selectedUser);
         // const selectedUserId = (this.props && this.props.match && this.props.match.params && this.props.match.params.userId) || (currentUser && currentUser.get('id'));
         const selectedUserId = (this.props && this.props.match && this.props.match.params);
-        console.log('selectedUserId: ', selectedUserId);
-        console.log('currentState: ', this.state);
+        // console.log('selectedUserId: ', selectedUserId);
+        // console.log('currentState: ', this.state);
         const {currentSelectedUserId} = this.state;
         //const {currentSelectedRoomId} = this.state;
 
@@ -386,10 +388,10 @@ var ismobile = window.innerWidth<=550?true:false;
         const selectedUserData = users && users.get(currentSelectedUserId);
 
         const {currentSelectedBranchId} = this.state;
-        console.log('currentSelectedBranchId: ', currentSelectedBranchId);
+        // console.log('currentSelectedBranchId: ', currentSelectedBranchId);
 
         const {currentSelectedRoomNumber} = this.state;
-        console.log('currentSelectedRoomNumber: ', currentSelectedRoomNumber);
+        // console.log('currentSelectedRoomNumber: ', currentSelectedRoomNumber);
 
         const {currentSelectedUserDeposit} = this.state;
 
@@ -425,7 +427,7 @@ var ismobile = window.innerWidth<=550?true:false;
         //console.log('selectedRoomPrice: ', selectedRoomPrice);
         //const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedRoomData && selectedRoomData.has('monthlyPrice'))? selectedRoomData.get('monthlyPrice'):'RM650';
         const selectedUserStartDate = this.state.startDate? this.state.startDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? selectedUserData.get('autoMembershipStarts'):'';
-        console.log('selectedUserStartDate: ', selectedUserStartDate);
+        // console.log('selectedUserStartDate: ', selectedUserStartDate);
 
         // var endDate = new Date();
         // endDate.setDate(endDate.get('autoMembershipStarts') + 30);
@@ -438,7 +440,7 @@ var ismobile = window.innerWidth<=550?true:false;
         const selectedUserCRO = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('mcId'):this.state.mcId;
         const selectedCROData = users && users.get(selectedUserCRO);
         //console.log('selectedRoomData: ', selectedRoomData);
-        const selectedUserMcId = (selectedUserData && selectedUserData.has('mcId'))? selectedCROData.get('name'):'';
+        const selectedUserMcId = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('mcId'):null;
         //console.log('selectedUserRoomNumber: ', selectedUserRoomNumber);
 
         // console.log('selectedUserName: ', selectedUserName);
@@ -590,23 +592,65 @@ var ismobile = window.innerWidth<=550?true:false;
                 onChange={this.handleChange('endDate')}
                 required
               />
+               <TextField
+                margin="dense"
+                id="paymentType"
+                label="Cash / online transfer / cash deposit"
+                defaultValue={'Cash'}
+                value={this.state.paymentType}
+                fullWidth
+                onChange={this.handleChange('paymentType')}
+                required
+              />
+               <TextField
+                margin="dense"
+                id="paymentStatus"
+                label="status: PAID/UNPAID"
+                value={this.state.paymentStatus}
+                fullWidth
+                onChange={this.handleChange('paymentStatus')}
+                required
+              />
               <TextField
                 margin="dense"
                 id="mcId"
                 label="Customer's Relation Officer"
                 defaultValue={selectedUserMcId}
-                value={selectedUserMcId}
+                value={(selectedCROData && selectedCROData.has('name'))? selectedCROData.get('name'):''}
                 fullWidth
                 onChange={this.handleChange('mcId')}
                 disabled={true}
                 // required
+              />
+
+              <TextField
+                margin="dense"
+                id="remarks"
+                label="notes/remark"
+                value={this.state.remark}
+                fullWidth
+                onChange={this.handleChange('remark')}
+                required
               />
             
             <StdButton
             text = {'Continue'}
             key = {'continue'}
             onClick={()=>{
-
+              this.props.actions.addInvoiceRental(
+                currentSelectedUserId, 
+                selectedUserCurrentBranch, 
+                selectedUserCurrentRoom, 
+                'Monthly', // hardcode temporary
+                this.state.monthlyDeposit? this.state.monthlyDeposit: selectedUserDeposit,
+                this.state.roomPrice? this.state.roomPrice:selectedRoomPrice,
+                this.state.startDate? this.state.startDate:selectedUserStartDate,
+                this.state.endDate? this.state.endDate:selectedUserEndDate,
+                this.state.mcId? this.state.mcId:selectedUserMcId,
+                this.state.paymentType,
+                this.state.paymentStatus,
+                this.state.remark? this.state.remark:null
+              )
             }}
           />
               

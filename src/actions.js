@@ -3289,23 +3289,28 @@ export function addUsers(users) {
 }
 
 // for user invoice rental
-export function addInvoiceRental (userId, handleResponse){
+// package = 'monthly'/weekly/daily
+export function addInvoiceRental (userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark = null, handleResponse){
   return function action(dispatch, getState) {
     dispatch(setAddingInvoice(true));
     const addInvoiceForRental = firebase.functions().httpsCallable('addInvoiceForRental');
-    return addInvoiceForRental({userId}).then(invoiceRef=>{
+    return addInvoiceForRental({userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
      // console.log('invoiceId: ', invoiceId);
       if(invoiceId){
+        // console.log('invoiceId: ', invoiceId)
         dispatch(getInvoiceAndDataById(invoiceId));
-        handleResponse(invoiceRef.data);
-        const newPath = `/payments/${invoiceId}`;
-        if(getState().router.location.pathname !== newPath){
-          dispatch(push(newPath));
-        }
+        // handleResponse(invoiceRef.data);
+        // const newPath = `/payments/${invoiceId}`;
+        // if(getState().router.location.pathname !== newPath){
+        //   dispatch(push(newPath));
+        // }
+        dispatch(showMessage('INVOICE CREATED'));
+        dispatch(viewPeople());
       }
       dispatch(setAddingInvoice(false));
     }).catch(error=>{
+      console.log('error adding invoice');
       dispatch(setAddingInvoice(false));
     });
   }
