@@ -4,6 +4,7 @@ const functions = require("firebase-functions");
 
 // The Firebase Admin SDK to access Firestore.
 const admin = require("firebase-admin");
+const moment = require("moment");
 admin.initializeApp();
 
 const timestamp = admin.firestore.FieldValue.serverTimestamp();
@@ -57,6 +58,7 @@ exports.addInvoiceForRental = functions.https.onCall((data, context) => {
   const mcId = data.mcId; 
   const paymentType = data.paymentType? data.paymentType:'CASH';
   const paymentStatus = data.paymentStatus? data.paymentStatus:'PAID'; 
+  const paid = data.paymentStatus && data.paymentStatus === 'PAID'? true:false;
   const remark = data.remark;
 
   if (!userId || !branchId || !roomId || !packages || !monthlyDeposit || !roomPrice || !startDate || !endDate || !mcId || !paymentType || !paymentStatus){
@@ -67,7 +69,11 @@ exports.addInvoiceForRental = functions.https.onCall((data, context) => {
   console.log('adding rental invoice....');
   const invoiceData = {
     createdAt:timestamp,
-    userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark
+    userId, branchId, roomId, packages, monthlyDeposit, roomPrice, 
+    startDate: startDate? moment(startDate).tz('Asia/Kuala_Lumpur').toDate():null,
+    endDate: endDate? moment(endDate).tz('Asia/Kuala_Lumpur').toDate():null, 
+    mcId, paymentType, paymentStatus, remark,
+    imgURL:data.imgURL? data.imgURL:null, paid
   };
 
   return admin.firestore().collection('invoices').add(invoiceData).then(invoiceRef=>{

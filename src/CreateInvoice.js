@@ -286,7 +286,7 @@ var ismobile = window.innerWidth<=550?true:false;
       currentBranch: '',
       currentRoomId: '',
       package: '',
-      deposit: '',
+      monthlyDeposit: null,
       roomPrice: '',
       startDate: '',
       endDate: '',
@@ -393,8 +393,6 @@ var ismobile = window.innerWidth<=550?true:false;
         const {currentSelectedRoomNumber} = this.state;
         // console.log('currentSelectedRoomNumber: ', currentSelectedRoomNumber);
 
-        const {currentSelectedUserDeposit} = this.state;
-
         const branch = this.props.branch || null;
         const selectedUserCurrentBranch = (selectedUserData && selectedUserData.has('currentBranch'))? selectedUserData.get('currentBranch'):this.state.branch;
         const selectedBranchData = branch && branch.get(selectedUserCurrentBranch);
@@ -409,7 +407,7 @@ var ismobile = window.innerWidth<=550?true:false;
         const selectedUserRoomNumber = (selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('roomNumber'):'';
         //console.log('selectedUserRoomNumber: ', selectedUserRoomNumber);
 
-        const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('monthlyDeposit'):'';
+        const selectedUserDeposit = this.state.monthlyDeposit? this.state.monthlyDeposit:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.has('monthlyDeposit')? selectedRoomData.get('monthlyDeposit'):'':'';
        // console.log('selectedUserDeposit: ', selectedUserDeposit);
 
         //const selectedCurrentRoomNumber = rooms && rooms.get(currentSelectedRoomNumber);
@@ -553,7 +551,7 @@ var ismobile = window.innerWidth<=550?true:false;
                 margin="dense"
                 id="deposit"
                 label="Deposit"
-                defaultValue={selectedUserDeposit}
+                // defaultValue={selectedUserDeposit}
                 value={selectedUserDeposit}
                 fullWidth
                 onChange={this.handleChange('monthlyDeposit')}
