@@ -85,6 +85,7 @@ exports.addInvoiceForRental = functions.https.onCall((data, context) => {
     endDate: endDate? moment(endDate).tz('Asia/Kuala_Lumpur').toDate():null, 
     mcId, paymentType, paymentStatus, remark,
     imgURL:data.imgURL? data.imgURL:null, paid, totalPrice,
+    imgPath: data.imgPath? data.imgPath:null
     // type:'', todo: type = firstTime Invoice, nextCycle, etc
   };
 
