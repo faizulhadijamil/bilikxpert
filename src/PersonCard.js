@@ -678,18 +678,6 @@ class PersonCard extends React.Component {
     window.scrollTo(0, 0);
   }
 
-  handleClickPaymentHistory = () => {
-    this.setState({
-      paymentHistoryOpen: !this.state.paymentHistoryOpen
-    });
-  };
-
-  handleClickVisitHistory = () => {
-    this.setState({
-      visitHistoryOpen: !this.state.visitHistoryOpen
-    });
-  };
-
   handleClickManage = () => {
     this.setState({
       manageOpen: !this.state.manageOpen
@@ -736,164 +724,6 @@ class PersonCard extends React.Component {
         </DialogActions>
       </Dialog>
     )
-  }
-
-  renderFreezeDialog(selectedUserName, selectedUserNextBilling){
-    const {classes} = this.props;
-    const user = this.props.currentUser;
-    const roles = user && user.get('roles');
-    const currentUserId = user && user.get('id');
-    const currentUserEmail = user && user.get('email');
-    const isSuperUser = roles && roles.get('superUser') === true;
-    // let showBuyFreezeBtn = false;
-    var {showBuyFreezeBtn} = this.state;
-
-    // console.log('currentUserId: ', currentUserEmail);
-    
-    const userFreeze = this.props.userFreeze||null;
-    // console.log('userFreeze: ', userFreeze);
-    // free freeze = 3 times only, 3 month specialFreeze (CV19 PKP)
-    // freeze per year = 3
-    var countFreeFreeze = isSuperUser? 12:3;
-    userFreeze && userFreeze.forEach((freezePayment)=>{
-      const source = freezePayment.get('source')||null;
-      const freezeFor = freezePayment.get('freezeFor')||null;
-      const freezeEnd = freezePayment.get('freezeEnd')||null;
-      const freezeType = freezePayment.get('freezeType')||null;
-
-      // hardcode for 2020 first
-      // console.log('freezeForYear: ', freezeFor && moment(getTheDate(freezeFor)).format('YYYY'))
-      // console.log('freezePayment.source: ', source);
-      if (source === 'freeze' && freezeFor && (moment(getTheDate(freezeFor)).format('YYYY')==='2022') && !freezeType){
-        countFreeFreeze -= 1;
-      }
-    });
-
-    // console.log('countFreeFreeze: ', countFreeFreeze);
-
-    var freezeOptions = [];
-
-    for (var i = 1; i <= countFreeFreeze; i++){
-      freezeOptions.push(<option key={`${i}monthFree`} value={`${i}`}>{`${i} month (FREE)`}</option>,)
-    }
-    // add buy option at the end
-    freezeOptions.push(<option key={'1monthPay'} value={'50'}>{'1 month (RM50)'}</option>);
-
-    if (countFreeFreeze <= 0){
-      freezeOptions = [<option key={'1monthPay'} value={'50'}>{'1 month (RM50)'}</option>];
-      //.log('show buy freeze button')
-      // showAddFreezeBtn = true;
-      showBuyFreezeBtn = true;
-      // this.state.showBuyFreezeBtn = true;
-    }
-
-    // freezeOptions.push(<option key={'1monthPay'} value={'50'}>{'1 month (RM50)'}</option>);
-    // var freezeOptions = [
-    //   <option key={'1monthFree'} value={'1'}>{'1 month (FREE)'}</option>,
-    //   <option key={'2monthFree'} value={'2'}>{'2 months (FREE)'}</option>,
-    //   <option key={'3monthFree'} value={'3'}>{'3 months (FREE)'}</option>,
-    //   <option key={'1monthPay'} value={'50'}>{'1 month (RM50)'}</option>
-    // ];
-
-    // if (isSuperUser){
-    //   freezeOptions = [
-    //     <option key={'2weeksFree'} value={'0.5'}>{'half month (special)'}</option>,
-    //     <option key={'1monthFree'} value={'1'}>{'1 month (FREE)'}</option>,
-    //     <option key={'2monthFree'} value={'2'}>{'2 months (FREE)'}</option>,
-    //     <option key={'3monthFree'} value={'3'}>{'3 months (FREE)'}</option>,
-    //     <option key={'1monthPay'} value={'50'}>{'1 month (RM50)'}</option>
-    //   ];
-    // }
-
-    return(
-      <Dialog key={'freezeDialog'} open={this.state.freezeDialogOpen} onClose={this.handleClose}>
-        <DialogContent>
-          <DialogTitle style={{textAlign:'center'}}>{selectedUserName}</DialogTitle>
-          <DialogContentText>{'Next Billing : '}{selectedUserNextBilling}</DialogContentText>
-          <DialogContentText>{'Add Freeze'}</DialogContentText>
-          <TextField
-            id="freezeDate"
-            label="Freeze Date"
-            type="date"
-            required
-            margin="dense"
-            fullWidth
-            InputLabelProps={{ shrink: true }}
-            onChange={this.handleAddFreeze('freezeDate')}
-          />
-        {false && <TextField
-          margin="dense"
-          id="freezeMonths"
-          label="Months"
-          type='number'
-          fullWidth
-          required
-          onChange={this.handleAddFreeze('freezeQuantity')}
-          defaultValue={`1`}
-        />}
-        <TextField id="freezeOptions" select
-            defaultValue={(countFreeFreeze<=0)? `50`:`1`}
-            // defaultValue={`1`}
-            label="Freeze Options"
-            margin="dense"
-            fullWidth
-            onChange={this.handleAddFreeze('freezeQuantity')}
-            InputLabelProps={{ shrink: true }}
-            SelectProps={{
-              native: true,
-              MenuProps: {
-                className: classes.menu,
-              },
-            }}
-          >
-            {freezeOptions}
-          </TextField>
-          <DialogActions>
-            <Button 
-              key={'addMonthsFreeze'} 
-              className={classes.bookButton} raised 
-              onClick={()=>this.handleSaveFreeze(false, null, showBuyFreezeBtn)}
-              disabled={!this.state.freezeData}
-              >
-              {showBuyFreezeBtn? 'Buy':'Add Freeze'}
-            </Button>
-            {isSuperUser && <Button 
-              key={'saveEditFreezeMCO'} 
-              className={classes.bookButton} raised 
-              onClick={()=>this.handleSaveFreeze(false, null, false, true)}
-              // disabled={!this.state.freezeData}
-              >
-              {'Add special freeze'}
-            </Button>}
-            {isSuperUser && <Button 
-              key={'saveEditFreezeTerminate'} 
-              className={classes.bookButton} raised 
-              onClick={()=>this.handleSaveFreeze(true)}
-              // disabled={!this.state.freezeData}
-              >
-              {'Add Terminate'}
-            </Button>}
-          </DialogActions>
-          {false && <List component="div" disablePadding>
-            {<UserPayments 
-              userId={this.state.userId} 
-              showFreezesOnly={true} 
-              // open={true}
-              />}
-          </List>}
-            <List component="div" disablePadding>
-              <FreezePayments
-                userId={this.state.userId}
-                executorId = {currentUserId}
-                executorEmail = {currentUserEmail}
-              />
-            </List>
-          <DialogActions>
-          <Button key={'cancel'} onClick={this.handleClose} color="primary">Cancel</Button>
-          </DialogActions>
-        </DialogContent>
-      </Dialog>
-    );
   }
 
   convertRoleToText = (role) => {
@@ -1524,24 +1354,10 @@ class PersonCard extends React.Component {
                         </Collapse>
                       </List>
                     }
-                    {(staffLevel6 && selectedUserId && selectedUserPackageId) &&
+                    {(selectedUserId) &&
                       <UserPayments userId={selectedUserId} />
                     }
                     {selectedUserId && <UserGantner userId={selectedUserId}/>}
-
-                    {false && userVisitItems.length > 0 &&
-                      <List>
-                        <ListItem button onClick={this.handleClickVisitHistory}>
-                          <ListItemText primary={`Visits (${userVisitItems.length})`} />
-                          {this.state.visitHistoryOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                        </ListItem>
-                        <Collapse in={this.state.visitHistoryOpen} timeout="auto" unmountOnExit>
-                          <List component="div" disablePadding>
-                            {userVisitItems}
-                          </List>
-                        </Collapse>
-                      </List>
-                    }
                   {!userData && <BabelLogo />}
                   </CardContent>
                 </Card>
@@ -2419,8 +2235,6 @@ class PersonCard extends React.Component {
             </Button>
             </DialogActions>
           </Dialog>
-          {this.renderFreezeDialog(selectedUserName, selectedUserNextBilling)}
-        
           {this.renderErrorDialog()}
           {(!this.props.addHidden && (isAdmin || isCRO)) && false && 
             <Button fab className={classes.fab} color='primary' onClick={()=>this.handleEdit()}>

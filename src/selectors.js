@@ -2110,42 +2110,11 @@ function createSecondaryText (paymentSource, theDate, paymentType, cardSummary, 
 
   // console.log('freezeTypeText: ', freezeTypeText);
   // console.log('referredUserTxt: ', referredUserTxt);
-  if (paymentSource === 'freezeTerminated'){
-    secondaryText = `(Terminated)`;
+  console.log('paymentSource: ', paymentSource);
+  if (paymentSource){
+    secondaryText = `${paymentSource} ${thePrice} Paid on ${dateFormat} ${theTxt}`;
   }
-  else if (paymentSource === 'freeze' && freezeTypeText && freezeTypeText.includes('specialFreeze')){
-    secondaryText = `(Special Freeze) on ${dateFormat}`;
-  }
-  else if (paymentSource === 'freeze' && freezeTypeText === null){
-    secondaryText = `(Freeze${cardText}) ${thePrice} on ${dateFormat}`;
-  }
-  else if (paymentSource === 'vend'){
-    if (thePrice === 0 || parseInt(thePrice)===0){
-      secondaryText = `(Free) on ${dateFormat}}`
-    }
-    else{
-      secondaryText = `(Vend${paymentText}) ${thePrice} Paid on ${dateFormat} ${theTxt}`
-    }
-  }else if (paymentSource === 'pbonline'){
-    secondaryText = `(pbonline) ${thePrice} Paid on ${dateFormat}}`
-  }else if (paymentSource ==='adyen'){
-    
-    secondaryText = `(adyen${cardText}${paymentText}) ${thePrice} Paid on ${dateFormat}`
-  }else if (paymentSource === 'join'){
-    secondaryText = `(Free) Joined on ${dateFormat}`
-  }else if (paymentSource === 'refer'){
-    secondaryText = `(Free) Referred ${referredUserTxt} on ${dateFormat}`
-  }else if (paymentSource === 'luckyDraw'){
-    secondaryText = `(Free) Won lucky draw on ${dateFormat}`
-  }else if (paymentSource === 'promo'){
-    secondaryText = `(Free) Won promo on ${dateFormat}`
-  }else if (paymentSource === 'free'){
-    secondaryText = `(Free) on ${dateFormat}`
-  }else if (paymentSource === 'complimentary'){
-    secondaryText = `(Free) Complimentary on ${dateFormat}`
-  }else if (paymentSource === 'jfr'){
-    secondaryText = `(Free) Joining Fee Rebate on ${dateFormat}`
-  }else{
+  else{
     secondaryText = `Unpaid`;
   }
   return secondaryText;
@@ -2237,10 +2206,9 @@ const getSelectedUserPaymentItems = createSelector(
             referredUser: referredUserName
           });
         }
-        else if (((paymentSource === 'vend') || ((paymentSource === 'adyen') && ((price!="0") || (price!=0))) || (paymentSource==='pbonline'))
-        && (paymentStatus === 'CLOSED') && (type === 'membership')){
+        else if (paymentStatus === 'CLOSED'){
           // check if the payment is yearly or monthly via the renewalTerm.
-          var renewalTerm = v.get('renewalTerm')? v.get('renewalTerm'):null;
+          var renewalTerm = v.get('renewalTerm')? v.get('renewalTerm'):'month';
           if (renewalTerm && (renewalTerm === 'year' || renewalTerm === 'yearly')){
             combinedVendYear.push({
               date:paymentCreatedDate
@@ -2322,6 +2290,14 @@ const getSelectedUserPaymentItems = createSelector(
               //   combinedVendMth[m].cardSummary = `${cardSummary} ${cardExpired}`;
               // }
             }
+          }
+          else{
+            combinedVendMth.push({
+              date:moment(paymentCreatedDate).add(m, 'months'), 
+              paymentDate:paymentCreatedDate,
+              type: paymentSource,
+              price, paymentType
+            });
           }
         }
       });
@@ -2456,7 +2432,7 @@ const getSelectedUserPaymentItems = createSelector(
         else{
           combinedData.push({
             date:x.date,
-          
+            type:'CASH'
             // bgroundColor: combinedData.length>(initialMonthsDiff)? "#20BF55":null
           })
         }
@@ -2473,8 +2449,8 @@ const getSelectedUserPaymentItems = createSelector(
           const cardSummary = combinedData[indexx].cardSummary? combinedData[indexx].cardSummary:null;
           const cardExpired = combinedData[indexx].cardExpired? combinedData[indexx].cardExpired:null;
           const freezeTypeText = combinedData[indexx].freezeType? combinedData[indexx].freezeType:null;
-          // console.log('freezeTypeText: ', freezeTypeText);
-          secondaryText = createSecondaryText(combinedData[indexx].type, paymentDate, paymentType, cardSummary, cardExpired, visitText, combinedData[indexx].price, referredUserTxt, freezeCount, freezeTypeText);
+          console.log('combinedData[indexx].paymentType: ', combinedData[indexx]);
+          secondaryText = createSecondaryText(combinedData[indexx].paymentType, paymentDate, paymentType, cardSummary, cardExpired, visitText, combinedData[indexx].price, referredUserTxt, freezeCount, freezeTypeText);
           combinedItems[indexx].secondaryText = secondaryText;
           combinedItems[indexx].primaryText = `${combinedItems[indexx].effectiveDate.format('D MMM')} - ${combinedItems[indexx].effectiveDate.add(1, 'month').subtract(1, 'days').format('D MMM YYYY')}`
           combinedItems[indexx].bgroundColor = combinedData[indexx].bgroundColor? combinedData[indexx].bgroundColor : null;
