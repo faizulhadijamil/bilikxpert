@@ -294,6 +294,10 @@ var ismobile = window.innerWidth<=550?true:false;
       icnumber: '',
       className: '',
       classDate: '',
+      image: null,
+      imagePath:null,
+      invoice:null,
+      addUserInvoice:null,
       dialogOpen: false,
       checked:false,
       refSource: null,
@@ -323,6 +327,7 @@ var ismobile = window.innerWidth<=550?true:false;
             this.setState({currentSelectedUserId:pathStringSplit[2]});
         }
     }
+
   //   componentWillMount() {
   //     const pathname = this.props.location && this.props.location.pathname;
   //     console.log('pathname: ', pathname);
@@ -339,6 +344,15 @@ var ismobile = window.innerWidth<=550?true:false;
 
     shouldComponentUpdate(nextProps, nextState) {
       if (this.props !== nextProps || this.state !== nextState) {
+        if (this.props.uploadedImageURL || this.props.uploadedImagePath || this.props.addUserInvoice) {
+          var updatedState = {};
+          updatedState.image = this.props.uploadedImageURL;
+          updatedState.imagePath = this.props.uploadedImagePath;
+          updatedState.invoice = this.props.addUserInvoice;
+          updatedState.completeRegistration = true;
+          this.setState({ ...updatedState })
+          this.props.actions.setUploadedImage(null, null);
+        }
         return true;
       }
       return false;
@@ -349,20 +363,53 @@ var ismobile = window.innerWidth<=550?true:false;
     handleChange = name => event => {
       var updatedState = {};
       var value = event.target.value;
-      if(name === 'quantity' && value < 1){
+      if (name === 'image') {
+
+        const imageFile = event.target.files[0];
+        if (imageFile) {
+          // console.log('imageFile: ', imageFile);
+          this.props.actions.uploadInvoiceImage(imageFile, (imageURL, imagePath, addUserInvoice) => {
+            if (imageURL) {
+              console.log('imageURL: ', imageURL);
+              console.log('imagePath: ', imagePath);
+              console.log('addUserInvoice: ', addUserInvoice);
+
+              updatedState.image = imageURL;
+              updatedState.imagePath = imagePath;
+              updatedState.invoice = addUserInvoice;
+              updatedState.completeRegistration = true;
+            }
+            this.setState({ ...updatedState});
+          });
+        }
+      }
+      else if(name === 'quantity' && value < 1){
         value = 1;
       }else if(name === 'checked'){
         value = event.target.checked;
       }
-      // else if (name === 'checkedPromo'){
-      //   value = event.target.checked;
-      //   //console.log('thecheckedValue: ', value);
-      // }
+   
       updatedState[name] = value;
       this.setState({ ...updatedState
       });
     }
 
+    handleCompleteSignUp = () => {
+      if (this.props.currentUser && this.props.currentUser.get('id')) {
+        //console.log('savingData');
+        this.props.actions.saveUserData(this.props.currentUser.get('id'), {
+          image: this.state.image,
+          uploadImage: this.state.uploadImage,
+          imagePath: this.state.imagePath,
+          addUserInvoice: this.state.uploadInvoiceImage
+        });
+      } else {
+        // every new registration will have to key in too
+        this.props.actions.signUp(this.state.email, this.state.password, this.state.name, this.state.phone, this.state.mcId, this.state.refSource, this.state.image, this.state.imagePath, this.state.uploadImage, this.state.uploadInvoiceImage, this.state.postcode, true);
+      }
+    }
+
+    
     scrollTo(number){
         window.scrollTo({
             top: number,
@@ -443,29 +490,39 @@ var ismobile = window.innerWidth<=550?true:false;
 
         // console.log('selectedUserName: ', selectedUserName);
         // console.log('selectedUserPhone: ', selectedUserPhone);
-        var editUserImage = editUserAvatar && editUserAvatar.has('image') ? editUserAvatar.get('image') : null;
-        if (this.state.editUserData && this.state.editUserData.image) {
-          editUserImage = this.state.editUserData.image;
+        var addUserInvoice = editUserInvoice && editUserInvoice.has('image') ? editUserInvoice.get('image') : null;
+        var editUserInvoice = <PhotoCameraIcon style={{width:64, height:64}} />;
+        if (addUserInvoice) {
+          editUserInvoice = <Avatar style={{width:64, height:64, marginLeft:'auto', marginRight:'auto'}} src={addUserInvoice} />;
         }
-        var editUserAvatar = <PhotoCameraIcon style={{width:64, height:64}} />;
-        if (editUserImage) {
-          editUserAvatar = <Avatar style={{width:64, height:64, marginLeft:'auto', marginRight:'auto'}} src={editUserImage} />;
+        
+        const image = this.state.image;
+        var editUserInvoice = <PhotoCameraIcon style={{width:128, height:128}} />;
+        if (image) {
+          addUserInvoice = <Avatar style={{width:128, height:128, marginLeft:'auto', marginRight:'auto'}} src={image} />;
         }
+        
+ console.log('this.props.isUploadingImage: ', this.props.isUploadingImage)
 
-      return (
-        <div className={classes.container}>
+        return (
+            <div className={classes.container}>
             <Card className={classes.content} elevation={0}>
             <CardMedia
                 className={classes.media}
                 image={require('./assets/bilikxpert_logos_black.png')}
             />
-            <div>
+           <div>
 
-            <div>
-            {this.state.imageURLToUpload}
+          <Typography type="display1" component="h1" color="primary" style={{textAlign:'center', marginBottom:32}}>
+            Welcome to BilikXpert Invoice
+          </Typography>
+
+          <div>
+          {this.state.imageURLToUpload}
+            {this.state.addUserInvoice}
             <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
               <IconButton color="primary" component="span" style={{marginTop:32, marginBottom:48}} disabled={this.props.isUploadingImage} onClick={()=>this.props.actions.useNativeCamera()}>
-                {editUserAvatar}
+                {addUserInvoice}
               </IconButton>
             </div>
             <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
@@ -480,6 +537,8 @@ var ismobile = window.innerWidth<=550?true:false;
               </label>
             </div>
           </div>
+         
+
             <TextField
                 margin="dense"
                 id="email"
@@ -635,6 +694,7 @@ var ismobile = window.innerWidth<=550?true:false;
             text = {'Continue'}
             key = {'continue'}
             onClick={()=>{
+              //console.log('image:', this.state)
               this.props.actions.addInvoiceRental(
                 currentSelectedUserId, 
                 selectedUserCurrentBranch, 
@@ -647,8 +707,11 @@ var ismobile = window.innerWidth<=550?true:false;
                 this.state.mcId? this.state.mcId:selectedUserMcId,
                 this.state.paymentType,
                 this.state.paymentStatus,
-                this.state.remark? this.state.remark:null
+                this.state.remark? this.state.remark:null,
+                this.state.image, this.state.imagePath
+
               )
+              
             }}
           />
               
@@ -657,8 +720,8 @@ var ismobile = window.innerWidth<=550?true:false;
             <BabelLogo hideLogo={true}/>
         </div>
 
-
-      );
+           
+        );
       
     }
   }
@@ -689,7 +752,11 @@ var ismobile = window.innerWidth<=550?true:false;
         staff: getStaff(state, props),
         users: getUsers(state, props),
         branch: getBranch(state, props),
-        rooms: getRooms(state, props)
+        rooms: getRooms(state, props),
+        isUploadingImage: state && state.state && state.state.get('isUploadingImage') ? true : false,
+        uploadedImageURL: state && state.state && state.state.get('uploadedImageURL') ? state.state.get('uploadedImageURL') : null,
+        uploadedImagePath: state && state.state && state.state.get('uploadedImagePath') ? state.state.get('uploadedImagePath') : null,
+        uploadedAddUserInvoice: state && state.state && state.state.get('addUserInvoice') ? state.state.get('addUserInvoice') : null,
       }
     }
     return mapStateToProps

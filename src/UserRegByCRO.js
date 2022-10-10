@@ -865,7 +865,7 @@ class UserRegByCRO extends React.Component {
 
       //console.log('registartion state: ', this.state);
 
-      // console.log('isNative: ', this.props.isNative);
+       //console.log('this.state.image: ', this.state.image);
       
       userItem = (
         <div>
@@ -934,7 +934,8 @@ class UserRegByCRO extends React.Component {
           (mcImage ? (<Avatar src={mcImage} />) : (<Avatar>{mcName.charAt(0).toUpperCase()}</Avatar>)) :
           null;
 
-         // console.log('register', this.state.continueRegistration);
+          //console.log('this.state.image: ', this.state.image);
+          console.log('this.props.isUploadingImage: ', this.props.isUploadingImage)
 
       userItem = (
         <div>

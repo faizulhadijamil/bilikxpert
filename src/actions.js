@@ -932,6 +932,44 @@ export function uploadImage(imageFile, handleUpload){
   }
 }
 
+export function uploadInvoiceImage(imageFile,handleUpload){
+  return function action(dispatch, getState) {
+    dispatch(setUploadingImage(true));
+
+    const storageRef = firebase.storage().ref();
+    var imagesRef = storageRef.child('resits');
+    var imageRef = imagesRef.child(firestore.collection("invoices").doc().id);
+    var imagePath = null;
+
+    var uploadPromise = null;
+    if('base64' in imageFile){
+      const base64 = `data:image/jpeg;base64, ${imageFile.base64}`;
+      uploadPromise = imageRef.putString(base64, 'data_url');
+    }else{
+      uploadPromise = imageRef.put(imageFile);
+    }
+
+    return uploadPromise.then( snapshot => {
+      dispatch(setUploadingImage(false));
+      imagePath = snapshot.ref.fullPath;
+      return snapshot.ref.getDownloadURL();
+    }).then(url=>{
+      if(handleUpload){
+        handleUpload(url, imagePath);
+      }else{
+        dispatch(setUploadedImage(url, imagePath));
+      }
+      dispatch(setUploadingImage(false));
+      return Promise.resolve();
+    }).catch((error)=>{
+      alert(error.message);
+      dispatch(showMessage(error.message))
+      dispatch(setUploadingImage(false));
+      return Promise.resolve();
+    });
+  }
+}
+
 export function uploadClassImage(imageFile, handleUpload){
   return function action(dispatch, getState) {
     const storageRef = firebase.storage().ref();
@@ -3290,11 +3328,11 @@ export function addUsers(users) {
 
 // for user invoice rental
 // package = 'monthly'/weekly/daily
-export function addInvoiceRental (userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark = null, handleResponse){
+export function addInvoiceRental (userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark = null, imgURL, imgPath,  handleResponse){
   return function action(dispatch, getState) {
     dispatch(setAddingInvoice(true));
     const addInvoiceForRental = firebase.functions().httpsCallable('addInvoiceForRental');
-    return addInvoiceForRental({userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark}).then(invoiceRef=>{
+    return addInvoiceForRental({userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark, imgURL, imgPath}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
      // console.log('invoiceId: ', invoiceId);
       if(invoiceId){

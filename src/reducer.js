@@ -216,6 +216,7 @@ export default function(state = initialState, action) {
     }
     case 'SET_UPLOADING_IMAGE':
     {
+      console.log('action.uploading:', action)
       if(action.uploading){
         return state.set('isUploadingImage', true);
       }else{
