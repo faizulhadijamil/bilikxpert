@@ -602,7 +602,8 @@ const filterByReferrals = (users, paidUser) => {
     // hardcode first
     const createdAtStartDate = moment('20200801');
     const createdAtEndDate = moment('20200730');
-    const theValidDate = moment(createdAt).isBetween(createdAtStartDate, createdAtEndDate)||null;
+    const createdAtTransDate = moment('20200801');
+    const theValidDate = moment(createdAt).isBetween(createdAtStartDate, createdAtEndDate,createdAtTransDate)||null;
     
     if(userId && (source === 'refer') && (type === 'membership')){
       // console.log('Thesource: ', source);
@@ -629,7 +630,8 @@ const filterByPayments = (users, paidUser) => {
     // hardcode first
     const createdAtStartDate = moment('20180801');
     const createdAtEndDate = moment('20190730');
-    const theValidDate = moment(createdAt).isBetween(createdAtStartDate, createdAtEndDate)||null;
+    const createdAtTransDate = moment('20180801');
+    const theValidDate = moment(createdAt).isBetween(createdAtStartDate, createdAtEndDate,createdAtTransDate)||null;
     
     if(userId && (status === 'CLOSED')){
       return true;

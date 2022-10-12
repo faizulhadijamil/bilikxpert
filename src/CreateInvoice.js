@@ -290,6 +290,7 @@ var ismobile = window.innerWidth<=550?true:false;
       roomPrice: '',
       startDate: '',
       endDate: '',
+      transDate:null,
       mcId:null,
       icnumber: '',
       className: '',
@@ -477,7 +478,9 @@ var ismobile = window.innerWidth<=550?true:false;
         // var endDate = new Date();
         // endDate.setDate(endDate.get('autoMembershipStarts') + 30);
         // const selectedUserEndDate = this.state.endDate? this.state.endDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? new Date((selectedUserData.get('autoMembershipStarts'))).getMonth()+1:null;
+        
         const selectedUserEndDate = this.state.endDate? this.state.endDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYY-MM-DD'):moment().format('YYYY-MM-DD');
+        
         //console.log('autoMembershipStarts: ', selectedUserData && selectedUserData.has('autoMembershipStarts') && moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYYMMDD'))
         //const selectedUserCRO = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('name'):this.state.mcId;
         //console.log('selectedUserCRO: ', selectedUserCRO);
@@ -503,6 +506,8 @@ var ismobile = window.innerWidth<=550?true:false;
         }
         
  console.log('this.props.isUploadingImage: ', this.props.isUploadingImage)
+
+ const {transDate} = this.state;
 
         return (
             <div className={classes.container}>
@@ -649,6 +654,17 @@ var ismobile = window.innerWidth<=550?true:false;
                 onChange={this.handleChange('endDate')}
                 required
               />
+                <TextField
+                margin="dense"
+                id="transDate"
+                label="Transaction Date"
+                type="date"
+                defaultValue={transDate}
+                value={transDate}
+                fullWidth
+                onChange={this.handleChange('transDate')}
+                required
+              />
                <TextField
                 margin="dense"
                 id="paymentType"
@@ -704,6 +720,7 @@ var ismobile = window.innerWidth<=550?true:false;
                 this.state.roomPrice? this.state.roomPrice:selectedRoomPrice,
                 this.state.startDate? this.state.startDate:selectedUserStartDate,
                 this.state.endDate? this.state.endDate:selectedUserEndDate,
+                this.state.transDate,
                 this.state.mcId? this.state.mcId:selectedUserMcId,
                 this.state.paymentType,
                 this.state.paymentStatus,

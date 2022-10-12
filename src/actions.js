@@ -1241,10 +1241,10 @@ export function saveClassData(classId, classData){
   }
 }
 
-export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, endDate, duration){
+export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, endDate, transDate, duration){
   return function action(dispatch, getState) {
 
-    if (classId && daysOfWeek && daysOfWeek.length > 0 && trainerId && trainerId.length > 0 && time && time.length === 5 && startDate && startDate.length === 10 && endDate && endDate.length === 10 && duration > 0){
+    if (classId && daysOfWeek && daysOfWeek.length > 0 && trainerId && trainerId.length > 0 && time && time.length === 5 && startDate && startDate.length === 10 && endDate && endDate.length === 10 && transDate && transDate.length === 10 && duration > 0){
       dispatch(showMessage("Scheduling class..."));
      // console.log('Scheduling class...');
      //console.log('daysOfWeek: ', daysOfWeek);
@@ -1255,6 +1255,7 @@ export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, en
 
       const startMoment = moment(startDate).toDate();
       const endMoment = moment(endDate).hours(23).minutes(59).seconds(59).toDate();
+      const transMoment = moment(transDate).toDate();
 
       const timeParts = time.split(':');
       const hour = parseInt(timeParts[0]) || 0;
@@ -1276,6 +1277,8 @@ export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, en
 
         var startsAtMoment = moment(startExactMoment);
         var endsAtMoment = moment(startExactMoment).add(duration, 'm');
+        var transAtMoment = moment(startExactMoment);
+
       //  console.log('endsAtMoment: ', endsAtMoment);
        // console.log('endMoment: ', endMoment);
         while (endsAtMoment.valueOf() < endMoment.valueOf()) {
@@ -1283,6 +1286,10 @@ export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, en
           sessions.push({startsAt:startsAtMoment.toDate(), endsAt:endsAtMoment.toDate()});
           startsAtMoment.add(7, 'd');
           endsAtMoment = moment(startsAtMoment).add(duration, 'm');
+        }
+
+        if(startExactMoment.valueOf() < transMoment.valueOf()){
+          startExactMoment.add(7, 'd');
         }
 
       });
@@ -1296,7 +1303,7 @@ export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, en
         //add schedule
         const newScheduleRef = firestore.collection("schedules").doc();
         batch.set(newScheduleRef,{
-          classId:classId, daysOfWeek:daysOfWeek, trainerId:trainerId, time:time, startDate:startDate, endDate:endDate, duration:duration
+          classId:classId, daysOfWeek:daysOfWeek, trainerId:trainerId, time:time, startDate:startDate, endDate:endDate, transDate:transDate,duration:duration
         });
 
         sessions.forEach(session =>{
@@ -3328,11 +3335,11 @@ export function addUsers(users) {
 
 // for user invoice rental
 // package = 'monthly'/weekly/daily
-export function addInvoiceRental (userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark = null, imgURL, imgPath,  handleResponse){
+export function addInvoiceRental (userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, transDate, mcId, paymentType, paymentStatus, remark = null, imgURL, imgPath,  handleResponse){
   return function action(dispatch, getState) {
     dispatch(setAddingInvoice(true));
     const addInvoiceForRental = firebase.functions().httpsCallable('addInvoiceForRental');
-    return addInvoiceForRental({userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark, imgURL, imgPath}).then(invoiceRef=>{
+    return addInvoiceForRental({userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, transDate, mcId, paymentType, paymentStatus, remark, imgURL, imgPath}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
      // console.log('invoiceId: ', invoiceId);
       if(invoiceId){
