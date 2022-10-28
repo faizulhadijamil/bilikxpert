@@ -1,7 +1,7 @@
 
   import {bindActionCreators} from 'redux';
   import {connect} from 'react-redux';
-  import {withStyles, Button, Typography, Card, CardMedia, TextField, CircularProgress, IconButton, Avatar
+  import {withStyles, Button, Typography, Card, CardMedia, TextField, MenuItem, CircularProgress, IconButton, Avatar
   } from '@material-ui/core';
   
   import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -285,7 +285,7 @@ var ismobile = window.innerWidth<=550?true:false;
       phone: '',
       currentBranch: '',
       currentRoomId: '',
-      package: '',
+      package: null,
       monthlyDeposit: null,
       roomPrice: '',
       startDate: '',
@@ -303,8 +303,11 @@ var ismobile = window.innerWidth<=550?true:false;
       checked:false,
       refSource: null,
       mcId: null,
+      package:'Month',
       paymentType:'Cash',
       paymentStatus:'PAID',
+      disableContinueButton:false,
+      showCircularProgress:false,
 
       mainImgUrl:null,
       bottomImgUrl:null,
@@ -395,22 +398,6 @@ var ismobile = window.innerWidth<=550?true:false;
       });
     }
 
-    handleCompleteSignUp = () => {
-      if (this.props.currentUser && this.props.currentUser.get('id')) {
-        //console.log('savingData');
-        this.props.actions.saveUserData(this.props.currentUser.get('id'), {
-          image: this.state.image,
-          uploadImage: this.state.uploadImage,
-          imagePath: this.state.imagePath,
-          addUserInvoice: this.state.uploadInvoiceImage
-        });
-      } else {
-        // every new registration will have to key in too
-        this.props.actions.signUp(this.state.email, this.state.password, this.state.name, this.state.phone, this.state.mcId, this.state.refSource, this.state.image, this.state.imagePath, this.state.uploadImage, this.state.uploadInvoiceImage, this.state.postcode, true);
-      }
-    }
-
-    
     scrollTo(number){
         window.scrollTo({
             top: number,
@@ -418,6 +405,10 @@ var ismobile = window.innerWidth<=550?true:false;
         });
     }
 
+    handleAddInvoice = () => {
+      
+    }
+    
     render() {
         const {classes} = this.props;
         const currentUser = this.props.currentUser;
@@ -466,7 +457,7 @@ var ismobile = window.innerWidth<=550?true:false;
         const selectedUserName = (selectedUserData && selectedUserData.has('name'))? selectedUserData.get('name'):this.state.name;
         const selectedUserPhone = (selectedUserData && selectedUserData.has('phone'))? selectedUserData.get('phone'):this.state.phone;
         
-        const selectedUserPackage = this.state.package? this.state.package:(selectedUserData && selectedUserData.has('package'))? selectedUserData.get('package'):'Monthly';
+        const selectedUserPackage = this.state.package? this.state.package:(selectedUserData && selectedUserData.has('package'))? selectedUserData.get('package'):'';
         
         //  const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedRoomData && selectedRoomData.has('monthlyDeposit'))? selectedRoomData.get('monthlyDeposit'):'';
         const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('monthlyPrice'):'';
@@ -496,18 +487,18 @@ var ismobile = window.innerWidth<=550?true:false;
         var addUserInvoice = editUserInvoice && editUserInvoice.has('image') ? editUserInvoice.get('image') : null;
         var editUserInvoice = <PhotoCameraIcon style={{width:64, height:64}} />;
         if (addUserInvoice) {
-          editUserInvoice = <Avatar style={{width:64, height:64, marginLeft:'auto', marginRight:'auto'}} src={addUserInvoice} />;
+          editUserInvoice = <Avatar variant="square" style={{width:64, height:64, marginLeft:'auto', marginRight:'auto'}} src={addUserInvoice} />;
         }
         
         const image = this.state.image;
         var editUserInvoice = <PhotoCameraIcon style={{width:128, height:128}} />;
         if (image) {
-          addUserInvoice = <Avatar style={{width:128, height:128, marginLeft:'auto', marginRight:'auto'}} src={image} />;
+          addUserInvoice = <Avatar variant="square" style={{width:128, height:128, marginLeft:'auto', marginRight:'auto'}} src={image} />;
         }
         
- console.log('this.props.isUploadingImage: ', this.props.isUploadingImage)
-
- const {transDate} = this.state;
+       //console.log('this.props.isUploadingImage: ', this.props.isUploadingImage)
+        const error = this.handleContinueRegister;
+        const {transDate} = this.state;
 
         return (
             <div className={classes.container}>
@@ -601,7 +592,7 @@ var ismobile = window.innerWidth<=550?true:false;
                 disabled={true}
                 required
               />
-              <TextField
+              {/* <TextField
                 margin="dense"
                 id="package"
                 label="Package"
@@ -610,7 +601,22 @@ var ismobile = window.innerWidth<=550?true:false;
                 fullWidth
                 onChange={this.handleChange('package')}
                 required
-              />
+              /> */}
+
+              <TextField 
+              margin="dense"
+              id="package" 
+               label="Package"
+               value={this.state.package} 
+               defaultValue={'Month'}
+               onChange={this.handleChange('package')}
+               fullWidth
+               select>
+               <MenuItem value="Month">Month</MenuItem>
+               <MenuItem value="Week">Week</MenuItem>
+               <MenuItem value="Day">Day</MenuItem>
+              </TextField>
+
               <TextField
                 margin="dense"
                 id="deposit"
@@ -665,7 +671,7 @@ var ismobile = window.innerWidth<=550?true:false;
                 onChange={this.handleChange('transDate')}
                 required
               />
-               <TextField
+               {/* <TextField
                 margin="dense"
                 id="paymentType"
                 label="Cash / online transfer / cash deposit"
@@ -674,8 +680,22 @@ var ismobile = window.innerWidth<=550?true:false;
                 fullWidth
                 onChange={this.handleChange('paymentType')}
                 required
-              />
-               <TextField
+              /> */}
+              <TextField 
+              margin="dense"
+              id="paymentType" 
+               label="Cash / online transfer / cash deposit"
+               value={this.state.paymentType} 
+               defaultValue={'Cash'}
+               onChange={this.handleChange('paymentType')}
+               fullWidth
+               select>
+               <MenuItem value="Cash">Cash</MenuItem>
+               <MenuItem value="Online Transfer">Online Transfer</MenuItem>
+               <MenuItem value="Cash Deposit">Cash Deposit</MenuItem>
+              </TextField>
+
+               {/* <TextField
                 margin="dense"
                 id="paymentStatus"
                 label="status: PAID/UNPAID"
@@ -683,7 +703,20 @@ var ismobile = window.innerWidth<=550?true:false;
                 fullWidth
                 onChange={this.handleChange('paymentStatus')}
                 required
-              />
+              /> */}
+              <TextField 
+              margin="dense"
+              id="paymentStatus" 
+               label="PAID / UNPAID"
+               value={this.state.paymentStatus} 
+               defaultValue={'paymentStatus'}
+               onChange={this.handleChange('paymentStatus')}
+               fullWidth
+               select>
+               <MenuItem value="Paid">PAID</MenuItem>
+               <MenuItem value="Unpaid">UNPAID</MenuItem>
+              </TextField>
+
               <TextField
                 margin="dense"
                 id="mcId"
@@ -711,25 +744,53 @@ var ismobile = window.innerWidth<=550?true:false;
             key = {'continue'}
             onClick={()=>{
               //console.log('image:', this.state)
-              this.props.actions.addInvoiceRental(
-                currentSelectedUserId, 
-                selectedUserCurrentBranch, 
-                selectedUserCurrentRoom, 
-                'Monthly', // hardcode temporary
-                this.state.monthlyDeposit? this.state.monthlyDeposit: selectedUserDeposit,
-                this.state.roomPrice? this.state.roomPrice:selectedRoomPrice,
-                this.state.startDate? this.state.startDate:selectedUserStartDate,
-                this.state.endDate? this.state.endDate:selectedUserEndDate,
-                this.state.transDate,
-                this.state.mcId? this.state.mcId:selectedUserMcId,
-                this.state.paymentType,
-                this.state.paymentStatus,
-                this.state.remark? this.state.remark:null,
-                this.state.image, this.state.imagePath
+                //console.log('showCircularProgress:', this.state)
 
-              )
-              
+              console.log('handleContinueRegister state: ', this.state);
+              // todo error checking...
+              if (!this.state.paymentStatus){
+                console.log('no payment status');
+                return;
+              }
+              else if (!this.state.transDate){
+                console.log('no transaction date');
+                return;
+              }
+
+              else if (this.state.paymentStatus && this.state.transDate){
+                this.setState({disableContinueButton:true});
+                this.setState({showCircularProgress:true});
+                this.props.actions.addInvoiceRental(
+                  currentSelectedUserId, 
+                  selectedUserCurrentBranch, 
+                  selectedUserCurrentRoom, 
+                  selectedUserPackage, // hardcode temporary
+                  this.state.monthlyDeposit? this.state.monthlyDeposit: selectedUserDeposit,
+                  this.state.roomPrice? this.state.roomPrice:selectedRoomPrice,
+                  this.state.startDate? this.state.startDate:selectedUserStartDate,
+                  this.state.endDate? this.state.endDate:selectedUserEndDate,
+                  this.state.transDate,
+                  this.state.mcId? this.state.mcId:selectedUserMcId,
+                  this.state.paymentType,
+                  this.state.paymentStatus? this.state.paymentStatus.toUpperCase():'UNPAID',
+                  this.state.remark? this.state.remark:null,
+                  this.state.image, this.state.imagePath,
+                  
+                  (response=>{
+                    if (response){
+                      this.setState({disableContinueButton:false});
+                      this.setState({showCircularProgress:false});
+                      
+                    }
+                  })
+  
+                )
+              }
+            
             }}
+            showCircularProgress = {this.state.showCircularProgress}
+            disabled = {this.state.disableContinueButton}
+
           />
               
             </div>

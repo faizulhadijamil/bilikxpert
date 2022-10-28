@@ -1741,7 +1741,7 @@ class PersonCard extends React.Component {
               {!isSelectedUserStaff && <TextField
                 margin="dense"
                 id="name"
-                label="Member Name"
+                label="Customer Name"
                 defaultValue={editUser && editUser.get('name')}
                 required
                 fullWidth

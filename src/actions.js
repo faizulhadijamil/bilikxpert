@@ -3336,6 +3336,7 @@ export function addUsers(users) {
 // for user invoice rental
 // package = 'monthly'/weekly/daily
 export function addInvoiceRental (userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, transDate, mcId, paymentType, paymentStatus, remark = null, imgURL, imgPath,  handleResponse){
+  // console.log('paymentStatus: ', paymentStatus);
   return function action(dispatch, getState) {
     dispatch(setAddingInvoice(true));
     const addInvoiceForRental = firebase.functions().httpsCallable('addInvoiceForRental');
@@ -3345,7 +3346,7 @@ export function addInvoiceRental (userId, branchId, roomId, packages, monthlyDep
       if(invoiceId){
         // console.log('invoiceId: ', invoiceId)
         dispatch(getInvoiceAndDataById(invoiceId));
-        // handleResponse(invoiceRef.data);
+        handleResponse(invoiceRef.data);
         // const newPath = `/payments/${invoiceId}`;
         // if(getState().router.location.pathname !== newPath){
         //   dispatch(push(newPath));
