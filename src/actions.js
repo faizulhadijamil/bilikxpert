@@ -1241,94 +1241,6 @@ export function saveClassData(classId, classData){
   }
 }
 
-export function makeSchedule(classId, daysOfWeek, trainerId, time, startDate, endDate, duration){
-  return function action(dispatch, getState) {
-
-    if (classId && daysOfWeek && daysOfWeek.length > 0 && trainerId && trainerId.length > 0 && time && time.length === 5 && startDate && startDate.length === 10 && endDate && endDate.length === 10 && duration > 0){
-      dispatch(showMessage("Scheduling class..."));
-     // console.log('Scheduling class...');
-     //console.log('daysOfWeek: ', daysOfWeek);
-     // console.log('theTime: ', time);
-     // console.log('startDate: ', startDate);
-     // console.log('endDate: ', endDate);
-     // console.log('duration: ', duration);
-
-      const startMoment = moment(startDate).toDate();
-      const endMoment = moment(endDate).hours(23).minutes(59).seconds(59).toDate();
-
-      const timeParts = time.split(':');
-      const hour = parseInt(timeParts[0]) || 0;
-      const minute = parseInt(timeParts[1]) || 0;
-
-      var sessions = [];
-      daysOfWeek.forEach(day=>{
-      //  console.log('Day',day);
-        var startExactMoment = moment(startMoment).days(day).hours(hour).minutes(minute).seconds(0).milliseconds(0);
-      //  console.log('startExactMoment: ', startExactMoment);
-       // console.log('startMoment: ', startMoment);
-
-        // console.log(startExactMoment.toDate(),
-        //   startExactMoment.valueOf() >= startMoment.valueOf());
-
-        if(startExactMoment.valueOf() < startMoment.valueOf()){
-          startExactMoment.add(7, 'd');
-        }
-
-        var startsAtMoment = moment(startExactMoment);
-        var endsAtMoment = moment(startExactMoment).add(duration, 'm');
-      //  console.log('endsAtMoment: ', endsAtMoment);
-       // console.log('endMoment: ', endMoment);
-        while (endsAtMoment.valueOf() < endMoment.valueOf()) {
-          //add sessions
-          sessions.push({startsAt:startsAtMoment.toDate(), endsAt:endsAtMoment.toDate()});
-          startsAtMoment.add(7, 'd');
-          endsAtMoment = moment(startsAtMoment).add(duration, 'm');
-        }
-
-      });
-
-      //console.log('sessions:', sessions);
-
-      if(sessions.length > 0){
-
-        const batch = firestore.batch();
-
-        //add schedule
-        const newScheduleRef = firestore.collection("schedules").doc();
-        batch.set(newScheduleRef,{
-          classId:classId, daysOfWeek:daysOfWeek, trainerId:trainerId, time:time, startDate:startDate, endDate:endDate, duration:duration
-        });
-
-        sessions.forEach(session =>{
-          const newSessionRef = firestore.collection("sessions").doc();
-
-          batch.set(newSessionRef, {
-            type:'class',
-            classId:classId,
-            startsAt:session.startsAt,
-            endsAt:session.endsAt,
-            trainerId:trainerId,
-            scheduleId:newScheduleRef.id
-          });
-
-        });
-
-        batch.commit().then(function () {
-            // console.log('Written');
-            dispatch(showMessage("Class scheduled!"));
-        }).catch(function(error){
-            dispatch(showMessage(error.message));
-        });
-      }
-      else{
-        dispatch(showMessage("No session!"));
-      }
-    }
-    else{
-      dispatch(showMessage("Class NOT scheduled!"));
-    }
-  }
-}
 
 export function updateSession(sessionId, updates){
   return function action(dispatch, getState) {
@@ -3345,17 +3257,18 @@ export function addUsers(users) {
 
 // for user invoice rental
 // package = 'monthly'/weekly/daily
-export function addInvoiceRental (userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark = null, imgURL, imgPath,  handleResponse){
+export function addInvoiceRental (userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, transDate, mcId, paymentType, paymentStatus, remark = null, imgURL, imgPath,  handleResponse){
+  // console.log('paymentStatus: ', paymentStatus);
   return function action(dispatch, getState) {
     dispatch(setAddingInvoice(true));
     const addInvoiceForRental = firebase.functions().httpsCallable('addInvoiceForRental');
-    return addInvoiceForRental({userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, mcId, paymentType, paymentStatus, remark, imgURL, imgPath}).then(invoiceRef=>{
+    return addInvoiceForRental({userId, branchId, roomId, packages, monthlyDeposit, roomPrice, startDate, endDate, transDate, mcId, paymentType, paymentStatus, remark, imgURL, imgPath}).then(invoiceRef=>{
       const invoiceId = invoiceRef.data;
      // console.log('invoiceId: ', invoiceId);
       if(invoiceId){
         // console.log('invoiceId: ', invoiceId)
         dispatch(getInvoiceAndDataById(invoiceId));
-        // handleResponse(invoiceRef.data);
+        handleResponse(invoiceRef.data);
         // const newPath = `/payments/${invoiceId}`;
         // if(getState().router.location.pathname !== newPath){
         //   dispatch(push(newPath));

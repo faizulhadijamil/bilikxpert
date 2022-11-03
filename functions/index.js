@@ -65,6 +65,7 @@ exports.addInvoiceForRental = functions.https.onCall((data, context) => {
   const roomPrice = data.roomPrice? parseFloat(data.roomPrice):0;
   const startDate = data.startDate; 
   const endDate = data.endDate; 
+  const transDate = data.transDate;
   const mcId = data.mcId; 
   const paymentType = data.paymentType? data.paymentType:'CASH';
   const paymentStatus = data.paymentStatus? data.paymentStatus:'PAID'; 
@@ -72,7 +73,7 @@ exports.addInvoiceForRental = functions.https.onCall((data, context) => {
   const remark = data.remark;
   const totalPrice = (monthlyDeposit+roomPrice).toFixed(2);
 
-  if (!userId || !branchId || !roomId || !packages || !roomPrice || !startDate || !endDate || !mcId || !paymentType || !paymentStatus){
+  if (!userId || !branchId || !roomId || !packages || !roomPrice || !startDate || !endDate || !transDate || !mcId || !paymentType || !paymentStatus){
     console.log('data missing....')
     return Promise.resolve();
   }
@@ -82,7 +83,8 @@ exports.addInvoiceForRental = functions.https.onCall((data, context) => {
     createdAt:timestamp,
     userId, branchId, roomId, packages, monthlyDeposit, roomPrice, 
     startDate: startDate? moment(startDate).tz('Asia/Kuala_Lumpur').toDate():null,
-    endDate: endDate? moment(endDate).tz('Asia/Kuala_Lumpur').toDate():null, 
+    endDate: endDate? moment(endDate).tz('Asia/Kuala_Lumpur').toDate():null,
+    transDate: transDate? moment(transDate).tz('Asia/Kuala_Lumpur').toDate():null, 
     mcId, paymentType, paymentStatus, remark,
     imgURL:data.imgURL? data.imgURL:null, paid, totalPrice,
     imgPath: data.imgPath? data.imgPath:null
@@ -223,6 +225,7 @@ exports.modifyInvoice = functions.firestore
   const roomPrice = afterData.roomPrice || 0;
   const startDate = afterData.startDate;
   const endDate = afterData.endDate;
+  const transDate = afterData.transDate;
   const mcId = afterData.mcId;
   const paymentType = afterData.paymentType;
   const paymentStatus = afterData.paymentStatus; 
@@ -259,7 +262,7 @@ exports.modifyInvoice = functions.firestore
         quantity,
         userId, totalPrice, 
         branchId, roomId, packages, monthlyDeposit, roomPrice,
-        startDate, endDate, mcId, paymentType, paymentStatus, 
+        startDate, endDate, transDate, mcId, paymentType, paymentStatus, 
         remark, imgURL
       });
       // todo:- send receipt to member
