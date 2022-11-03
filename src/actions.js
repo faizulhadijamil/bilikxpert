@@ -256,7 +256,7 @@ export function bootstrap(){
           else if (pathname.indexOf('/renewmembership') !== -1 || pathname.indexOf('/renewmembership/') !== -1){
             //console.log('renewmembership path');
           }
-          else if (pathname.indexOf('/createInvoice') !== -1){
+          else if (pathname.indexOf('/createInvoice') !== -1 || pathname.indexOf('/viewinvoices') !== -1){
             console.log('createInvoice path');
             dispatch(getRooms);
             dispatch(getBranches());
@@ -1072,29 +1072,29 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
       if(Object.keys(userData).includes('tempCardNumber')){
         userData.tempCardAddedAt = timestamp;
       }
-      if(Object.keys(userData).includes('referredByUserId')){
-        if (userData.referredByUserId){
-          paymentRef.add({
-            referredUserId:userId,
-            createdAt:timestamp,
-            source:'refer',
-            totalPrice:0,
-            type:'membership',
-            userId:userData.referredByUserId,
-            referralFromApp:true
-          });
-        }
-        else{
-          // delete the ref
-          paymentRef.where('referredUserId', '==', userId).get().then(function(querySnapshot){
-            querySnapshot.forEach(function(doc){
-              doc.ref.delete().then(function(){
-               // console.log('referral data deleted');
-              });
-            });
-          });
-        }
-      }
+      // if(Object.keys(userData).includes('referredByUserId')){
+      //   if (userData.referredByUserId){
+      //     paymentRef.add({
+      //       referredUserId:userId,
+      //       createdAt:timestamp,
+      //       source:'refer',
+      //       totalPrice:0,
+      //       type:'membership',
+      //       userId:userData.referredByUserId,
+      //       referralFromApp:true
+      //     });
+      //   }
+      //   else{
+      //     // delete the ref
+      //     paymentRef.where('referredUserId', '==', userId).get().then(function(querySnapshot){
+      //       querySnapshot.forEach(function(doc){
+      //         doc.ref.delete().then(function(){
+      //          // console.log('referral data deleted');
+      //         });
+      //       });
+      //     });
+      //   }
+      // }
 
       if(userData.packageId){
         userData.packageLocked = true;
@@ -1117,20 +1117,20 @@ export function saveUserData(userId, userData, BeforeuserData=null, currentLogin
         userData.cancellationCreatedAt = timestamp;
       }
 
-      // console.log('beforeUserData: ', BeforeuserData);
-      // console.log('userData: ', userData);
+      console.log('beforeUserData: ', BeforeuserData);
+      console.log('userData: ', userData);
       return userRef.update({
       ...userData,
       updatedAt:timestamp
       })
       .then(function() {dispatch(showMessage("User updates saved!"))})
       .then(function(){
-        if (BeforeuserData.cancellationDate && !isValidDate(BeforeuserData.cancellationDate)){
-          BeforeuserData.cancellationDate = null; // replace the value so the invalid message will not come out
-        }
-        if (BeforeuserData.membershipStarts && !isValidDate(BeforeuserData.membershipStarts)){
-          BeforeuserData.membershipStarts = null; // replace the value so the invalid message will not come out
-        }
+        // if (BeforeuserData.cancellationDate && !isValidDate(BeforeuserData.cancellationDate)){
+        //   BeforeuserData.cancellationDate = null; // replace the value so the invalid message will not come out
+        // }
+        // if (BeforeuserData.membershipStarts && !isValidDate(BeforeuserData.membershipStarts)){
+        //   BeforeuserData.membershipStarts = null; // replace the value so the invalid message will not come out
+        // }
         const logData = {
           executerId: currentLoginUserId,
           executerEmail: currentLoginUserEmail,
@@ -3290,7 +3290,7 @@ export function setInvoiceNotFound() {
 export function getInvoicesByUserId(userId){
   return function action(dispatch, getState) {
     if(userId && userId.length>0){
-      firestore.collection("invoices").where('userId', '==', userId).where('type', '==', 'membership').where('paid', '==', false).orderBy('createdAt', 'desc').limit(1).get().then(function(querySnapshot) {
+      firestore.collection("invoices").where('userId', '==', userId).where('paid', '==', false).orderBy('createdAt', 'desc').limit(1).get().then(function(querySnapshot) {
         var invoices = {};
         querySnapshot.forEach(function(doc) {
             // doc.data() is never undefined for query doc snapshots
@@ -3299,6 +3299,23 @@ export function getInvoicesByUserId(userId){
             // console.log(doc.id, " => ", doc.data());
         });
         dispatch(setInvoices(invoices));
+      });
+    }
+  }
+}
+
+export function getAllInvoicesByUserId(userId){
+  return function action(dispatch, getState) {
+    if(userId && userId.length>0){
+      firestore.collection("invoices").where('userId', '==', userId).orderBy('createdAt', 'desc').get().then(function(querySnapshot) {
+        var invoices = {};
+        querySnapshot.forEach(function(doc) {
+            // doc.data() is never undefined for query doc snapshots
+            invoices[doc.id] = doc.data();
+            // dispatch(setInvoicesByUserId(doc.id, doc.data().userId));
+            // console.log(doc.id, " => ", doc.data());
+        });
+        dispatch(setInvoicesByUserId(invoices, userId));
       });
     }
   }
@@ -4133,6 +4150,21 @@ export function viewNewInvoice(userId){
   }
 }
 
+// view new invoice
+export function viewInvoices(userId){
+  return function action(dispatch, getState) {
+    const currentUserId = getState().state.getIn(['user', 'id']) || null;
+    const showUserId = userId || currentUserId;
+    if(!showUserId){
+      return;
+    }
+    const newPath = `/viewinvoices/${showUserId}`;
+    if(getState().router.location.pathname !== newPath){
+      dispatch(push(newPath));
+    }
+  }
+}
+
 export function viewPT(){
   return function action(dispatch, getState) {
     const newPath = `/buypt`;
@@ -4338,7 +4370,9 @@ export function verifyAuth(bookingId = null) {
             getState().router.location.pathname.indexOf('referral') === -1 && 
             getState().router.location.pathname.indexOf('CNYangpow') === -1 &&
             getState().router.location.pathname.indexOf('registration') === -1 &&
-            getState().router.location.pathname.indexOf('paymentreport') === -1)
+            getState().router.location.pathname.indexOf('paymentreport') === -1 &&
+            // todo: profile need to add login checking
+            getState().router.location.pathname.indexOf('profile') === -1)
             {
              // console.log('view login page')
               dispatch(viewLogin());
@@ -4421,7 +4455,6 @@ export function verifyAuth(bookingId = null) {
             const packageId = userData.packageId;
             const image = userData.image;
             const pathname = getState().router.location.pathname;
-            // console.log('pathnamefaizul: ', pathname.indexOf('join'));
             // if ((packageId && !image) || (roles && isTrainer)) {
             // if (isStaff && isTrainer) {
             // if (isStaff && !isTrainer){  
@@ -4460,6 +4493,9 @@ export function verifyAuth(bookingId = null) {
             }else if (pathname.indexOf('bfmreport') === 1){
              // console.log('pathname: ', pathname);
               // dispatch(viewNext());
+            }
+            else if (isStaff && pathname.indexOf('profile') === 1){
+              console.log('profile page... ')
             }
             else{
             //  console.log('NEXTTTT');

@@ -201,8 +201,8 @@ class Profile extends React.Component {
     bookingUserId: null,
     bookingDuration:'30',
     freezeDialogOpen : false,
-    freezeData : {}
-    // bookingDate: moment().format('YYYY-MM-DD')
+    freezeData : {},
+    editUserState:false
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -292,6 +292,11 @@ class Profile extends React.Component {
         });
       }
     }else{
+      var value = event.target.value;
+      updatedState[name] = value;
+      this.setState({ ...updatedState });
+    }
+   
       // var bookingDate = this.state.bookingDate;
       // var bookingStart = this.state.bookingStart;
       // var bookingDuration = this.state.bookingDuration;
@@ -309,7 +314,7 @@ class Profile extends React.Component {
       // }
       //
       // this.nearestAvailableSlot(bookingDate, bookingStart, bookingDuration);
-    }
+    // }
   }
 
   handleChangeAvailability = (day, periodIndex, isStart, dayAvailablity) => event => {
@@ -682,9 +687,8 @@ class Profile extends React.Component {
 
 
   render() {
-    const {
-      classes
-    } = this.props;
+    const {classes} = this.props;
+    const {editUserState} = this.state;
 
     const currentUser = this.props.currentUser;
     const roles = currentUser && currentUser.get('roles');
@@ -1038,19 +1042,11 @@ class Profile extends React.Component {
     const selectedBookingUser = selectedBookingUserId && this.props.users && this.props.users.get(selectedBookingUserId)
       ? this.props.users.get(selectedBookingUserId)
       : (selectedBookingUserId && currentUser && currentUser.get('id') && currentUser.get('id') === selectedBookingUserId ? currentUser : null);
-    const selectedBookingUserName = selectedBookingUser && selectedBookingUser.get('name');
-    // booking && console.log(booking.toJS(), selectedBookingUserId, selectedBookingUser);
-    // console.log(bookingId);
-
-    // bookings && console.log(bookings.toJS());
-    // console.log(this.props.state && this.props.state.hasIn(['bookings', 'bookingsById']));
-
-    console.log('canChangeImage:' , canChangeImage);
 
     return (
       <div>
         <MenuAppBar/>
-          {true && <div className={classes.container}>
+          {<div className={classes.container}>
             <Card style={{boxShadow:null, marginLeft:0}} className={classes.card} elevation={0}>
             {true && <CardContent classes={{root:classes.cardRoot}}>
                 {!userData &&
@@ -1071,7 +1067,7 @@ class Profile extends React.Component {
                     {(canChangeImage && this.props.isNative) &&
                       <div>
                         <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
-                          <IconButton color="primary" component="span" style={{marginTop:32, marginBottom:32}} disabled={this.props.isUploadingImage} onClick={()=>this.props.actions.useNativeCamera()}>
+                          <IconButton color="primary" component="span" style={{marginTop:0, marginBottom:0}} disabled={this.props.isUploadingImage} onClick={()=>this.props.actions.useNativeCamera()}>
                             {selectedUserAvatar}
                           </IconButton>
                         </div>
@@ -1084,7 +1080,7 @@ class Profile extends React.Component {
                           </Button>
                         </div>
                         {canSaveImage &&
-                          <div style={{display:'flex', flex:1, marginLeft:32, marginRight:32, justifyContent:'center'}}>
+                          <div style={{display:'flex', flex:1, marginLeft:0, marginRight:0, justifyContent:'center'}}>
                           <Button raised component="span" color='primary' key={'savePhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} onClick={()=>this.props.actions.saveUserData(selectedUserId, {image:this.state.image, imagePath:this.state.imagePath})}>
                             {'Save'}
                           </Button>
@@ -1097,7 +1093,7 @@ class Profile extends React.Component {
                         <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
                         <input accept="image/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} disabled={this.props.isUploadingImage} />
                           <label htmlFor="icon-button-file" >
-                            <IconButton color="primary" component="span" style={{marginTop:32, marginBottom:32}}>
+                            <IconButton color="primary" component="span" style={{marginTop:0, marginBottom:0}}>
                               {selectedUserAvatar}
                             </IconButton>
                           </label>
@@ -1124,22 +1120,11 @@ class Profile extends React.Component {
                         }
                       </div>
                     }
-                    {true && //!isTrainer && hasPackage && //
-                      <div style={{display:'flex', flex:1, marginLeft:32, marginRight:32, justifyContent:'center'}}>
-                        <Button raised component="span" color='primary' key={'ptAvailability'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} onClick={()=>this.handleFreeze(selectedUserId)}>
-                          {'Freeze Membership'}
-                        </Button>
-                      </div>
-                    }
-                    {((isCurrentUser && isTrainer) || (selectedUserIsTrainer && isAdmin)) &&
-                      <div style={{display:'flex', flex:1, marginLeft:32, marginRight:32, justifyContent:'center'}}>
-                        <Button raised component="span" color='primary' key={'ptAvailability'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} onClick={()=>this.handleSchedule()}>
-                          {'PT Availability'}
-                        </Button>
-                      </div>
-                    }
-                    <Typography type="headline" component="h1" color="inherit" style={{textAlign:'center', marginTop:32, color:'white'}}>
+                    <Typography type="headline" component="h1" color="inherit" style={{textAlign:'center', marginTop:0, color:'white'}}>
                       {selectedUserName}
+                    </Typography>
+                    <Typography type="headline" component="h1" color="inherit" style={{textAlign:'center', marginTop:0, color:'white'}}>
+                      {selectedUserEmail}
                     </Typography>
                     {selectedUserMembershipCard &&
                       <Typography type="subheading" component="p" gutterBottom color="primary" style={{textAlign:'center', color:'#fff'}} disabled>
@@ -1147,21 +1132,8 @@ class Profile extends React.Component {
                       </Typography>
                     }
                     {(!isCurrentUser && !selectedUserIsStaff && selectedUserPhone) &&
-                      <Chip onClick={()=>window.open(`tel:${selectedUserPhone}`)} avatar={<Avatar><PhoneIcon color='primary'/></Avatar>} label={`${selectedUserPhone}`} style={{marginTop:16, marginLeft:'auto', marginRight:'auto'}}/>
-                    }
-                    {(!isCurrentUser && !selectedUserIsStaff && selectedUserEmail) &&
-                      <Chip onClick={()=>window.open(`mailto:${selectedUserEmail}`)} avatar={<Avatar><EmailIcon color='primary'/></Avatar>} label={`${selectedUserEmail}`} style={{marginTop:16, marginLeft:'auto', marginRight:'auto'}}/>
-                    }
-                    {selectedUserTrainerTier &&
-                      <Typography type="subheading" component="p" gutterBottom color="primary" style={{textAlign:'center', color:'#fff'}}>
-                        {`Tier ${selectedUserTrainerTier}`}
-                      </Typography>
-                    }
-                    {selectedUserTrainerBio &&
-                      <div className={classes.content}>
-                        <Typography type="subheading" component="p" gutterBottom color="primary" style={{textAlign:'justify', color:'#fff', paddingLeft:16, paddingRight:16}}>
-                          {selectedUserTrainerBio}
-                        </Typography>
+                      <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+                        <Chip onClick={()=>window.open(`tel:${selectedUserPhone}`)} avatar={<Avatar><PhoneIcon color='primary'/></Avatar>} label={`${selectedUserPhone}`} style={{marginTop:16, marginLeft:'auto', marginRight:'auto'}}/>
                       </div>
                     }
                   </div>
@@ -1183,81 +1155,62 @@ class Profile extends React.Component {
                       </Button>
                     } */}
 
-                {(!selectedUserIsTrainer && days.length === 0) &&
-                  <GridList key={'timelineGrid'} className={classes.gridList} spacing={16} cellHeight='auto'>
-                    <GridListTile key={'timelineTitle'} cols={2} style={{ height: 'auto', marginTop:16 }}>
-                      <Typography type="title" style={{textAlign:'center', color:'rgba(0, 0, 0, 0.54)'}}>
-                        {isCurrentUser ? "You have no past events" : `No past events`}
-                      </Typography>
-                    </GridListTile>
-                  </GridList>
-                }
+                <Button key={'editUserState'} 
+                  onClick={()=>{this.setState({editUserState:editUserState?false:true})}} color="primary">
+                  {editUserState? `HIDE`:`EDIT USER`}
+                </Button>
+                {editUserState &&
+                   <div style={{display:'flex', flex:1, marginLeft:10, marginRight:10, justifyContent:'center', flexDirection:'column'}}>
+                      <TextField
+                        margin="dense"
+                        id="name"
+                        label="Name"
+                        defaultValue={selectedUserName}
+                        required
+                        fullWidth
+                        onChange={this.handleChange('name')}
+                      />
+                      <TextField
+                        margin="dense"
+                        id="name"
+                        label="Email"
+                        defaultValue={selectedUserEmail}
+                        required
+                        fullWidth
+                        onChange={this.handleChange('email')}
+                      />
+                      <TextField
+                        margin="dense"
+                        id="phone"
+                        label="Phone Number"
+                        type="number"
+                        defaultValue={selectedUserPhone}
+                        fullWidth
+                        onChange={this.handleChange('phone')}
+                        required
+                      />
 
-                {days}
-                {showSpinner &&
-                  <CircularProgress style={{margin:'auto', display:'block', marginTop:32, height:64, width:64}}/>
+                    <Button key={'saveUserData'} 
+                      onClick={()=>{
+                        console.log('theemailState: ', this.state);
+                        this.props.actions.saveUserData(selectedUserId, 
+                          {
+                            name:this.state.name?this.state.name:selectedUserName,
+                            email:this.state.email?this.state.email:selectedUserEmail,
+                            phone:this.state.phone? this.state.phone:selectedUserPhone
+                          }
+                        )
+                      }} color="primary">
+                      {`SAVE`}
+                    </Button>
+                   </div>
                 }
                 <BabelLogo/>
             </CardContent>}
-              {(!booking && selectedUserIsTrainer && !this.state.hideBookings) &&
-                <div className={classes.bottomBar} style={bottomBarStyle}>
-                  <div className={classes.bottomRow}>
-                    <Typography type="subheading" component="p" color="primary" style={{margin:8}}>
-                      {"Select a Date"}
-                    </Typography>
-
-                  </div>
-                  <div className={classes.bottomRow}>
-                    {dateButtons}
-                  </div>
-                  <Divider style={{marginTop:8}}/>
-                  <div className={classes.bottomRow}>
-                    <Typography type="subheading" component="p" color="primary" style={{margin:8}}>
-                      {"Select a Time"}
-                    </Typography>
-                  </div>
-                  <div className={classes.bottomRow}>
-                    {timeButtons}
-                  </div>
-                  <Divider style={{marginTop:8}}/>
-                  <div className={classes.bottomRow}>
-                    <Typography type="subheading" component="p" color="primary" style={{margin:8}}>
-                      {"Select a Duration"}
-                    </Typography>
-                  </div>
-                  <div className={classes.bottomRowSpaceAround}>
-                    {durationButtons}
-                    {true &&
-                      <Button className={classes.bookButton} raised disabled={!this.state.bookingDate || !this.state.bookingStart || !this.state.bookingDuration} onClick={()=>this.handleBookNow()}>
-                        {isAdmin ? 'Add Booking' : 'Book Now'}
-                      </Button>
-                    }
-                    {false &&
-                      <Button className={classes.bookButton} raised onClick={()=>console.log('cancel')}>
-                        {'Cancel Booking'}
-                      </Button>
-                    }
-                  </div>
-                </div>
-              }
-              {(booking && selectedUserIsTrainer) &&
-                <div className={classes.bottomBar} style={bottomBarStyle}>
-                  <div className={classes.bottomRowSpaceAround}>
-                    <Typography type="title" component="p" color="primary" style={{
-                        padding: 8 * 2
-                      }}>
-                      {`Booking for ${selectedBookingUserName} on ${moment(booking.get('startsAt')).format('ddd, D MMM')} from ${moment(booking.get('startsAt')).format('h:mm A')} to ${moment(booking.get('endsAt')).format('h:mm A')}`}
-                    </Typography>
-                    <Button className={classes.bookButton} raised onClick={()=>this.props.actions.cancelBooking(bookingId)}>
-                      {'Cancel Booking'}
-                    </Button>
-                  </div>
-                </div>
-              }
             </Card>
           </div>}
+        
           <Dialog key={'scheduleDialog'} open={this.state.scheduleDialogOpen} onClose={this.handleClose}>
-
               <DialogTitle>{'Available For PT'}</DialogTitle>
               <DialogContent>
               <FormControl>
@@ -1328,41 +1281,7 @@ class Profile extends React.Component {
                 </Button>
                 </DialogActions>
               </Dialog>
-              <Dialog key={'freezeDialog'} open={this.state.freezeDialogOpen} onClose={this.handleClose}>
-                <DialogContent>
-                <DialogTitle style={{textAlign:'center'}}>Freeze Your Membership</DialogTitle>
-                <TextField
-                  id="freezeDate"
-                  label="Freeze Date"
-                  type="date"
-                  required
-                  margin="dense"
-                  fullWidth
-                  onChange={this.handleAddFreeze('freezeDate')}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-                <TextField
-                  margin="dense"
-                  id="freezeMonths"
-                  label="Free Months"
-                  type='number'
-                  fullWidth
-                  required
-                  onChange={this.handleAddFreeze('freezeQuantity')}
-                  defaultValue={`1`}
-                />
-                </DialogContent>
-                <DialogActions>
-                <Button key={'cancel'} onClick={this.handleClose} color="primary">
-                  Cancel
-                </Button>
-                <Button key={'saveEdit'} className={classes.bookButton} raised onClick={()=>this.handleSaveFreeze()}>
-                  {'Add Freeze'}
-                </Button>
-                </DialogActions>
-              </Dialog>
+
               {(!isCurrentUser && !selectedUserIsStaff && (isAdmin || isMC || isTrainer)) &&
                 <Button fab className={classes.fab} color='primary' onClick={()=>this.handleAdd()}>
                   <AddIcon/>

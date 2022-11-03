@@ -645,6 +645,7 @@ class PersonCard extends React.Component {
     // this.props.actions.getGantnerLogsByUserId(userId);
     this.props.actions.getInvoicesByUserId(userId);
     this.props.actions.getPaymentsByUserId(userId);
+    // this.props.actions.getAllInvoicesByUserId(userId);
     // this.props.actions.viewPerson(userId);
     // console.log(userId);
     // this.props.actions.removeCardToRegister();
@@ -695,13 +696,8 @@ class PersonCard extends React.Component {
     })
   };
 
-  handleAddInvoice = (selectedUserId) => {
-    // window.open(`/createInvoice/${selectedUserId}`, '_blank');
-    // this.props.actions.addInvoiceRental(selectedUserId, (response)=>{
-    //   console.log('addInvoiceRentalresponse: ', response);
-    // });
-    this.props.actions.viewNewInvoice(selectedUserId);
-  };
+  handleAddInvoice = (selectedUserId) => {this.props.actions.viewNewInvoice(selectedUserId)};
+  handleViewInvoices = (selectedUserId) => {this.props.actions.viewInvoices(selectedUserId)};
 
   handleSwitch = (event, checked) =>{
     //console.log('event: ', event);
@@ -1337,8 +1333,13 @@ class PersonCard extends React.Component {
                       </Button>
                     }
                     {(isSuperUser) &&
-                      <Button key={'generateButton'} className={classes.addInvoiceButton} onClick={()=>{this.handleAddInvoice(selectedUserId)}}>
+                      <Button key={'createInvoiceBtn'} className={classes.addInvoiceButton} onClick={()=>{this.handleAddInvoice(selectedUserId)}}>
                         {'Create Invoice'}
+                      </Button>
+                    }
+                    {(isSuperUser) &&
+                      <Button key={'viewInvoicesBtn'} className={classes.addInvoiceButton} onClick={()=>{this.handleViewInvoices(selectedUserId)}}>
+                        {'View Invoices'}
                       </Button>
                     }
                     {manageItems.length > 0 && (staffLevel4) && 
