@@ -886,7 +886,7 @@ class PersonCard extends React.Component {
       // console.log('selected member is staff: ', editUser && editUser.get('isStaff'));
       isStaff = true;
     }
-
+    //console.log('editUser : ',this.state);
     //console.log('inGymMap: ', inGymMap);
 
     // if (this.state.editUserData.roles) {

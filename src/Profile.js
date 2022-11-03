@@ -2,8 +2,8 @@ import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {withStyles, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
-  DialogContentText, DialogTitle, Divider, FormControl, FormGroup, FormLabel, 
-  IconButton, TextField, GridList, GridListTile, GridListTileBar, Avatar,
+  DialogContentText, DialogTitle, Divider, FormControl, FormControlLabel, FormGroup, FormLabel, 
+  IconButton, TextField, GridList, GridListTile, GridListTileBar, Avatar, Switch, Radio, RadioGroup,
   Card, CardContent, Typography, Button
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
@@ -11,21 +11,31 @@ import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
 import AddIcon from '@material-ui/icons/Add';
 import React from 'react';
+import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import moment from 'moment';
 import {getTheDate} from './actions'; 
 
 import PropTypes from 'prop-types';
 
 import {
+  getCardToRegisterState,
+  getPackagesList,
   makeGetAllUsers,
+  makeGetBranch,
+  makeGetRoom,
   makeGetCurrentUser,
-  makeGetCurrentUserGantnerLogs,
-  makeGetSelectedUser,
+  makeGetInGymMap,
   makeGetCheckIn,
   makeGetCheckOut,
   makeGetSelectedUserGantnerLogs,
-  makeGetSessions,
-  makeGetBookings
+  makeGetSelectedUserInvoices,
+  makeGetSelectedUserOrLastCheckedIn,
+  makeGetSelectedUserOrLastCheckedInId,
+  makeGetSelectedUserReferredByUser,
+  // makeGetSelectedUserReferredToUser,
+  makeGetSelectedUserFreezeItems,
+  makeGetSelectedUserFreeze,
+  makeGetStaff
 } from './selectors';
 import * as Actions from './actions';
 import BabelLogo from './BabelLogo';
@@ -194,6 +204,17 @@ class Profile extends React.Component {
 
   state = {
     userId: null,
+    editUserId: null,
+    editUserData: {},
+    currentBranch: {},
+    currentRoomId: {},
+    branchLabel: {},
+    branchName: null,
+    roomNumberLabel: '',
+    roomNumber: '',
+    branch:'',
+    currentUserData: {},
+    userId: null,
     search: '',
     daysToLoad: 5,
     scheduleDialogOpen : false,
@@ -212,7 +233,110 @@ class Profile extends React.Component {
     return false;
   }
 
+  handleEdit = (userId) => {
+    this.cancelRegisterCard();
+    if (!userId) {
+      userId = 'NEW';
+    }
+    this.setState({
+      editDialogOpen: true,
+      editUserId: userId
+    });
+  };
+
+  
+  handleClose = (content = null) => {
+    if (content === 'errorDialog'){this.setState({showError:false})}
+    else{
+      this.cancelRegisterCard();
+      this.setState({
+        open: false,
+        editUserId: null,
+        editUserData: {},
+        editDialogOpen: false,
+        terminateDialogOpen: false,
+        freezeDialogOpen: false,
+        showError:false,
+        freezeData: {},
+        showOtherRoles:false,
+      });
+    }
+  };
+
+  handleSaveEdit = () => {
+    //console.log('handleSaveEdit: ', this.state);
+
+    // window.ononline = (event) => {
+    // 	console.log("Back Online")
+	  // };
+  
+    // window.onoffline = (event) => {
+    //     console.log("Connection Lost")
+    // };
+    // window.addEventListener("offline", () => {
+    //   console.log('save data OFFLINE.....');
+    //   console.log('should close the popup')
+    //   this.handleClose();
+      
+    //   // this.props.actions.showOffline
+    //   // setOnlineStatus(false);
+    // });
+
+    // window.addEventListener("online", () => {
+
+      //console.log('ONLINE.....')
+      // setOnlineStatus(true);
+      const cardToRegister = this.props.cardToRegister;
+      if(Object.getOwnPropertyNames(this.state.editUserData).length>0) {
+        if (cardToRegister && typeof cardToRegister === 'string' && cardToRegister.length > 0) {
+          this.props.actions.saveUserData(
+            this.state.editUserId, 
+            // { ...this.state.editUserData,
+            //   gantnerCardNumber: cardToRegister
+            // }
+            { ...this.state.editUserData,
+              gantnerCardNumber: cardToRegister
+            },
+            this.state.currentUserData,
+            this.state.currentLoginUseremail, 
+            this.state.currentLoginUserId
+          );
+        } else {
+          // console.log('editUserData: ', this.state.editUserData);
+          // console.log('currentUserData: ', this.state.currentUserData);
+          // if (this.state.editUserData.cancellationDate){
+          //   // todo: remove the current invoice
+
+          // }
+          //console.log('editUserData: ', this.state.editUserData);
+          //console.log('currentUserData: ', this.state.currentUserData);
+          var editUserData = {...this.state.editUserData}
+          if (this.state.editUserData.branch){
+            editUserData = {...this.state.editUserData, currentBranch:this.state.editUserData.branch}
+          }
+          if (this.state.editUserData.roomId){
+            editUserData = {...this.state.editUserData, currentRoomId:this.state.editUserData.roomId}
+          }
+          
+          this.props.actions.saveUserData(this.state.editUserId, editUserData, this.state.currentUserData, this.state.currentLoginUseremail, this.state.currentLoginUserId);
+        }
+        this.handleClose();
+      }
+      else{
+        this.handleClose();
+      }
+    
+    // });
+  }
   componentDidMount() {
+    const user = this.props.currentUser;
+    const currentLoginUseremail = user && user.get('email');
+    const currentLoginUserId = user && user.get('id');
+    this.setState({
+      currentLoginUserId,
+      currentLoginUseremail
+    });
+
     window.scrollTo(0, 0)
     window.addEventListener('scroll', this.onScroll, false);
     this.updateForUser();
@@ -224,6 +348,24 @@ class Profile extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    if (this.props.userId !== prevProps.userId) {
+      this.handleSelectPerson(this.props.userId);
+    }
+
+    if (this.props.uploadedImageURL || this.props.uploadedImagePath) {
+      var editUserData = this.state.editUserData;
+      editUserData.image = this.props.uploadedImageURL;
+      editUserData.imagePath = this.props.uploadedImagePath;
+      this.setState({
+        editUserData: {
+          ...editUserData,
+
+        },
+      });
+      this.props.actions.setUploadedImage(null, null);
+    }
+
+
     if (this.props.uploadedImageURL || this.props.uploadedImagePath) {
       var updatedState = {};
       updatedState.image = this.props.uploadedImageURL;
@@ -686,11 +828,58 @@ class Profile extends React.Component {
       classes
     } = this.props;
 
+    const user = this.props.currentUser;
+    // const roles = user && user.get('roles');
+    //const roles = user && user.get('staffRole');
+    // const isAdmin =  roles && roles.get('admin') === true;
+    // const isSuperUser = roles && roles.get('superUser') === true;
+    // const isCRO = roles && roles.get('mc') === true;
+    // const isTrainer = roles && roles.get('trainer') === true;
+    // const isSuperVisor = roles && roles.get('superVisor') === true;
+    // const isseniorCRO = roles && roles.get('seniorCRO') === true;
+    //const isAdmin =  roles && (roles === 'admin');
+    const roles = user && user.get('staffRole');
+    const isSuperUser = roles && (roles === 'superUser');
+    const isCRO = roles && (roles === 'CRO');
+    //const isTrainer = roles && (roles === 'trainer');
+    const isSuperVisor = roles && (roles === 'supervisor');
+    const isSeniorCRO = roles && (roles === 'seniorCRO');
+    const isShared = roles && (roles === 'shared');
+    const staffBranch = user && user.get('staffBranch');
+    const branchLabel = 'Branch';
+    const roomNumberLabel = 'Room Number';
+
+    const staffLevel0 = isSuperUser;
+    const staffLevel1 = isSuperUser || isAdmin;
+    const staffLevel2 = isSuperUser || isAdmin || isSuperVisor;
+    const staffLevel3 = isSuperUser || isAdmin || isSuperVisor || isSeniorCRO;
+    const staffLevel4 = isSuperUser || isAdmin || isSuperVisor || isSeniorCRO || isCRO;
+    const staffLevel5 = isSuperUser || isAdmin || isSuperVisor || isSeniorCRO || isCRO || isTrainer;
+    const staffLevel6 = isSuperUser || isAdmin || isSuperVisor || isSeniorCRO || isCRO || isTrainer || isShared;
+
+    var isStaff = false;
+    if (editUser && editUser.get('isStaff')){
+      // console.log('selected member is staff: ', editUser && editUser.get('isStaff'));
+      isStaff = true;
+    }
+
+    const branchesData = this.props.branch || null;
+    const branchSize = branchesData && branchesData.size;
+    const branchId = this.state.branch || null;
+    console.log('theBranchId: ', branchId);
+
+    const roomsData = this.props.rooms || null;
+    const selectedRoomId = this.state.roomId;
+
     const currentUser = this.props.currentUser;
-    const roles = currentUser && currentUser.get('roles');
+    //const roles = currentUser && currentUser.get('roles');
     const isAdmin = roles && roles.get('admin') === true;
     const isMC = roles && roles.get('mc') === true;
     const isTrainer = roles && roles.get('trainer') === true;
+
+    const packages = this.props.packages;
+    const complimentaryPkg = 'yKLfNYOPzXHoAiknAT24';
+    const complimentaryPromoPkg = 'L6sJtsKG68LpEUH3QeD4';
 
     const selectedUserId = (this.props && this.props.match && this.props.match.params && this.props.match.params.userId) || (currentUser && currentUser.get('id'));
     const isCurrentUser = selectedUserId && currentUser && currentUser.get('id') === selectedUserId;
@@ -701,7 +890,37 @@ class Profile extends React.Component {
     const selectedUserPhone = userData && userData.has('phone') && userData.get('phone') ? userData.get('phone') : null;
     const selectedUserEmail = userData && userData.has('email') && userData.get('email') ? userData.get('email') : null;
 
+    const editUserId = this.state.editDialogOpen ? this.state.editUserId : null;
+    const editUser = (this.state.editDialogOpen && editUserId !== 'NEW') ? this.props.selectedUser : null;
 
+    var editUserImage = editUser && editUser.has('image') ? editUser.get('image') : null;
+    if (this.state.editUserData && this.state.editUserData.image) {
+      editUserImage = this.state.editUserData.image;
+    }
+    var editUserAvatar = <PhotoCameraIcon style={{width:64, height:64}} />;
+    if (editUserImage) {
+      editUserAvatar = <Avatar style={{width:64, height:64, marginLeft:'auto', marginRight:'auto'}} src={editUserImage} />;
+    }
+
+      var branchName = '';
+      const selectedBranch = branchesData && branchesData.filter((x, key)=>{
+          if (key === editUserCurrentBranchId){
+              branchName = x.has('name')? x.get('name'):'';
+              return true;
+          }
+          return false;
+      }).first();
+
+    var editUserMembershipStarts = editUserStartDate ? editUserStartDate : editUserFirstVisit;
+    const editUserStartDate = editUser && editUser.has('autoMembershipStarts') && editUser.get('autoMembershipStarts') ? getTheDate(editUser.get('autoMembershipStarts')) : null;
+    const editUserFirstVisit = editUser && editUser.has('membershipStarts') && editUser.get('membershipStarts') ? getTheDate(editUser.get('membershipStarts')) : null;
+    
+    const selectedUserRoomId = userData && userData.has('currentRoomId') ? userData.get('currentRoomId') : null; 
+    // console.log('selectedBranch: ', selectedBranch);
+     const selectedUserBranchName = selectedBranch && selectedBranch.get('name'); 
+     const editUserBranchId = this.state.editUserData.branch;
+    
+     const editUserRoomId = editUser && editUser.get('currentRoomId');
 
     // const selectedUserPackageId = userData && userData.has('packageId') ? userData.get('packageId') : null;
     // const selectedUserPackageData = selectedUserPackageId && packages && packages.has(selectedUserPackageId) ? packages.get(selectedUserPackageId) : null;
@@ -723,6 +942,16 @@ class Profile extends React.Component {
       canChangeImage = true;
     }
 
+    var memberId;
+    if (editUser) {
+      if (editUser.get('nric')) {
+        memberId = editUser.get('nric');
+      } else {
+        memberId = editUser.get('passport');
+      }
+    }
+    console.log('editUser : ',this.state);
+
     const image = this.state.image;
     const canSaveImage = canChangeImage && this.state.image && this.state.image !== (userData && userData.has('image') && userData.get('image') ? userData.get('image') : null);
     const selectedUserImage = image ? image : (userData && userData.has('image') ? userData.get('image') : null);
@@ -738,7 +967,36 @@ class Profile extends React.Component {
     const selectedUserIsStaff = selectedUserIsAdmin || selectedUserIsTrainer || selectedUserIsOps;
     const selectedUserTrainerBio = selectedUserIsTrainer && userData && userData.get('bio');
     const selectedUserTrainerTier = selectedUserIsTrainer && userData && userData.get('tier');
-    
+
+    const editUserCurrentBranchId = (editUser && editUser.has('currentBranch'))? editUser.get('currentBranch'):null;
+    const editUserAutoBilling = editUser && editUser.has('autoMembershipEnds') && editUser.get('autoMembershipEnds') ? getTheDate(editUser.get('autoMembershipEnds')) : (editUser && editUser.has('membershipEnds') && editUser.get('membershipEnds') ? getTheDate(editUser.get('membershipEnds')) : null);
+    const editUserPackageName = editUserPackage && editUserPackage.get('name');
+
+    const isSelectedUserStaff = editUser && editUser.get('isStaff');
+
+    var teamLeaderId = editUser && editUser.get('teamLeaderId');
+    if (editUserData && 'teamLeaderId' in editUserData) {
+      teamLeaderId = editUserData.teamLeaderId;
+    }
+
+    var editUserGantnerCardNumber = editUser && editUser.get('gantnerCardNumber');
+    var isRegisteringCard = false;
+    // console.log('cardToRegister: ', this.props.cardToRegister);
+    if (this.props.cardToRegister) {
+      const cardToRegister = this.props.cardToRegister;
+      if (cardToRegister && typeof cardToRegister === 'string' && cardToRegister.length > 0) {
+        editUserGantnerCardNumber = cardToRegister;
+      } else {
+        isRegisteringCard = true;
+      }
+    }
+
+    const teamLeader = teamLeaderId && this.props.staff.has(teamLeaderId) ? this.props.staff.get(teamLeaderId) : null;
+    const teamLeaderName = teamLeader && teamLeader.has('name') ? teamLeader.get('name') : null;
+    const teamLeaderImage = teamLeader && teamLeader.has('image') ? teamLeader.get('image') : null;
+    const teamLeaderAvatar = teamLeaderImage || (teamLeaderName && teamLeaderName.length > 0) ?
+      (teamLeaderImage ? (<Avatar src={teamLeaderImage} />) : (<Avatar>{teamLeaderName.charAt(0).toUpperCase()}</Avatar>)) :
+      null;
 
     var days = [];
     if (true) {
@@ -750,6 +1008,40 @@ class Profile extends React.Component {
         if (nameA < nameB) {return 1;}
         return 0;
       }) : null;
+
+      var editUserPackageId = editUser && editUser.get('packageId');
+      var editUserPackage = packages && packages.get(editUserPackageId);
+      if (editUserData && editUserData.packageId) {
+        editUserPackage = packages && packages.get(editUserData.packageId);
+      }
+
+
+
+      var editUserBranchName = '';
+      const editUserBranch = branchesData && branchesData.filter((x, key)=>{
+        if (key === editUserBranchId){
+          editUserBranchName = x.has('name')? x.get('name'):'';
+            return true;
+        }
+        return false;
+    }).first();
+
+    var editUserRoomNumber;
+    const editRoomData = roomsData && roomsData.filter((x,y)=>{
+      if (y === editUserRoomId){
+        editUserRoomNumber = x.get('roomNumber');
+        return true;
+      }
+    });
+
+    const editUserDataRoomId = editUserData && editUserData.roomId;
+    var editUserDataRoomNumber;
+    roomsData && roomsData.filter((x,y)=>{
+      if (y === editUserDataRoomId){
+        editUserDataRoomNumber = x.get('roomNumber');
+        return true;
+      }
+    });
 
       const selectedUserGanterLogsByDay = selectedUserGanterLogs ? selectedUserGanterLogs.groupBy(x => moment(getTheDate(x.get('createdAt'))).format('YYYY-MM-DD')) : null;
       var showSpinner = false;
@@ -1044,7 +1336,7 @@ class Profile extends React.Component {
 
     // bookings && console.log(bookings.toJS());
     // console.log(this.props.state && this.props.state.hasIn(['bookings', 'bookingsById']));
-
+    var editUserData = this.state.editUserData;
     console.log('canChangeImage:' , canChangeImage);
 
     return (
@@ -1166,7 +1458,828 @@ class Profile extends React.Component {
                     }
                   </div>
                 }
+                
+                {(editUser || editUserId === 'NEW') &&
+            <Dialog key={'editDialog'} open={this.state.editDialogOpen} onClose={this.handleClose}>
+              {this.props.isNative &&
+                <div>
+                  <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+                    <IconButton color="primary" component="span" style={{marginTop:32, marginBottom:32}} disabled={this.props.isUploadingImage} onClick={()=>this.props.actions.useNativeCamera()}>
+                      {editUserAvatar}
+                    </IconButton>
+                  </div>
+                  <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+              <input accept="/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
+              <label htmlFor="icon-button-file" >
+                <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}}>
+                  {this.state.image ? 'Change Photo' : 'Upload Photo' }
+                  {this.props.isUploadingImage &&
+                    <CircularProgress style={{color:'white', marginLeft:8}}/>
+                  }
+                </Button>
+              </label>
+            </div>
+                  {/* <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+                <input accept="image/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
+                  <label htmlFor="icon-button-file" >
+                    <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}}>
+                      {this.state.image ? 'Change Photo' : 'Upload Photo' }
+                      {this.props.isUploadingImage && <CircularProgress style={{color:'white', marginLeft:8}}/>}
+                    </Button>
+                  </label>
+                </div> */}
+                </div>
+              }
+              {!this.props.isNative &&
+                <div>
+                  <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+                  <input accept="image/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} disabled={this.props.isUploadingImage} />
+                    <label htmlFor="icon-button-file" >
+                      <IconButton color="primary" component="span" style={{marginTop:32, marginBottom:32}}>
+                        {editUserAvatar}
+                      </IconButton>
+                    </label>
+                  </div>
+                  <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+                  <input accept="image/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
+                    <label htmlFor="icon-button-file" >
+                      <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}}>
+                        {this.state.image ? 'Change Photo' : 'Upload Photo' }
+                        {this.props.isUploadingImage &&
+                          <CircularProgress style={{color:'white', marginLeft:8}}/>
+                        }
+                      </Button>
+                    </label>
+                  </div>
+                </div>
+              }
+              <DialogContent>
+                {
+                  <FormGroup>
+                    {staffLevel1 && <FormControlLabel
+                      control={
+                        <Switch
+                          checked={this.state.editUserData.roles ? this.state.editUserData.roles.testAccount : (editUser ? editUser.getIn(['roles', 'testAccount']) : false)}
+                          onChange={(event, checked) => {
+                            var editUserData = this.state.editUserData;
+                            // var roles = editUserData.roles ? {...editUser.get('roles').toJS(), admin:editUserData.roles.admin} : (editUser.get('roles') ? editUser.get('roles').toJS() : {});
+                            var roles = editUserData.roles;
+                            if(!roles){
+                              if(editUser && editUser.get('roles')){
+                                roles = editUser && editUser.get('roles').toJS();
+                              }else{
+                                roles = {};
+                              }
+                            }
+                            roles.testAccount = checked;
+                            this.setState({ editUserData:{...editUserData, roles}});
+                          }}
+                        />
+                      }
+                      label={'Test Account'}
+                    />}
+                  
+                  {staffLevel2 && <FormControlLabel
+                    control={
+                      <Switch
+                        // checked={this.state.editUserData? this.state.editUserData.isStaff? this.state.editUserData.isStaff: (editUser && editUser.get('isStaff')): false}
+                        // checked={this.state.showOtherRoles}
+                        // checked = {isStaff}
+                        checked={this.state.editUserData? (this.state.editUserData.isStaff !== undefined)? this.state.editUserData.isStaff : (editUser && editUser.get('isStaff')) : false}
+                        onChange={(event, checked) => {
+                          
+                          var editUserData = this.state.editUserData;
+                          //console.log('theState: ', this.state);
+                          var isStaff = editUserData.isStaff;
+                          
+                          if(!isStaff){
+                            if(editUser && editUser.get('isStaff')){
+                              isStaff = editUser && editUser.get('isStaff');
+                            }else{
+                              isStaff = false;
+                            }
+                          }
+                         
+                          isStaff = checked;
+                          //console.log('memberIsStaff: ', isStaff, checked);
+                        
+                          // this.setState({ editUserData:{...editUserData, isStaff}});
+                          if (checked){
+                            isStaff = true;
+                            this.setState({showOtherRoles:true, editUserData: {...editUserData, isStaff}});
+                          }
+                          else{
+                            isStaff = false;
+                            const staffRole = null;
+                            // roles = null;
+                            this.setState({showOtherRoles:false, editUserData: {...editUserData, isStaff, staffRole}});
+                          }
+                        }}
+                        // onChange = {this.handleSwitch}
+                      />
+                    }
+                    label={'Staff'}
+                  />}
+                  </FormGroup>
+                }
 
+                {(staffLevel2) && (this.state.showOtherRoles) && false &&
+                  <FormGroup>
+
+                  {false && <FormControlLabel
+                    control={
+                      <Switch
+                        checked={this.state.editUserData.roles ? this.state.editUserData.roles.admin : (editUser ? editUser.getIn(['roles', 'admin']) : false)}
+                        onChange={(event, checked) => {
+                          var editUserData = this.state.editUserData;
+                          // var roles = editUserData.roles ? {...editUser.get('roles').toJS(), admin:editUserData.roles.admin} : (editUser.get('roles') ? editUser.get('roles').toJS() : {});
+                          var roles = editUserData.roles;
+                          if(!roles){
+                            if(editUser && editUser.get('roles')){
+                              roles = editUser && editUser.get('roles').toJS();
+                            }else{
+                              roles = {};
+                            }
+                          }
+                          roles.admin = checked;
+                          // if (roles.admin){
+                          //   roles.seniorCRO = false;
+                          //   roles.superUser = false;
+                          //   roles.superVisor = false;
+                          //   roles.mc = false;
+                          //   roles.trainer = false;
+                          //   roles.shared = false;
+                          // }
+                          // console.log('therole: ', roles);
+                          // console.log('editUserData: ', editUserData);
+                          // this.setState({ editUserData });
+                          this.setState({ editUserData:{...editUserData, roles}});
+                        }}
+                      />
+                    }
+                    label={'Admin'}
+                  />}
+
+                  {false && <FormControlLabel
+                    control={
+                      <Switch
+                        checked={this.state.editUserData.roles ? this.state.editUserData.roles.superVisor : (editUser ? editUser.getIn(['roles', 'superVisor']) : false)}
+                        onChange={(event, checked) => {
+                          var editUserData = this.state.editUserData;
+                          // var roles = editUserData.roles ? {...editUser.get('roles').toJS(), admin:editUserData.roles.admin} : (editUser.get('roles') ? editUser.get('roles').toJS() : {});
+                          var roles = editUserData.roles;
+                          if(!roles){
+                            if(editUser && editUser.get('roles')){
+                              roles = editUser && editUser.get('roles').toJS();
+                            }else{
+                              roles = {};
+                            }
+                          }
+                          roles.superVisor = checked;
+                          // if (roles.superVisor){
+                          //   roles.seniorCRO = false;
+                          //   roles.superUser = false;
+                          //   roles.admin = false;
+                          //   roles.mc = false;
+                          //   roles.trainer = false;
+                          //   roles.shared = false;
+                          // }
+                          // console.log('editUserData: ', editUserData);
+                          // this.setState({ editUserData });
+                          this.setState({ editUserData:{...editUserData, roles}});
+                        }}
+                      />
+                    }
+                    label={'Supervisor'}
+                  />}
+
+                  {false && <FormControlLabel
+                    control={
+                      <Switch
+                        checked={this.state.editUserData.roles ? this.state.editUserData.roles.seniorCRO : (editUser ? editUser.getIn(['roles', 'seniorCRO']) : false)}
+                        onChange={(event, checked) => {
+                          var editUserData = this.state.editUserData;
+                          // var roles = editUserData.roles ? {...editUser.get('roles').toJS(), admin:editUserData.roles.admin} : (editUser.get('roles') ? editUser.get('roles').toJS() : {});
+                          var roles = editUserData.roles;
+                          if(!roles){
+                            if(editUser && editUser.get('roles')){
+                              roles = editUser.get('roles').toJS();
+                            }else{
+                              roles = {}
+                            }
+                          }
+                          roles.seniorCRO = checked;
+                          // if (roles.seniorCRO){
+                          //   roles.superVisor = false;
+                          //   roles.superUser = false;
+                          //   roles.admin = false;
+                          //   roles.mc = false;
+                          //   roles.trainer = false;
+                          //   roles.shared = false;
+                          // }
+                          // console.log('editUserData: ', editUserData);
+                          // this.setState({ editUserData });
+                          this.setState({ editUserData:{...editUserData, roles}});
+                        }}
+                      />
+                    }
+                    label={'Senior CRO'}
+                  />}
+
+                  {false && <FormControlLabel
+                    control={
+                      <Switch
+                        checked={this.state.editUserData.roles ? this.state.editUserData.roles.mc : (editUser ? editUser.getIn(['roles', 'mc']) : false)}
+                        onChange={(event, checked) => {
+                          var editUserData = this.state.editUserData;
+                          // var roles = editUserData.roles ? {...editUser.get('roles').toJS(), admin:editUserData.roles.admin} : (editUser.get('roles') ? editUser.get('roles').toJS() : {});
+                          var roles = editUserData.roles;
+                          if(!roles){
+                            if(editUser && editUser.get('roles')){
+                              roles = editUser.get('roles').toJS();
+                            }else{
+                              roles = {}
+                            }
+                          }
+                          roles.mc = checked;
+                          // if (roles.mc){
+                          //   roles.seniorCRO = false;
+                          //   roles.superUser = false;
+                          //   roles.admin = false;
+                          //   roles.superVisor= false;
+                          //   roles.trainer = false;
+                          //   roles.shared = false;
+                          // }
+                          // console.log('editUserData: ', editUserData);
+                          // this.setState({ editUserData });
+                          this.setState({ editUserData:{...editUserData, roles}});
+                        }}
+                      />
+                    }
+                    label={'CRO'}
+                  />}
+
+                  {false && <FormControlLabel
+                    control={
+                      <Switch
+                        checked={this.state.editUserData.roles ? this.state.editUserData.roles.trainer : (editUser ? editUser.getIn(['roles', 'trainer']) : false)}
+                        onChange={(event, checked) => {
+                          var editUserData = this.state.editUserData;
+                          var roles = editUserData.roles;
+                          if(!roles){
+                            if(editUser && editUser.get('roles')){
+                              roles = editUser.get('roles').toJS();
+                            }else{
+                              roles = {}
+                            }
+                          }
+                          // var roles = editUserData.roles ? {...editUser.get('roles').toJS(), trainer:editUserData.roles.trainer} : (editUser.get('roles') ? editUser.get('roles').toJS() : {});
+                          roles.trainer = checked;
+                          // if (roles.trainer){
+                          //   roles.seniorCRO = false;
+                          //   roles.superUser = false;
+                          //   roles.admin = false;
+                          //   roles.superVisor= false;
+                          //   roles.mc = false;
+                          //   roles.shared = false;
+                          // }
+                          // console.log('editUserData: ', editUserData);
+                          // this.setState({ editUserData });
+                          this.setState({ editUserData:{...editUserData, roles}});
+                        }}
+                      />
+                    }
+                    label={'Trainer'}
+                  />}
+
+                  {false && <FormControlLabel
+                    control={
+                      <Switch
+                        checked={this.state.editUserData.roles ? this.state.editUserData.roles.shared : (editUser ? editUser.getIn(['roles', 'shared']) : false)}
+                        onChange={(event, checked) => {
+                          var editUserData = this.state.editUserData;
+                          var roles = editUserData.roles;
+                          if(!roles){
+                            if(editUser && editUser.get('roles')){
+                              roles = editUser.get('roles').toJS();
+                            }else{
+                              roles = {}
+                            }
+                          }
+                          // var roles = editUserData.roles ? {...editUser.get('roles').toJS(), trainer:editUserData.roles.trainer} : (editUser.get('roles') ? editUser.get('roles').toJS() : {});
+                          roles.shared = checked;
+                         
+                          this.setState({ editUserData:{...editUserData, roles}});
+                        }}
+                      />
+                    }
+                    label={'Shared'}
+                  />}
+                </FormGroup>
+              }
+
+              {staffLevel2 && (this.state.editUserData? (this.state.editUserData.isStaff !== undefined)? this.state.editUserData.isStaff : (editUser && editUser.get('isStaff')) : false) && 
+                <FormGroup>
+                  <FormControl required style={{marginTop:32}}>
+                    <FormLabel component="legend">Role</FormLabel>
+                    <RadioGroup
+                      aria-label="Role"
+                      name="role"
+                      value={this.state.editUserData.staffRole ? this.state.editUserData.staffRole : (editUser ? editUser.get('staffRole') : "nonStaff")}
+                      onChange={this.handleChange('staffRole')}
+                    >
+                      {(isSuperUser || isAdmin) && <FormControlLabel value="admin" control={<Radio />} label="Admin" />}
+                      <FormControlLabel value="supervisor" control={<Radio />} label="Supervisor" />
+                      <FormControlLabel value="seniorCRO" control={<Radio />} label="Senior CRO" />
+                      <FormControlLabel value="CRO" control={<Radio />} label="CRO" />
+                      <FormControlLabel value="shared" control={<Radio />} label="Shared Service" />
+                      <FormControlLabel value="trainer" control={<Radio />} label="Trainer" />
+                      <FormControlLabel value="terminatedStaff" control={<Radio />} label="EX Staff" />
+                    </RadioGroup>
+                  </FormControl>
+                  <FormControl required style={{marginTop:32}}>
+                    <FormLabel component="legend">Branch</FormLabel>
+                    <RadioGroup
+                      aria-label="Branch"
+                      name="branch"
+                      value={this.state.editUserData.staffBranch ? this.state.editUserData.staffBranch : (editUser ? editUser.get('staffBranch') : null)}
+                      onChange={this.handleChange('staffBranch')}
+                    >
+                      <FormControlLabel value="TTDI" control={<Radio />} label="TTDI" />
+                      <FormControlLabel value="KLCC" control={<Radio />} label="KLCC" />
+                    </RadioGroup>
+                  </FormControl>
+                </FormGroup>
+              }
+
+              {false && (!isStaff && memberId) &&
+                <TextField
+                  margin="dense"
+                  id="memberId"
+                  label="Member ID"
+                  type="text"
+                  value={memberId}
+                  fullWidth
+                  required
+                  disabled
+                />
+              }
+              {isSelectedUserStaff && <TextField
+                margin="dense"
+                id="staffname"
+                label="Staff Name"
+                defaultValue={editUser && editUser.get('name')}
+                required
+                fullWidth
+                disabled={(!(isSuperUser || isAdmin) && isSelectedUserStaff)}
+                onChange={this.handleChange('name')}
+              />}
+              {!isSelectedUserStaff && <TextField
+                margin="dense"
+                id="name"
+                label="Customer Name"
+                defaultValue={editUser && editUser.get('name')}
+                required
+                fullWidth
+                disabled={!roles || isShared}
+                onChange={this.handleChange('name')}
+              />}
+              {isSelectedUserStaff && <TextField
+                margin="dense"
+                id="staffemail"
+                label="Email Address"
+                type="email"
+                defaultValue={editUser && editUser.get('email')}
+                fullWidth
+                onChange={this.handleChange('email')}
+                disabled={(!(isSuperUser) && isSelectedUserStaff)}
+                required
+              />}
+               {!isSelectedUserStaff && <TextField
+                margin="dense"
+                id="email"
+                label="Email Address"
+                type="email"
+                defaultValue={editUser && editUser.get('email')}
+                fullWidth
+                onChange={this.handleChange('email')}
+                disabled={!roles || isShared || isTrainer}
+                required
+              />}
+              <TextField
+                margin="dense"
+                id="phone"
+                label="Phone Number"
+                type="number"
+                defaultValue={editUser && editUser.get('phone')}
+                fullWidth
+                onChange={this.handleChange('phone')}
+                disabled={!roles || isShared || isTrainer}
+                required
+              />
+              {(this.state.editUserData? (this.state.editUserData.staffRole === 'trainer')? true : editUser? (editUser.get('staffRole')==='trainer')? true:false:false:false) &&
+                <div>
+                  <TextField
+                    margin="dense"
+                    id="bio"
+                    label="Bio"
+                    type='text'
+                    multiline
+                    required
+                    fullWidth
+                    disabled={this.state.isScheduling}
+                    onChange={this.handleChange('bio')}
+                    defaultValue={editUser && editUser.get('bio')}
+                  />
+                  <FormGroup>
+                    <FormControl required style={{marginTop:32}}>
+                      <FormLabel component="legend">Tier</FormLabel>
+                      <RadioGroup
+                        aria-label="tier"
+                        name="tier"
+                        value={this.state.editUserData.tier ? this.state.editUserData.tier : (editUser ? editUser.get('tier') : null)}
+                        onChange={this.handleChange('tier')}
+                      >
+                        <FormControlLabel value="1" control={<Radio />} label="1" />
+                        <FormControlLabel value="2" control={<Radio />} label="2" />
+                        <FormControlLabel value="3" control={<Radio />} label="3" />
+                        <FormControlLabel value="X" control={<Radio />} label="X" />
+                      </RadioGroup>
+                    </FormControl>
+                  </FormGroup>
+                  {!teamLeaderId &&
+                    <IntegrationAutosuggest key='trainersTeamLeader' selections='trainers' placeholder='Team Leader' onSelectionChange={selectedUserId => this.handleAutosuggest('teamLeaderId', selectedUserId)}/>
+                  }
+                  {teamLeaderId &&
+                    <div style={{marginTop:16}}>
+                      <FormLabel component="legend">Team Leader</FormLabel>
+                      <Chip
+                      avatar={teamLeaderAvatar}
+                      label={teamLeaderName}
+                      style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                      onDelete={()=>this.handleAutosuggest('teamLeaderId', null)}
+                      />
+                    </div>
+                  }
+                </div>
+              }
+            {!isStaff &&
+              <div>
+                <TextField
+                  margin="dense"
+                  id="nric"
+                  label="IC/Passport ID"
+                  // type="number"
+                  type="text"
+                  defaultValue={editUser && editUser.get('nric')}
+                  fullWidth
+                  onChange={this.handleChange('nric')}
+                  disabled={!roles || isShared || isTrainer}
+                  required
+                />
+                {false && <TextField
+                  margin="dense"
+                  id="passport"
+                  label="Passport ID"
+                  type="text"
+                  defaultValue={editUser && editUser.get('passport')}
+                  fullWidth
+                  onChange={this.handleChange('passport')}
+                  required
+                />}
+
+                {staffLevel5 && <FormGroup>
+                  <FormControl required style={{marginTop:32}}>
+                    <FormLabel component="legend">Gender</FormLabel>
+                    <RadioGroup
+                      aria-label="gender"
+                      name="gender1"
+                      value={this.state.editUserData.gender ? this.state.editUserData.gender : (editUser ? editUser.get('gender') : null)}
+                      onChange={this.handleChange('gender')}
+                    >
+                      <FormControlLabel value="male" control={<Radio />} label="Male" />
+                      <FormControlLabel value="female" control={<Radio />} label="Female" />
+                    </RadioGroup>
+                  </FormControl>
+                  <FormControl required style={{marginTop:32}}>
+                    <FormLabel component="legend">Race</FormLabel>
+                    <RadioGroup
+                      aria-label="race"
+                      name="race"
+                      value={this.state.editUserData.race ? this.state.editUserData.race : (editUser ? editUser.get('race') : null)}
+                      onChange={this.handleChange('race')}
+                    >
+                      <FormControlLabel value="malay" control={<Radio />} label="Malay" />
+                      <FormControlLabel value="chinese" control={<Radio />} label="Chinese" />
+                      <FormControlLabel value="indian" control={<Radio />} label="Indian" />
+                      <FormControlLabel value="other" control={<Radio />} label="Other" />
+                    </RadioGroup>
+                  </FormControl>
+                </FormGroup>}
+                {/* {staffLevel4 && !isSelectedUserStaff && !trainerId &&
+                  <IntegrationAutosuggest key='trainers' selections='trainers' placeholder='Trainer' onSelectionChange={selectedUserId => this.handleAutosuggest('trainerId', selectedUserId)}/>
+                }
+                {staffLevel4 && !isSelectedUserStaff && trainerId &&
+                  <div style={{marginTop:16}}>
+                    <FormLabel id="trainerId" component="legend">Trainer</FormLabel>
+                    <Chip
+                    avatar={trainerAvatar}
+                    label={trainerName}
+                    style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                    onDelete={()=>this.handleAutosuggest('trainerId', null)}
+                    />
+                  </div>
+                } */}
+                {/* {staffLevel4 && !isSelectedUserStaff && !mcId &&
+                  <IntegrationAutosuggest key='mc' selections='membershipConsultants' placeholder='Membership Consultant' onSelectionChange={selectedUserId => this.handleAutosuggest('mcId', selectedUserId)}/>
+                }
+                {staffLevel4 && !isSelectedUserStaff && mcId &&
+                  <div style={{marginTop:16}}>
+                    <FormLabel id="mcColId" component="legend">Membership Consultant</FormLabel>
+                    <Chip
+                      avatar={mcAvatar}
+                      label={mcName}
+                      style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                      onDelete={()=>{
+                        // 25/8/2020 - only staff level 2 can remove mcId
+                        if (staffLevel2){this.handleAutosuggest('mcId', null)}
+                      }}
+                    />
+                  </div>
+                } */}
+                {/* {staffLevel4 && !isSelectedUserStaff && !referredByUserId &&
+                  <IntegrationAutosuggest key='referral' selections='activeMembers' placeholder='Referred By Member' onSelectionChange={selectedUserId => this.handleAutosuggest('referredByUserId', selectedUserId)}/>
+                }
+                {staffLevel4 && !isSelectedUserStaff && referredByUserId &&
+                  <div style={{marginTop:16}}>
+                    <FormLabel id="referredById" component="legend">Referred By Member</FormLabel>
+                    <Chip
+                    avatar={referredByUserAvatar}
+                    label={referredByUserName}
+                    style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                    onDelete={()=>this.handleAutosuggest('referredByUserId', null)}
+                    />
+                  </div>
+                } */}
+                {/* {staffLevel4 && !isSelectedUserStaff && <TextField
+                  id="package"
+                  select
+                  defaultValue={currentUserPkgId}
+                  label="Package"
+                  margin="dense"
+                  fullWidth
+                  onChange={this.handleChange('packageId')}
+                  // value={packageList}
+                  InputLabelProps={{ shrink: true }}
+                  SelectProps={{
+                    native: true,
+                    MenuProps: {
+                      className: classes.menu,
+                    },
+                  }}
+                >
+                  {packageOptions}
+                </TextField>} */}
+                {/* {staffLevel4 && !isSelectedUserStaff && <TextField
+                  id="goal"
+                  select
+                  defaultValue={editUser && editUser.has('achieveTarget') ? editUser.get('achieveTarget') : null}
+                  label="Achieve Target"
+                  margin="dense"
+                  fullWidth
+                  onChange={this.handleChange('achieveTarget')}
+                  InputLabelProps={{ shrink: true }}
+                  SelectProps={{
+                    native: true,
+                    MenuProps: {
+                      className: classes.menu,
+                    },
+                  }}
+                >
+                  {achieveTargetOptions}
+                </TextField>} */}
+                {/* {(editUserPackage && false) &&
+                  <div>
+                  <TextField
+                    margin="dense"
+                    id="joiningFee"
+                    label="Joining Fee (RM)"
+                    type="number"
+                    defaultValue={`${editUserPackage.get('joiningFee')}`}
+                    disabled
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    margin="dense"
+                    id="monthlyFee"
+                    label="Monthly Fee (RM)"
+                    type="number"
+                    defaultValue={`${editUserPackage.get('monthlyFee')}`}
+                    disabled
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    margin="dense"
+                    id="prepaidAmount"
+                    label="Prepaid Amount (RM)"
+                    type="number"
+                    defaultValue={`${editUserPackage.get('prepaidAmount')}`}
+                    disabled
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    margin="dense"
+                    id="freeGift"
+                    label="Bonus Free Gift"
+                    type="text"
+                    defaultValue={editUserPackage.get('freeGift')}
+                    disabled
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    margin="dense"
+                    id="freePT"
+                    label="Bonus Free PT Sessions"
+                    type="number"
+                    defaultValue={editUserPackage.get('freePT')}
+                    disabled
+                    fullWidth
+                    required
+                  />
+                  <TextField
+                    margin="dense"
+                    id="freeMonths"
+                    label="Bonus Free Months"
+                    type="number"
+                    defaultValue={`${editUserPackage.get('freeMonths')}`}
+                    disabled
+                    fullWidth
+                    required
+                  />
+              </div>
+                }
+                {false && <TextField
+                  id="inductionDate"
+                  label="Induction Date"
+                  type="date"
+                  required
+                  margin="dense"
+                  fullWidth
+                  onChange={this.handleChange('inductionDate')}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />} */}
+                {/* {false && <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={this.state.editUserData.inductionDone ? this.state.editUserData.inductionDone : (editUser ? editUser.get('inductionDone') : false)}
+                      onChange={(event, checked) => {
+                        var editUserData = this.state.editUserData;
+                        var inductionDone = checked;
+                        this.setState({ editUserData:{...editUserData, 'inductionDone':inductionDone}});
+                      }}
+                    />
+                  }
+                  label={'Induction Done'}
+                />
+                </FormGroup>} */}
+                
+        {staffLevel4 && (this.state.showBranchDetails) && <IntegrationAutosuggest selections='branches' placeholder={branchLabel} onSelectionChange={branch => {
+          this.handleAutosuggest('branch', branch);
+          this.setState({showBranchDetails:false})
+          
+          }}/>}
+        {staffLevel4 && !this.state.showBranchDetails && 
+            <div style={{marginTop:16}}>
+            <FormLabel component="legend">Branch</FormLabel>
+            <Chip
+                avatar={null}
+                label={editUserBranchName? editUserBranchName: selectedUserBranchName? selectedUserBranchName:null }
+                style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                onDelete={()=>{
+                  this.handleAutosuggest('branch', null)
+                  this.setState({showBranchDetails:true});
+                }}
+            />
+            </div>
+        }
+        
+        {staffLevel4 && this.state.showRoomNumber && <IntegrationAutosuggest selections='rooms' branchId={this.state.branch? this.state.branch:editUserCurrentBranchId? editUserCurrentBranchId:editUserBranchId} placeholder={roomNumberLabel} onSelectionChange={roomId => {
+          this.handleAutosuggest('roomId', roomId)
+          this.setState({showRoomNumber:false});
+          }}/>}
+        {staffLevel4 && !this.state.showRoomNumber &&
+                    <div style={{marginTop:16}}>
+                    <FormLabel component="legend">Room Number</FormLabel>
+                    <Chip
+                        avatar={null}
+                        label={editUserDataRoomNumber? editUserDataRoomNumber:editUserRoomNumber?editUserRoomNumber:''}
+                        style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                        onDelete={()=>{
+                          this.handleAutosuggest('roomId', null);
+                          this.setState({showRoomNumber:true})
+                        }}
+                    />
+                    </div>
+        }
+              {staffLevel4 && !isSelectedUserStaff && editUserMembershipStarts &&
+                  <TextField
+                    id="startDate"
+                    label="Start Date"
+                    type="date"
+                    required
+                    value={moment(editUserMembershipStarts).format('YYYY-MM-DD')}
+                    margin="dense"
+                    fullWidth
+                    onChange={this.handleChange('autoMembershipStarts')}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    disabled={((isSuperUser || isAdmin || isSuperVisor) ) ? false : true}
+                  />
+                }
+                {staffLevel4 && (!editUser || !editUserMembershipStarts) && !isSelectedUserStaff &&
+                  <TextField
+                    id="startDate"
+                    label="Start Date"
+                    type="date"
+                    required
+                    defaultValue={editUser && moment(editUserMembershipStarts).format('YYYY-MM-DD')}
+                    margin="dense"
+                    fullWidth
+                    onChange={this.handleChange('autoMembershipStarts')}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                }
+                {staffLevel4 && !isSelectedUserStaff && <TextField
+                  id="endDate"
+                  // label={(editUserPackageId && (editUserPackageId === complimentaryPkg) || (editUserPackageId === complimentaryPromoPkg)) ? "End Date" : "Billing Date"}
+                  label = {(editUserPackageId && (editUserPackageId === complimentaryPkg) || (editUserPackageId === complimentaryPromoPkg)) || this.state.enableBillDate?  "End Date" : "Billing Date" }
+                  type="date"
+                  required
+                  defaultValue={editUser && moment(editUserAutoBilling).format('YYYY-MM-DD')}
+                  margin="dense"
+                  fullWidth
+                  onChange={this.handleChange('membershipEnds')}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  disabled = {((isAdmin || isSuperUser || isSuperVisor) && (this.state.enableBillDate || (editUserPackageName && editUserPackageName.toLowerCase().includes('complimentary'))))? false:true }
+                  // disabled={isAdmin && editUserPackageId && (editUserPackageId === complimentaryPkg || editUserPackageId === complimentaryPromoPkg) ? false : true}
+                />}
+                <TextField
+                  margin="dense"
+                  id="remarks"
+                  label="Remarks"
+                  type='text'
+                  multiline
+                  required
+                  fullWidth
+                  onChange={this.handleChange('remarks')}
+                  defaultValue={editUser && editUser.get('remarks')}
+                  disabled={(staffLevel4) ? false : true}
+                />
+                {isStaff && staffLevel1 && false && 
+                  <Button key={'terminateStaff'} className={classes.staffTerminateButton} raised onClick={()=>this.handleTerminateStaff()}>
+                    {'Terminate'}
+                  </Button>
+                }
+              </div>
+            }
+
+              </DialogContent>
+              {!isStaff &&
+                <DialogActions style={{margin:0}}>
+                  {!isRegisteringCard &&
+                    <Button key={'membershipCard'} className={classes.addButton} onClick={()=>this.handleRegisterCard()}>
+                      {editUserGantnerCardNumber ? 'Change Membership Card' : 'Add Membership Card'}
+                    </Button>
+                  }
+                  {isRegisteringCard &&
+                    <Button key={'registerMembershipCard'} className={classes.addButton} onClick={()=>this.cancelRegisterCard()}>
+                      {'Please tap card to reader'} <CircularProgress style={{color:'white'}}/>
+                    </Button>
+                  }
+                </DialogActions>
+              }
+              <DialogActions style={{margin:0}}>
+                <Button key={'cancel'} onClick={this.handleClose} color="primary">
+                  Cancel
+                </Button>
+                <Button key={'saveEdit'} className={classes.bookButton} raised onClick={()=>this.handleSaveEdit()}>
+                  {'Save'}
+                </Button>
+              </DialogActions>
+            </Dialog>
+          }
                     {/* {( userData && selectedUserId && selectedUserId.length > 0 && selectedUserRoomId) &&
                       <Button key={'checkInOutRoom'} className={classes.addButton} onClick={()=>this.props.actions.addCheckInOut(selectedUserId)}>
                         {'Check Out'}
@@ -1382,25 +2495,45 @@ Profile.propTypes = {
 const ProfileStyled = withStyles(styles)(Profile);
 
 const makeMapStateToProps = () => {
+  const getSelectedUserOrLastCheckedIn = makeGetSelectedUserOrLastCheckedIn();
+  const getSelectedUserOrLastCheckedInId = makeGetSelectedUserOrLastCheckedInId();
+
   const getCurrentUser = makeGetCurrentUser();
-  const getCurrentUserGantnerLogs = makeGetCurrentUserGantnerLogs();
-  const getSelectedUser = makeGetSelectedUser();
+  const getUsers = makeGetAllUsers();
+  const getStaff = makeGetStaff();
+  const getInGymMap = makeGetInGymMap();
+  const getCheckIn = makeGetCheckIn();
+  const getCheckOut = makeGetCheckOut();
+  const getBranch = makeGetBranch();
+  const getRooms = makeGetRoom();
+  //const getSelectedUser = makeGetSelectedUser();
   const getSelectedUserGantnerLogs = makeGetSelectedUserGantnerLogs();
+  const getSelectedUserReferredByUser = makeGetSelectedUserReferredByUser();
   const getAllUsers = makeGetAllUsers();
-  const getSessions = makeGetSessions();
-  const getBookings = makeGetBookings();
+  //const getSessions = makeGetSessions();
+  //const getBookings = makeGetBookings();
   const mapStateToProps = (state, props) => {
     // const currentUser = getCurrentUser(state, props);
     // const selectedUserId = (this.props && this.props.match && this.props.match.params && this.props.match.params.userId) || (currentUser && currentUser.get('id'));
     // console.log(selectedUserId);
     return {
       currentUser: getCurrentUser(state, props),
-      selectedUser: getSelectedUser(state,props),
-      currentUserGanterLogs: getCurrentUserGantnerLogs(state, props),
+      selectedUserOrLastCheckedInId: getSelectedUserOrLastCheckedInId(state, props),
+      //selectedUser: getSelectedUser(state,props),
+      //currentUserGanterLogs: getCurrentUserGantnerLogs(state, props),
       selectedUserGanterLogs: getSelectedUserGantnerLogs(state, props),
       users: getAllUsers(state, props),
-      sessions: getSessions(state, props),
-      bookings: getBookings(state, props),
+      staff: getStaff(state, props),
+      packages: getPackagesList(state, props),
+      inGymMap: getInGymMap(state, props),
+      checkIn: getCheckIn(state, props),
+      checkOut: getCheckOut(state, props),
+      branch: getBranch(state, props),
+      rooms: getRooms(state, props),
+      //sessions: getSessions(state, props),
+      //bookings: getBookings(state, props),
+      cardToRegister: getCardToRegisterState(state, props),
+      //selectedUserReferredByUser: getSelectedUserReferredByUser(state, props),
       allBookings: state.state && state.state.has('bookings') && state.state.hasIn(['bookings', 'bookingsById']) && state.state.getIn(['bookings', 'bookingsById']),
       isNative: state && state.state && state.state.get('isNative') ? true : false,
       isUploadingImage: state && state.state && state.state.get('isUploadingImage') ? true : false,
