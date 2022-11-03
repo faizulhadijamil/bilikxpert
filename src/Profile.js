@@ -19,11 +19,9 @@ import PropTypes from 'prop-types';
 import {
   makeGetAllUsers,
   makeGetCurrentUser,
-  makeGetCurrentUserGantnerLogs,
   makeGetSelectedUser,
-  makeGetCheckIn,
-  makeGetCheckOut,
-  makeGetSelectedUserGantnerLogs,
+  makeGetBranch,
+  makeGetRoom,
   makeGetSessions,
   makeGetBookings
 } from './selectors';
@@ -202,7 +200,11 @@ class Profile extends React.Component {
     bookingDuration:'30',
     freezeDialogOpen : false,
     freezeData : {},
-    editUserState:false
+    editUserState:false,
+    branchId: null,
+    roomId: null,
+    roomNumberLabel: '',
+    roomNumber: '',
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -293,6 +295,13 @@ class Profile extends React.Component {
       }
     }else{
       var value = event.target.value;
+      if (name === 'email' && value && value.length > 0) {
+        value = value.toLowerCase();
+      }else if(name==='phone'){
+        value = value.replace(/[^0-9]/g, '');
+      }else if(name==='name'){
+        value = value.replace(/[0-9:]+/g, '');
+      }
       updatedState[name] = value;
       this.setState({ ...updatedState });
     }
@@ -392,28 +401,6 @@ class Profile extends React.Component {
     this.setState({
       scheduleDialogOpen: true
     });
-  };
-
-  handleBookNow = (classId, sessionId, trainerId, activeSeat, longBookingLabel) => {
-    const user = this.props.currentUser;
-    const userId = user ? user.get('id') : null;
-    const roles = user && user.get('roles');
-    const isAdmin = roles && roles.get('admin') === true;
-    if (isAdmin) {
-      this.setState({
-        bookingDialogOpen: true
-      });
-      // console.log(this.state);
-      // this.handleMakeBooking();
-    } else if (userId) {
-      // adminMakePTBooking(trainerId, userId, bookerId, startsAt, duration)
-      this.handleMakeBooking();
-      // this.handleMakeBooking(classId, sessionId, trainerId, `${activeSeat}`, longBookingLabel)
-    } else {
-      // this.setState({
-      //   bookingDialogOpen: true
-      // });
-    }
   };
 
   handleClose = () =>{
@@ -685,10 +672,15 @@ class Profile extends React.Component {
     this.handleClose();
   }
 
+  handleAutosuggest = (name, value) => {
+    var valueMap = {};
+    valueMap[name] = value;
+    this.setState({ ...valueMap });
+  }
 
   render() {
     const {classes} = this.props;
-    const {editUserState} = this.state;
+    const {editUserState, branchId} = this.state;
 
     const currentUser = this.props.currentUser;
     const roles = currentUser && currentUser.get('roles');
@@ -704,8 +696,7 @@ class Profile extends React.Component {
     const selectedUserMembershipCard = userData && userData.has('membershipCard') && userData.get('membershipCard') ? userData.get('membershipCard') : null;
     const selectedUserPhone = userData && userData.has('phone') && userData.get('phone') ? userData.get('phone') : null;
     const selectedUserEmail = userData && userData.has('email') && userData.get('email') ? userData.get('email') : null;
-
-
+    const selectedUserBranchId = userData && userData.has('currentBranch') ? userData.get('currentBranch'):null;
 
     // const selectedUserPackageId = userData && userData.has('packageId') ? userData.get('packageId') : null;
     // const selectedUserPackageData = selectedUserPackageId && packages && packages.has(selectedUserPackageId) ? packages.get(selectedUserPackageId) : null;
@@ -740,8 +731,6 @@ class Profile extends React.Component {
     const selectedUserIsOps = selectedUserRoles && selectedUserRoles.get('ops') === true;
     const selectedUserIsTrainer = selectedUserRoles && selectedUserRoles.get('trainer') === true;
     const selectedUserIsStaff = selectedUserIsAdmin || selectedUserIsTrainer || selectedUserIsOps;
-    const selectedUserTrainerBio = selectedUserIsTrainer && userData && userData.get('bio');
-    const selectedUserTrainerTier = selectedUserIsTrainer && userData && userData.get('tier');
     
 
     var days = [];
@@ -1037,12 +1026,45 @@ class Profile extends React.Component {
 
     const bookingId = this.props.location.search.replace('?bid=', '');
     const bookings = this.props.allBookings;
-    const booking = bookings && bookingId && bookings.get(bookingId) && !bookings.get(bookingId).get('cancelledAt') && bookings.get(bookingId);
-    const selectedBookingUserId = booking && booking.get('userId');
-    const selectedBookingUser = selectedBookingUserId && this.props.users && this.props.users.get(selectedBookingUserId)
-      ? this.props.users.get(selectedBookingUserId)
-      : (selectedBookingUserId && currentUser && currentUser.get('id') && currentUser.get('id') === selectedBookingUserId ? currentUser : null);
 
+    const branchesData = this.props.branch || null;
+    const roomsData = this.props.rooms || null;
+
+    console.log('theState: ', this.state);
+
+    var branchName;
+    var editBranchName;
+    branchesData && branchesData.filter((x, key)=>{
+      if (this.state.branchId && key === this.state.branchId){
+        editBranchName = x.has('name')? x.get('name'):'';
+        return true;
+      }
+      else if (key === selectedUserBranchId){
+        branchName = x.has('name')? x.get('name'):'';
+        return true;
+      }
+      else{
+        return false;  
+      }
+    }).first();
+
+    var roomNumber, editRoomNumber;
+    const selectedUserRoomId = userData && userData.has('currentRoomId') ? userData.get('currentRoomId') : null; 
+    roomsData && roomsData.filter((x, key)=>{
+      const isAvailable = x.has('isAvailable')? x.get('isAvailable'):true;
+      if (this.state.roomId && key === this.state.roomId && isAvailable){
+        editRoomNumber = x.has('roomNumber')? x.get('roomNumber'):'';
+        return true;
+      }
+      else if (key === selectedUserRoomId){
+        roomNumber = x.has('roomNumber')? x.get('roomNumber'):'';
+        return true;
+      }
+      else{
+        return false;
+      }
+    }).first();
+    
     return (
       <div>
         <MenuAppBar/>
@@ -1189,15 +1211,47 @@ class Profile extends React.Component {
                         onChange={this.handleChange('phone')}
                         required
                       />
-
+                      {(this.state.showBranchDetails) && <IntegrationAutosuggest selections='branches' placeholder={'Branch'} onSelectionChange={branch => { this.setState({showBranchDetails:false});this.handleAutosuggest('branchId', branch)}}/>}
+                      {(!this.state.showBranchDetails) && <div style={{marginTop:16}}>
+                        <FormLabel component="legend">Branch</FormLabel>
+                        <Chip
+                            avatar={null}
+                            label={editBranchName? editBranchName:branchName?branchName:null}
+                            style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                            onDelete={()=>{
+                              this.handleAutosuggest('branchId', null);
+                              this.setState({showBranchDetails:true});
+                            }}
+                        />
+                      </div>}
+                      {this.state.showRoomNumber && <IntegrationAutosuggest selections='rooms' branchId={this.state.branchId? this.state.branchId:selectedUserBranchId? selectedUserBranchId:null} placeholder={'Room Number'} onSelectionChange={roomId => {
+                        this.handleAutosuggest('roomId', roomId)
+                        this.setState({showRoomNumber:false});
+                        }}/>}
+                      {!this.state.showRoomNumber &&
+                        <div style={{marginTop:16}}>
+                        <FormLabel component="legend">Room Number</FormLabel>
+                        <Chip
+                            avatar={null}
+                            label={editRoomNumber? editRoomNumber:roomNumber?roomNumber:''}
+                            style={{marginTop:8, fontSize:'1rem', fontWeight:'500'}}
+                            onDelete={()=>{
+                              this.handleAutosuggest('roomId', null);
+                              this.setState({showRoomNumber:true})
+                            }}
+                        />
+                        </div>
+                      }
+                      
                     <Button key={'saveUserData'} 
                       onClick={()=>{
-                        console.log('theemailState: ', this.state);
                         this.props.actions.saveUserData(selectedUserId, 
                           {
                             name:this.state.name?this.state.name:selectedUserName,
                             email:this.state.email?this.state.email:selectedUserEmail,
-                            phone:this.state.phone? this.state.phone:selectedUserPhone
+                            phone:this.state.phone? this.state.phone:selectedUserPhone,
+                            currentBranch:this.state.branchId? this.state.branchId:selectedUserBranchId,
+                            currentRoomId:this.state.roomId? this.state.roomId:selectedUserRoomId
                           }
                         )
                       }} color="primary">
@@ -1302,12 +1356,11 @@ const ProfileStyled = withStyles(styles)(Profile);
 
 const makeMapStateToProps = () => {
   const getCurrentUser = makeGetCurrentUser();
-  const getCurrentUserGantnerLogs = makeGetCurrentUserGantnerLogs();
   const getSelectedUser = makeGetSelectedUser();
-  const getSelectedUserGantnerLogs = makeGetSelectedUserGantnerLogs();
   const getAllUsers = makeGetAllUsers();
+  const getBranch = makeGetBranch();
+  const getRooms = makeGetRoom();
   const getSessions = makeGetSessions();
-  const getBookings = makeGetBookings();
   const mapStateToProps = (state, props) => {
     // const currentUser = getCurrentUser(state, props);
     // const selectedUserId = (this.props && this.props.match && this.props.match.params && this.props.match.params.userId) || (currentUser && currentUser.get('id'));
@@ -1315,12 +1368,10 @@ const makeMapStateToProps = () => {
     return {
       currentUser: getCurrentUser(state, props),
       selectedUser: getSelectedUser(state,props),
-      currentUserGanterLogs: getCurrentUserGantnerLogs(state, props),
-      selectedUserGanterLogs: getSelectedUserGantnerLogs(state, props),
+      branch: getBranch(state, props),
+      rooms: getRooms(state, props),
       users: getAllUsers(state, props),
       sessions: getSessions(state, props),
-      bookings: getBookings(state, props),
-      allBookings: state.state && state.state.has('bookings') && state.state.hasIn(['bookings', 'bookingsById']) && state.state.getIn(['bookings', 'bookingsById']),
       isNative: state && state.state && state.state.get('isNative') ? true : false,
       isUploadingImage: state && state.state && state.state.get('isUploadingImage') ? true : false,
       uploadedImageURL: state && state.state && state.state.get('uploadedImageURL') ? state.state.get('uploadedImageURL') : null,
