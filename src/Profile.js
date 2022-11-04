@@ -1,4 +1,5 @@
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {withStyles, Chip, CircularProgress, Dialog, DialogActions, DialogContent,
@@ -205,6 +206,8 @@ class Profile extends React.Component {
     roomId: null,
     roomNumberLabel: '',
     roomNumber: '',
+    startDate: '',
+    remark: null,
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -691,12 +694,26 @@ class Profile extends React.Component {
     const selectedUserId = (this.props && this.props.match && this.props.match.params && this.props.match.params.userId) || (currentUser && currentUser.get('id'));
     const isCurrentUser = selectedUserId && currentUser && currentUser.get('id') === selectedUserId;
 
+    const editUserId = this.state.editDialogOpen ? this.state.editUserId : null;
+    const editUser = (this.state.editDialogOpen && editUserId !== 'NEW') ? this.props.selectedUser : null;
+    var editUserImage = editUser && editUser.has('image') ? editUser.get('image') : null;
+    if (this.state.editUserData && this.state.editUserData.image) {
+      editUserImage = this.state.editUserData.image;
+    }
+    var editUserAvatar = <PhotoCameraIcon style={{width:64, height:64}} />;
+    if (editUserImage) {
+      editUserAvatar = <Avatar style={{width:64, height:64, marginLeft:'auto', marginRight:'auto'}} src={editUserImage} />;
+    }
+
     var userData = isCurrentUser ? currentUser : this.props.selectedUser;
     const selectedUserName = userData && userData.has('name') && userData.get('name') ? userData.get('name') : null;
     const selectedUserMembershipCard = userData && userData.has('membershipCard') && userData.get('membershipCard') ? userData.get('membershipCard') : null;
     const selectedUserPhone = userData && userData.has('phone') && userData.get('phone') ? userData.get('phone') : null;
     const selectedUserEmail = userData && userData.has('email') && userData.get('email') ? userData.get('email') : null;
     const selectedUserBranchId = userData && userData.has('currentBranch') ? userData.get('currentBranch'):null;
+    const selectedUserStartDate = this.state.startDate? this.state.startDate:(userData && userData.has('autoMembershipStarts'))? userData.get('autoMembershipStarts'):'';
+    //const selectedUserStartDate = userData && userData.has('autoMembershipStarts') && userData.get('autoMembershipStarts') ? userData.get('autoMembershipStarts') : null;
+    const remark = userData && userData.has('remark') ? userData.get('remark'):'';
 
     // const selectedUserPackageId = userData && userData.has('packageId') ? userData.get('packageId') : null;
     // const selectedUserPackageData = selectedUserPackageId && packages && packages.has(selectedUserPackageId) ? packages.get(selectedUserPackageId) : null;
@@ -723,7 +740,7 @@ class Profile extends React.Component {
     const selectedUserImage = image ? image : (userData && userData.has('image') ? userData.get('image') : null);
     const selectedUserAvatar = selectedUserImage || (selectedUserName && selectedUserName.length > 0) ?
       (selectedUserImage ? (<Avatar src={selectedUserImage} style={{marginLeft:'auto', marginRight:'auto', width:128, height:128, fontSize:'3.5rem'}} />) : 
-     (<PhotoCamera style={{width:128, height:128, color:'#fff'}}/>)) 
+     (<PhotoCamera style={{width:128, height:128, color:'#D9E3F0'}}/>)) 
       :null;
 
     const selectedUserRoles = userData && userData.get('roles');
@@ -1065,6 +1082,7 @@ class Profile extends React.Component {
       }
     }).first();
     
+    console.log('canChangeImage123: ', canChangeImage);
     return (
       <div>
         <MenuAppBar/>
@@ -1077,8 +1095,8 @@ class Profile extends React.Component {
                 {userData &&
                   <div style={{backgroundColor:'#062845', paddingTop:96, paddingBottom:32}}>
                     {!canChangeImage &&
-                      <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
-                        <IconButton color="primary" component="span" style={{marginTop:32, marginBottom:32}} >
+                      <div style={{display:'flex', flex:1, backgroundColor:'red', marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+                        <IconButton color="primary" component="span" style={{backgroundColor:'red', marginTop:32, marginBottom:32}} >
                           {selectedUserImage || (selectedUserName && selectedUserName.length > 0) ?
                             (selectedUserImage ? (<Avatar src={selectedUserImage} style={{marginLeft:'auto', marginRight:'auto', width:128, height:128, fontSize:'3.5rem'}} />) : (<Avatar style={{marginLeft:'auto', marginRight:'auto', width:128, height:128, fontSize:'3.5rem'}}>{selectedUserName.charAt(0).toUpperCase()}</Avatar>)) :
                             null}
@@ -1086,10 +1104,10 @@ class Profile extends React.Component {
                       </div>
                       
                     }
-                    {(canChangeImage && this.props.isNative) &&
+                    {(!canChangeImage && !this.props.isNative) &&
                       <div>
                         <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
-                          <IconButton color="primary" component="span" style={{marginTop:0, marginBottom:0}} disabled={this.props.isUploadingImage} onClick={()=>this.props.actions.useNativeCamera()}>
+                          <IconButton color="primary" component="span" style={{marginTop:32, marginBottom:32}} disabled={this.props.isUploadingImage} onClick={()=>this.props.actions.useNativeCamera()}>
                             {selectedUserAvatar}
                           </IconButton>
                         </div>
@@ -1110,17 +1128,17 @@ class Profile extends React.Component {
                         }
                       </div>
                     }
-                    {(canChangeImage && !this.props.isNative) &&
+                    {(canChangeImage && this.props.isNative) &&
                       <div>
                         <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
                         <input accept="image/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} disabled={this.props.isUploadingImage} />
                           <label htmlFor="icon-button-file" >
-                            <IconButton color="primary" component="span" style={{marginTop:0, marginBottom:0}}>
+                            <IconButton color="#D9E3F0" component="span" style={{marginTop:0, marginBottom:0}}>
                               {selectedUserAvatar}
                             </IconButton>
                           </label>
                         </div>
-                        <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+                        <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center', padding:1, backgroundColor:'white'}}>
                         <input accept="image/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
                           <label htmlFor="icon-button-file" >
                             <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} >
@@ -1131,7 +1149,7 @@ class Profile extends React.Component {
                             </Button>
                           </label>
                         </div>
-                        {canSaveImage &&
+                        {
                           <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
                           <label>
                             <Button raised component="span" color='primary' key={'savePhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} onClick={()=>this.props.actions.saveUserData(selectedUserId, {image:this.state.image, imagePath:this.state.imagePath})}>
@@ -1182,7 +1200,7 @@ class Profile extends React.Component {
                   {editUserState? `HIDE`:`EDIT USER`}
                 </Button>
                 {editUserState &&
-                   <div style={{display:'flex', flex:1, marginLeft:10, marginRight:10, justifyContent:'center', flexDirection:'column'}}>
+                   <div style={{display:'flex', flex:1, marginLeft:10, marginRight:10, justifyContent:'center', flexDirection:'column',color:'primary'}}>
                       <TextField
                         margin="dense"
                         id="name"
@@ -1242,7 +1260,29 @@ class Profile extends React.Component {
                         />
                         </div>
                       }
+
+                      <TextField
+                      margin="dense"
+                      id="startDate"
+                      label="Start Date"
+                      type="date"
+                      defaultValue={selectedUserStartDate}
+                       value={selectedUserStartDate}
+                      fullWidth
+                      onChange={this.handleChange('startDate')}
+                      required
+                       />
                       
+                      <TextField
+                        margin="dense"
+                        id="remark"
+                        label="Notes/Remarks"
+                        defaultValue={remark}
+                        value={remark}
+                        fullWidth
+                        onChange={this.handleChange('remark')}
+                        required
+                      />
                     <Button key={'saveUserData'} 
                       onClick={()=>{
                         this.props.actions.saveUserData(selectedUserId, 
@@ -1251,7 +1291,12 @@ class Profile extends React.Component {
                             email:this.state.email?this.state.email:selectedUserEmail,
                             phone:this.state.phone? this.state.phone:selectedUserPhone,
                             currentBranch:this.state.branchId? this.state.branchId:selectedUserBranchId,
-                            currentRoomId:this.state.roomId? this.state.roomId:selectedUserRoomId
+                            currentRoomId:this.state.roomId? this.state.roomId:selectedUserRoomId,
+                            remark:this.state.remark,
+                            autoMembershipStarts:this.state.startDate? this.state.startDate:selectedUserStartDate,
+                            image:this.state.image, 
+                            imagePath:this.state.imagePath
+                            /// ni state picture baru x ada. letak kat sini
                           }
                         )
                       }} color="primary">
