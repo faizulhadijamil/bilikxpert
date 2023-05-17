@@ -3730,6 +3730,32 @@ export function addClass(name, description, instructorName, maxCapacity, venue, 
   }
 }
 
+// add room
+export function addRoom(roomNumber, branchId, monthlyDeposit, monthlyPrice, weeklyDeposit, weeklyPrice, dailyDeposit, dailyPrice, handleResponse){
+  return function action(dispatch, getState) {
+    dispatch(setAddingRoom(true));
+    const addClass = firebase.functions().httpsCallable('addRoom');
+    return addClass({roomNumber, branchId, monthlyDeposit, monthlyPrice, weeklyDeposit, weeklyPrice, dailyDeposit, dailyPrice}).then(roomRef=>{
+      const roomId = roomRef.data;
+     //console.log('classId: ', classId);
+      if(roomId){
+        // dispatch(getInvoiceAndDataById(invoiceId));
+        handleResponse({success:true, roomData: roomRef.data, roomId: roomRef.id});
+        // const newPath = `/payments/${invoiceId}`;
+        // if(getState().router.location.pathname !== newPath){
+        //   dispatch(push(newPath));
+        // }
+      }
+      else{
+        handleResponse({success:false, error:'error creating room'});
+      }
+      dispatch(setAddingRoom(false));
+    }).catch(error=>{
+      dispatch(setAddingRoom(false));
+    });
+  }
+}
+
 // manually add recurring to the users
 export function addRecurring(userId){
   return function action(dispatch, getState) {
@@ -4090,6 +4116,15 @@ export function viewPT(){
 export function viewClasses(){
   return function action(dispatch, getState) {
     const newPath = `/classes`;
+    if(getState().router.location.pathname !== newPath){
+      dispatch(push(newPath));
+    }
+  }
+}
+
+export function viewRooms(){
+  return function action(dispatch, getState) {
+    const newPath = `/rooms`;
     if(getState().router.location.pathname !== newPath){
       dispatch(push(newPath));
     }
@@ -4694,6 +4729,13 @@ export function setAddingInvoice(adding){
 export function setAddingClass(adding){
   return {
     type: 'SET_ADDING_CLASS',
+    adding
+  };
+}
+
+export function setAddingRoom(adding){
+  return {
+    type: 'SET_ADDING_ROOM',
     adding
   };
 }

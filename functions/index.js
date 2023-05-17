@@ -100,6 +100,38 @@ exports.addInvoiceForRental = functions.https.onCall((data, context) => {
   });
 });
 
+exports.addRoom = functions.https.onCall((data, context) => {
+  const roomNumber = data.roomNumber;
+  const branchId = data.branchId; 
+  const monthlyDeposit = data.monthlyDeposit;
+  const monthlyPrice = data.monthlyPrice;
+  const weeklyDeposit = data.weeklyDeposit; 
+  const weeklyPrice = data.weeklyPrice;
+  const dailyDeposit = data.dailyDeposit;
+  const dailyPrice = data.dailyPrice;
+
+  const timestamp = admin.firestore.FieldValue.serverTimestamp();
+
+  if(!roomNumber || !branchId){
+    console.log('Missing data', roomNumber, branchId);
+    return Promise.resolve();
+  }
+
+  console.log('Adding room...');
+  const roomDetails = {
+    createdAt : timestamp,
+    active:true,
+    isAvailable:true,
+    roomNumber, branchId, monthlyDeposit, monthlyPrice, weeklyDeposit, weeklyPrice, dailyDeposit, dailyPrice
+  }
+  return admin.firestore().collection('rooms').add(roomDetails).then(roomRef=>{
+    return roomRef.id;
+  }).catch((error)=>{
+    console.log('Error', error.message);
+    return Promise.resolve();
+  });
+});
+
 exports.modifyUser = functions.firestore
   .document('users/{userId}')
   .onWrite((change, context) => {

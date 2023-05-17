@@ -20,6 +20,7 @@ import Booking from './Booking'
 import Buy from './Buy'
 import Classes from './Classes';
 import createClass from './gymClass/createClass';
+import Rooms from './rooms';
 import Feed from './Feed'
 // import Payments from './Payments';
 //import PaymentsAdyen from './PaymentsAdyen';
@@ -101,9 +102,6 @@ class App extends Component {
 
   render() {
     const {classes} = this.props;
-
-
-    
     const user = this.props.state && this.props.state.has('user') && this.props.state.hasIn(['user', 'id']) ? this.props.state.get('user') : null;
     // const roles = user && user.get('roles');
     // const isAdmin = roles && roles.get('admin') === true;
@@ -228,7 +226,7 @@ class App extends Component {
             {/* <Route exact path='/testpage' component={testPage} /> */}
             {/* <Route exact path='/vendproductpage' component={vendProductPage} /> */}
             {/* <Route path='/referral' component={Referral} /> */}
-            {/* <Route path='/cnyangpow' component={CNYangpow} /> */}
+            <Route path='/rooms' component={Rooms} />
             <Route path='/createinvoice' component={createInvoice} />
             <Route path='/viewinvoices' component={viewInvoices} />
             <Route exact path='/people' component={People} />
@@ -289,7 +287,7 @@ class App extends Component {
             classes={{root:classes.bottomNav}}
           >
             <BottomNavigationAction label="Register" icon={<DateRange />} onClick={()=>this.props.actions.viewRegister()} />
-            <BottomNavigationAction label="Classes" icon={<Dashboard />} onClick={()=>this.props.actions.viewClasses()}/>
+            <BottomNavigationAction label="Rooms" icon={<Dashboard />} onClick={()=>this.props.actions.viewRooms()}/>
             { /*<BottomNavigationAction label={peopleLabel} icon={<PeopleIcon />} onClick={()=>this.props.actions.viewPeople()}/> */}
             {(user) &&
               <BottomNavigationAction label="Profile" icon={<PersonIcon />} onClick={()=>this.props.actions.viewProfile()}/>
