@@ -73,7 +73,7 @@ exports.addInvoiceForRental = functions.https.onCall((data, context) => {
   const remark = data.remark;
   const totalPrice = (monthlyDeposit+roomPrice).toFixed(2);
 
-  if (!userId || !branchId || !roomId || !packages || !roomPrice || !startDate || !endDate || !transDate || !mcId || !paymentType || !paymentStatus){
+  if (!userId || !branchId || !roomId || !roomPrice || !startDate || !endDate || !transDate || !paymentType || !paymentStatus){
     console.log('data missing....')
     return Promise.resolve();
   }
@@ -202,6 +202,8 @@ exports.modifyUser = functions.firestore
   }
 );
 
+
+
 // Once the generateInvoices function is called, any changes in invoices db will update the user db
 // todo:- send receipt to user email or phone number is status is paid
 exports.modifyInvoice = functions.firestore
@@ -230,7 +232,8 @@ exports.modifyInvoice = functions.firestore
   const paymentType = afterData.paymentType;
   const paymentStatus = afterData.paymentStatus; 
   const remark = afterData.remark;
-  const imgURL = afterData.imgURL
+  const imgURL = afterData.imgURL;
+  const invoiceId = afterRef.id;
 
   // if(!beforeRef.exists || !userId){
   //   //new
@@ -263,7 +266,8 @@ exports.modifyInvoice = functions.firestore
         userId, totalPrice, 
         branchId, roomId, packages, monthlyDeposit, roomPrice,
         startDate, endDate, transDate, mcId, paymentType, paymentStatus, 
-        remark, imgURL
+        remark, imgURL,
+        invoiceId
       });
       // todo:- send receipt to member
       // return sendReceiptEmail(email, name, totalPrice, afterRef.id, date);
@@ -278,4 +282,35 @@ exports.modifyInvoice = functions.firestore
     return Promise.resolve();
   }
 });
+
+exports.modifyPayment = functions.firestore
+  .document('payments/{paymentId}')
+  .onWrite((change, context) => {
+
+    const document = (change.after && change.after.exists) ? change.after.data() : ((change.before && change.before.exists) ? change.before.data() : null);
+    if(!document){
+      //deleted
+      console.log('removing payment: ', document);
+      return null;
+    }
+    // Get an object with the previous document value (for update or delete)
+    // const oldDocument = event.data.previous.data();
+
+    // perform desired operations ...
+    const userId = document && document.userId;
+    const type = document && document.type;
+
+    if (userId) {
+      console.log("Payment updated - touching userId", userId);
+      const timestamp = admin.firestore.FieldValue.serverTimestamp();
+      let updatedPayment = {paymentsUpdatedAt:timestamp};
+      // if payment were made, which is not complimentary month and membership type, change complimentary promo to false
+      updatedPayment = {paymentsUpdatedAt:timestamp}
+      return admin.firestore().collection('users').doc(userId).update(updatedPayment);
+    }
+    else{
+      return Promise.resolve();
+    }
+  }
+);
 

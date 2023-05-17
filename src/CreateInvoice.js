@@ -1,15 +1,14 @@
 
   import {bindActionCreators} from 'redux';
   import {connect} from 'react-redux';
-  import {withStyles, Button, Typography, Card, CardMedia, TextField, MenuItem, CircularProgress, IconButton, Avatar
+  import {withStyles, Button, Typography, Card, CardMedia, TextField, MenuItem, CircularProgress, IconButton, Avatar, FormLabel, Chip
   } from '@material-ui/core';
   
   import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
   import React from 'react';
 
-  import AddIcon from '@material-ui/icons/Add';
-  import RemoveIcon from '@material-ui/icons/Remove';
+  import IntegrationAutosuggest from './IntegrationAutosuggest';
   import moment from 'moment';
   import BabelLogo from './BabelLogo';
   import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
@@ -290,7 +289,7 @@ var ismobile = window.innerWidth<=550?true:false;
       roomPrice: '',
       startDate: '',
       endDate: '',
-      transDate:null,
+      transDate:'',
       mcId:null,
       icnumber: '',
       className: '',
@@ -394,7 +393,7 @@ var ismobile = window.innerWidth<=550?true:false;
       }
    
       updatedState[name] = value;
-      this.setState({ ...updatedState
+        this.setState({ ...updatedState
       });
     }
 
@@ -409,11 +408,20 @@ var ismobile = window.innerWidth<=550?true:false;
       
     }
     
+    handleAutosuggest = (name, value) => {
+      //console.log('handleAutosuggestName:', name);
+      //console.log('handleAutosuggestValue:', value);
+      var valueMap = {};
+      valueMap[name] = value;
+      this.setState({ ...valueMap });
+    }
+
     render() {
         const {classes} = this.props;
         const currentUser = this.props.currentUser;
         const roles = currentUser && currentUser.get('roles');
         const selectedUser = this.props.selectedUser;
+        const staff = this.props.staff || null;
         // console.log('currentUser: ', currentUser);
         // console.log('selectedUser: ', selectedUser);
         // const selectedUserId = (this.props && this.props.match && this.props.match.params && this.props.match.params.userId) || (currentUser && currentUser.get('id'));
@@ -431,6 +439,14 @@ var ismobile = window.innerWidth<=550?true:false;
 
         const {currentSelectedRoomNumber} = this.state;
         // console.log('currentSelectedRoomNumber: ', currentSelectedRoomNumber);
+
+        const mcId = this.state.mcId;
+        const mc = mcId && staff && staff.get(mcId) ? staff.get(mcId) : null;
+        const mcName = mc && mc.has('name') ? mc.get('name') : null;
+        const mcImage = mc && mc.has('image') ? mc.get('image') : null;
+        const mcAvatar = mcImage || (mcName && mcName.length > 0) ?
+          (mcImage ? (<Avatar src={mcImage} />) : (<Avatar>{mcName.charAt(0).toUpperCase()}</Avatar>)) :
+          null;
 
         const branch = this.props.branch || null;
         const selectedUserCurrentBranch = (selectedUserData && selectedUserData.has('currentBranch'))? selectedUserData.get('currentBranch'):this.state.branch;
@@ -479,7 +495,7 @@ var ismobile = window.innerWidth<=550?true:false;
         const selectedUserCRO = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('mcId'):this.state.mcId;
         const selectedCROData = users && users.get(selectedUserCRO);
         //console.log('selectedRoomData: ', selectedRoomData);
-        const selectedUserMcId = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('mcId'):null;
+        // const selectedUserMcId = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('mcId'):null;
         //console.log('selectedUserRoomNumber: ', selectedUserRoomNumber);
 
         // console.log('selectedUserName: ', selectedUserName);
@@ -555,7 +571,7 @@ var ismobile = window.innerWidth<=550?true:false;
                 value={selectedUserName}
                 fullWidth
                 onChange={this.handleChange('name')}
-                disabled={true}
+                // disabled={true}
                 // required
               />
               <TextField
@@ -567,7 +583,7 @@ var ismobile = window.innerWidth<=550?true:false;
                 value={selectedUserPhone}
                 fullWidth
                 onChange={this.handleChange('phone')}
-                disabled={true}
+                // disabled={true}
                 required
               />
               <TextField
@@ -578,7 +594,7 @@ var ismobile = window.innerWidth<=550?true:false;
                 value={selectedUserBranchName}
                 fullWidth
                 onChange={this.handleChange('currentBranchName')}
-                disabled={true}
+                // disabled={true}
                 // required
               />
               <TextField
@@ -589,7 +605,7 @@ var ismobile = window.innerWidth<=550?true:false;
                 value={selectedUserRoomNumber}
                 fullWidth
                 onChange={this.handleChange('roomNumber')}
-                disabled={true}
+                // disabled={true}
                 required
               />
               {/* <TextField
@@ -617,7 +633,7 @@ var ismobile = window.innerWidth<=550?true:false;
                <MenuItem value="Day">Day</MenuItem>
               </TextField>
 
-              <TextField
+              {/* <TextField
                 margin="dense"
                 id="deposit"
                 label="Deposit"
@@ -626,7 +642,8 @@ var ismobile = window.innerWidth<=550?true:false;
                 fullWidth
                 onChange={this.handleChange('monthlyDeposit')}
                 required
-              />
+              /> */}
+
               <TextField
                 margin="dense"
                 id="roomPrice"
@@ -717,7 +734,7 @@ var ismobile = window.innerWidth<=550?true:false;
                <MenuItem value="Unpaid">UNPAID</MenuItem>
               </TextField>
 
-              <TextField
+              {/* <TextField
                 margin="dense"
                 id="mcId"
                 label="Customer's Relation Officer"
@@ -725,9 +742,9 @@ var ismobile = window.innerWidth<=550?true:false;
                 value={(selectedCROData && selectedCROData.has('name'))? selectedCROData.get('name'):''}
                 fullWidth
                 onChange={this.handleChange('mcId')}
-                disabled={true}
+                // disabled={true}
                 // required
-              />
+              /> */}
 
               <TextField
                 margin="dense"
@@ -765,12 +782,13 @@ var ismobile = window.innerWidth<=550?true:false;
                   selectedUserCurrentBranch, 
                   selectedUserCurrentRoom, 
                   selectedUserPackage, // hardcode temporary
-                  this.state.monthlyDeposit? this.state.monthlyDeposit: selectedUserDeposit,
+                  this.state.monthlyDeposit? this.state.monthlyDeposit: null,
                   this.state.roomPrice? this.state.roomPrice:selectedRoomPrice,
                   this.state.startDate? this.state.startDate:selectedUserStartDate,
                   this.state.endDate? this.state.endDate:selectedUserEndDate,
                   this.state.transDate,
-                  this.state.mcId? this.state.mcId:selectedUserMcId,
+                  null,
+                  // this.state.mcId? this.state.mcId:selectedUserMcId,
                   this.state.paymentType,
                   this.state.paymentStatus? this.state.paymentStatus.toUpperCase():'UNPAID',
                   this.state.remark? this.state.remark:null,
