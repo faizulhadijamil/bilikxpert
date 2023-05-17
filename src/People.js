@@ -328,7 +328,8 @@ class People extends React.Component {
                 {staffLevel6 && this.renderUserList('Taman Midah', 'midahMember', searchText, selectedStaffId, true, true)}
                 {true && (isSuperUser || isAdmin) && this.renderUserList('New', 'new', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Cahaya Hanson', 'hansonMember', searchText, selectedStaffId, true, false)}
-                {staffLevel6 && this.renderUserList('Melawati', 'melawatiMember', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Melawati 1', 'melawatiMember', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Melawati 2', 'melawati2Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Wangsa Maju 1', 'wangsa1Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Wangsa Maju 2', 'wangsa2Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Wangsa Maju 3', 'wangsa3Member', searchText, selectedStaffId, true, false)}

@@ -14,6 +14,7 @@ import {
   makeGetHansonMemberItems,
   makeGetMidahMemberItems,
   makeGetMelawatiMemberItems,
+  makeGetMelawati2MemberItems,
   makeGetCempakaMemberItems,
   makeGetIndahMemberItems,
   makeGetMajuMemberItems,
@@ -265,7 +266,12 @@ const makeMapStateToProps = () => {
         const getMelawatiItems = makeGetMelawatiMemberItems();
         items = getMelawatiItems(state, props)
         break;
-      }     
+      }
+      case 'melawati2Member':{
+        const getMelawati2Items = makeGetMelawati2MemberItems();
+        items = getMelawati2Items(state, props)
+        break;
+      }          
       case 'midahMember':{
         const getMidahItems = makeGetMidahMemberItems();
         items = getMidahItems(state, props)

@@ -177,7 +177,7 @@ function getRoomSuggestion (rooms, inputValue){
     const keep =
       // (!inputValue || suggestion.label.toLowerCase().includes(inputValue.toLowerCase())) &&
       (isAvailable && (!inputValue || (roomNumber && roomNumber.toLowerCase().includes(inputValue.toLowerCase())))) &&
-      count < 5;
+      count < 9;
 
     if (keep) {
       count += 1;

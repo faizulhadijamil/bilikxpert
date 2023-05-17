@@ -729,6 +729,27 @@ const getMelawatiMemberItems = createSelector(
   }
 );
 
+export const makeGetMelawati2MemberItems = () => {
+  return getMelawati2MemberItems;
+}
+
+const getMelawati2MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByMelawatiMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'pgUPhs4isKYwnSR3qyVQ'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByMelawatiMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
 export const makeGetCempakaMemberItems = () => {
   return getCempakaMemberItems;
 }
