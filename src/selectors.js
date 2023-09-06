@@ -750,6 +750,27 @@ const getMelawati2MemberItems = createSelector(
   }
 );
 
+export const makeGetMelawati3MemberItems = () => {
+  return getMelawati3MemberItems;
+}
+
+const getMelawati3MemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByMelawatiMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'X9Z7a5UfUsTs2yKWDO1h'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByMelawatiMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
 export const makeGetCempakaMemberItems = () => {
   return getCempakaMemberItems;
 }
@@ -1149,6 +1170,26 @@ const getCahaya7MemberItems = createSelector(
   }
 );
 
+export const makeGetWatanMemberItems = () => {
+  return getWatanMemberItems;
+}
+
+const getWatanMemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByWatanMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === '7Sf8M3rZbcfn8SCyEDzW'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByWatanMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
 
 export const makeGetComplementaryMemberItems = () => {
   return getComplementaryMembersItems;
@@ -1764,6 +1805,8 @@ const itemForMember = (member, id, packages, staff = null, staffId = null, backg
   const packageData = ((packageId && packages) && packages.get(packageId)) || null;
   const packageName = (packageData && packageData.get('name')) || null;
   const roomId = (member.get('currentroomId')) || null;
+  // console.log('rooms itemForMember: ', rooms);
+  // const roomNumber = roomId && 
 
 
   // const roomData = rooms && rooms.get(roomId);
@@ -1799,6 +1842,7 @@ const itemForMember = (member, id, packages, staff = null, staffId = null, backg
 
   const avatarImage = (member.get('image') && member.get('image').replace(encodeURIComponent('images/'), encodeURIComponent('images/thumb_64_'))) || null;
   const avatarName = primaryText && typeof primaryText === 'string' && primaryText.trim().length > 0 ? primaryText.trim().charAt(0) : 'X';
+  // const avatarRoomNumber = member.get('currentRoomId') && 
 
   if(!backgroundColor){
     var bgroundColor = '#fff';
@@ -2179,7 +2223,7 @@ const getSelectedUserPaymentItems = createSelector(
     if (userStartDate && selectedUserPayments){
       
       selectedUserPayments.toKeyedSeq().forEach((v,k)=>{
-        const paymentCreatedDate = getTheDate(v.get('createdAt'));
+        const paymentCreatedDate = getTheDate(v.get('transDate'))? getTheDate(v.get('transDate')):getTheDate(v.get('createdAt'));
         const paymentSource = v.get('source');
         const paymentType = v.get('paymentType');
         const cardSummary = v.get('cardSummary');

@@ -20,7 +20,7 @@ import Booking from './Booking'
 import Buy from './Buy'
 import Classes from './Classes';
 import createClass from './gymClass/createClass';
-import Rooms from './rooms';
+import Rooms from './Rooms';
 import Feed from './Feed'
 // import Payments from './Payments';
 //import PaymentsAdyen from './PaymentsAdyen';

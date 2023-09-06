@@ -1228,14 +1228,17 @@ class PersonCard extends React.Component {
   });
 
   const editUserDataRoomId = editUserData && editUserData.roomId;
-  var editUserDataRoomNumber;
+  var editUserDataRoomNumber, selectedRoomNumber;
   roomsData && roomsData.filter((x,y)=>{
     if (y === editUserDataRoomId){
       editUserDataRoomNumber = x.get('roomNumber');
       return true;
     }
+    if (y === selectedUserRoomId){
+      selectedRoomNumber = x.get('roomNumber');
+      return true
+    }
   });
-
     
     // console.log('selectedUserRoomId: ', selectedUserRoomId)
     return (
@@ -1281,6 +1284,9 @@ class PersonCard extends React.Component {
                       }
                       {selectedUserLastVisit &&
                         <ListItem divider>Last Visit <Chip className={classes.userDetailChip} label={selectedUserLastVisit}/></ListItem>
+                      }
+                      {selectedUserRoomId &&
+                        <ListItem divider>Room No <Chip className={classes.userDetailChip} label={selectedRoomNumber}/></ListItem>
                       }
                       {selectedUserTrainer &&
                         <ListItem divider>Trainer {selectedUserTrainerChip}</ListItem>

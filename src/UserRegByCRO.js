@@ -316,8 +316,8 @@ class UserRegByCRO extends React.Component {
   handleContinueRegister = () => {
    console.log('handleContinueRegister state: ', this.state);
     // todo error checking...
-    if (!this.state.name || (this.state.name && this.state.name.length<5)){
-     // console.log('invalid name');
+    if (!this.state.name || (this.state.name && this.state.name.length<4)){
+     console.log('invalid name');
       return;
     }
     else if (!this.state.phone || (this.state.phone && this.state.phone.length<5)){
@@ -337,7 +337,7 @@ class UserRegByCRO extends React.Component {
         currentRoomId: this.state.roomId,
         autoMembershipStarts:this.state.autoMembershipStarts? this.state.autoMembershipStarts:moment().tz('Asia/Kuala_Lumpur').format('YYYY-MM-DD'),
         mcId: this.state.mcId,
-        nric: this.state.nric,
+        nric: this.state.nric? this.state.nric:null,
         ...this.state  
     }
 

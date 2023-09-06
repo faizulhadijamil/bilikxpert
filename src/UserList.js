@@ -15,6 +15,7 @@ import {
   makeGetMidahMemberItems,
   makeGetMelawatiMemberItems,
   makeGetMelawati2MemberItems,
+  makeGetMelawati3MemberItems,
   makeGetCempakaMemberItems,
   makeGetIndahMemberItems,
   makeGetMajuMemberItems,
@@ -34,6 +35,7 @@ import {
   makeGetCahaya5MemberItems,
   makeGetCahaya6MemberItems,
   makeGetCahaya7MemberItems,
+  makeGetWatanMemberItems,
   makeGetActiveMemberItems,
   makeGetActiveMemberItemsKLCC,
   makeGetActiveMemberItemsTTDI,
@@ -271,7 +273,12 @@ const makeMapStateToProps = () => {
         const getMelawati2Items = makeGetMelawati2MemberItems();
         items = getMelawati2Items(state, props)
         break;
-      }          
+      }
+      case 'melawati3Member':{
+        const getMelawati2Items = makeGetMelawati3MemberItems();
+        items = getMelawati2Items(state, props)
+        break;
+      }            
       case 'midahMember':{
         const getMidahItems = makeGetMidahMemberItems();
         items = getMidahItems(state, props)
@@ -370,6 +377,11 @@ const makeMapStateToProps = () => {
       case 'cahaya7Member':{
         const getCahaya7Items = makeGetCahaya7MemberItems();
         items = getCahaya7Items(state, props)
+        break;
+      }
+      case 'watanMember':{
+        const getWatanItems = makeGetWatanMemberItems();
+        items = getWatanItems(state, props)
         break;
       }
       case 'activeKLCC':{

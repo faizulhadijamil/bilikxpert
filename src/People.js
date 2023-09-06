@@ -330,13 +330,15 @@ class People extends React.Component {
                 {staffLevel6 && this.renderUserList('Cahaya Hanson', 'hansonMember', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Melawati 1', 'melawatiMember', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Melawati 2', 'melawati2Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Melawati 3', 'melawati3Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Watan', 'watanMember', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Wangsa Maju 1', 'wangsa1Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Wangsa Maju 2', 'wangsa2Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Wangsa Maju 3', 'wangsa3Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Wangsa Maju 4', 'wangsa4Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Wangsa Maju 5', 'wangsa5Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Wangsa Maju 6', 'wangsa6Member', searchText, selectedStaffId, true, false)}
-                {staffLevel6 && this.renderUserList('Wangsa Maju 7', 'wangsa6Member', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Wangsa Maju 7', 'wangsa7Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Cempaka', 'cempakaMember', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Pandan Cahaya 1', 'cahaya1Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Pandan Cahaya 2', 'cahaya2Member', searchText, selectedStaffId, true, false)}
