@@ -344,7 +344,7 @@ function setUsersById(userMap, state) {
       const membershipStarts = userData.autoMembershipStarts ? userData.autoMembershipStarts : userData.membershipStarts;
       const membershipEnds = userData.autoMembershipEnds ? userData.autoMembershipEnds : userData.membershipEnds;
       const packageId = userData && userData.packageId;
-      const isComplimentaryPackage = packageId && (packageId === 'yKLfNYOPzXHoAiknAT24' || packageId === 'L6sJtsKG68LpEUH3QeD4');
+      const currentRoomId = userData && userData.currentRoomId;
 
       // const cancelled = userData && (userData.cancellationDate || userData.cancellationReason) ? true : false;
       const cancelled = userData && (userData.cancellationDate && moment(getTheDate(userData.cancellationDate)).isSameOrBefore(moment(), 'day')) ? true : false;
@@ -353,12 +353,13 @@ function setUsersById(userMap, state) {
       if(cancelled){
         cancelledMembers[userId] = userData;
       }
-      else if (packageId && membershipStarts 
+      else if (currentRoomId && membershipStarts 
         && (moment(getTheDate(membershipStarts)) < moment()) 
         && membershipEnds && moment(getTheDate(membershipEnds)) >= moment()){
+          // console.log('active member: ', userData && userData.name);
         activeMembers[userId] = userData;
       }
-      else if (packageId && membershipStarts 
+      else if (currentRoomId && membershipStarts 
         && (moment(getTheDate(membershipStarts)) < moment()) 
         && membershipEnds && moment(getTheDate(membershipEnds)) < moment()){
         expiredCount += 1;

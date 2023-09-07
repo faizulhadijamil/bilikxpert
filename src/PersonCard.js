@@ -773,7 +773,6 @@ class PersonCard extends React.Component {
     const branchesData = this.props.branch || null;
     const branchSize = branchesData && branchesData.size;
     const branchId = this.state.branch || null;
-    console.log('theBranchId: ', branchId);
 
     const roomsData = this.props.rooms || null;
     const selectedRoomId = this.state.roomId;
@@ -1200,7 +1199,7 @@ class PersonCard extends React.Component {
     }
 
     // console.log('editUserData: ', editUserData);
-    const currentUserPkgId = editUser && editUser.has('packageId') ? editUser.get('packageId') : '';
+    const currentUserBranchId = userData && userData.get('currentBranch');
     const editUserPackageName = editUserPackage && editUserPackage.get('name');
 
     const selectedUserRoomId = userData && userData.has('currentRoomId') ? userData.get('currentRoomId') : null; 
@@ -1210,17 +1209,21 @@ class PersonCard extends React.Component {
    
     const editUserRoomId = editUser && editUser.get('currentRoomId');
 
-    var editUserBranchName = '';
-    const editUserBranch = branchesData && branchesData.filter((x, key)=>{
+    var editUserBranchName = '', selectedUserBranchNama='';
+    branchesData && branchesData.filter((x, key)=>{
       if (key === editUserBranchId){
         editUserBranchName = x.has('name')? x.get('name'):'';
           return true;
+      }
+      if (currentUserBranchId && (key === currentUserBranchId)){
+        selectedUserBranchNama = x.has('name')? x.get('name'):'';
+        return true;
       }
       return false;
   }).first();
 
   var editUserRoomNumber;
-  const editRoomData = roomsData && roomsData.filter((x,y)=>{
+  roomsData && roomsData.filter((x,y)=>{
     if (y === editUserRoomId){
       editUserRoomNumber = x.get('roomNumber');
       return true;
@@ -1284,6 +1287,9 @@ class PersonCard extends React.Component {
                       }
                       {selectedUserLastVisit &&
                         <ListItem divider>Last Visit <Chip className={classes.userDetailChip} label={selectedUserLastVisit}/></ListItem>
+                      }
+                       {branchSize && branchSize>0 && branchesData && selectedUserRoomId && 
+                        <ListItem divider>Branch <Chip className={classes.userDetailChip} label={selectedUserBranchNama}/></ListItem>
                       }
                       {selectedUserRoomId &&
                         <ListItem divider>Room No <Chip className={classes.userDetailChip} label={selectedRoomNumber}/></ListItem>

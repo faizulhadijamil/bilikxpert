@@ -161,11 +161,11 @@ class UserList extends React.Component {
      
       // var listMap = {};
       (items) && items.forEach(item => {
-        // console.log('theItems123: ', item)
+        // console.log('theItemsUserList: ', item)
         if (!this.props.showAll && (newItems.length >= this.state.itemsToLoad || (!isOpen && !(items && (items.length < 5))))) {
           return;
         }
-        newItems.push(<UserListItem key={item.id} id={item.id} primaryText={item.primaryText} secondaryText={item.secondaryText} avatarImage={item.avatarImage} avatarName={item.avatarName} selectAction={this.props.showAll ? viewAction : selectAction} viewAction={viewAction} backgroundColor={item.backgroundColor} type={this.props.type}/>)
+        newItems.push(<UserListItem key={item.id} id={item.id} primaryText={item.primaryText} secondaryText={item.secondaryText} avatarImage={item.avatarImage} avatarName={item.avatarName} avatarNumber={item.avatarRoomNumber} selectAction={this.props.showAll ? viewAction : selectAction} viewAction={viewAction} backgroundColor={item.backgroundColor} type={this.props.type}/>)
       });
     }
 

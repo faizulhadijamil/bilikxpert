@@ -3,6 +3,7 @@ import moment from 'moment';
 
 import {getTheDate} from './actions';
 import { object } from 'firebase-functions/lib/providers/storage';
+import rooms from './Rooms';
 // const getVisibilityFilter = (state, props) =>
 //   state.todoLists[props.listId].visibilityFilter
 //
@@ -165,7 +166,7 @@ const getBranches = (state,props) => state.state && state.state.hasIn(['branches
 export const getBranchesList = createSelector(
   [ getBranches ],
   (branches) => {
-    console.log('theBranches package: ', branches);
+    // console.log('theBranches package: ', branches);
     return branches || null;
   }
 );
@@ -429,7 +430,7 @@ const getNewUserItems = createSelector(
         }
       });
       const sortedNewUsers = sortBy(newUsers, 'joinDate').reverse();
-      return filteredItemsForUsers(sortedNewUsers, searchText, packages, null, null, filteredStaffId);
+      return filteredItemsForUsers(sortedNewUsers, searchText, packages, null, null, filteredStaffId, null, null);
     }
   }
 );
@@ -545,24 +546,9 @@ export const makeGetActiveMemberItemsTTDI = () => {
   return getActiveMembersItemsTTDI;
 }
 const getActiveMembersItems = createSelector(
-  [ getActiveMembers, getFreezePayments, getPackages, getSearchTextState, getFilteredStaffId ],
-  (activeMembers, freezePayments, packages, searchText, filteredStaffId) => {
-    const filteredActiveMembers = filterByFreezePayments(freezePayments, activeMembers, false);
-    const filteredWithoutComplimentaryMembers = filterByActiveWithoutComplimentary(filteredActiveMembers);
-    activeMembers && activeMembers.toKeyedSeq().forEach((v,k)=>{
-      if (k === 'NYPGHFkYMCoKFArIe3bq'){
-        console.log('theK :', k);
-      }
-    });
-    filteredActiveMembers && filteredActiveMembers.toKeyedSeq().forEach((v,k)=>{
-      // console.log('theK filtered 2:', k);
-      if (k === 'NYPGHFkYMCoKFArIe3bq'){
-        console.log('theK filtered :', k);
-      }
-    });
-    // return filteredItemsForUsers(filteredActiveMembers, searchText, packages, null, null, filteredStaffId);
-    console.log('searchText: ', searchText);
-    return filteredItemsForUsers(filteredWithoutComplimentaryMembers, searchText, packages, null, null, filteredStaffId);
+  [ getActiveMembers, getPackages, getSearchTextState, getFilteredStaffId, getRooms ],
+  (activeMembers, packages, searchText, filteredStaffId, rooms) => {
+    return filteredItemsForUsers(activeMembers, searchText, packages, null, null, filteredStaffId, 'white', rooms);
   }
 );
 
@@ -673,6 +659,7 @@ export const makeGetHansonMemberItems = () => {
 const getHansonMemberItems = createSelector(
   [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
   (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    console.log('getHansonRooms: ', rooms);
     const filteredByHansonMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1764,6 +1751,7 @@ const filteredItemsForUsers = (users, searchText, packages, staff, staffId, filt
   if(!users){
     return null;
   }
+  console.log('filteredItemsForUsers rooms: ', backgroundColor);
   var userItems = [];
   users.toKeyedSeq().forEach((v,k)=>{
     if(userMatchesSearchText(v, k, searchText, filteredStaffId)){
@@ -1805,8 +1793,11 @@ const itemForMember = (member, id, packages, staff = null, staffId = null, backg
   const packageData = ((packageId && packages) && packages.get(packageId)) || null;
   const packageName = (packageData && packageData.get('name')) || null;
   const roomId = (member.get('currentroomId')) || null;
-  // console.log('rooms itemForMember: ', rooms);
-  // const roomNumber = roomId && 
+  const roomData = (roomId && rooms) && rooms.get(roomId) || null;
+  const roomNumber = roomData && roomData.get('roomNumber') || null
+  console.log('rooms itemForNumber: ', rooms)
+  // console.log('roomNumber itemForMember: ', roomNumber);
+  
 
 
   // const roomData = rooms && rooms.get(roomId);
@@ -1842,7 +1833,8 @@ const itemForMember = (member, id, packages, staff = null, staffId = null, backg
 
   const avatarImage = (member.get('image') && member.get('image').replace(encodeURIComponent('images/'), encodeURIComponent('images/thumb_64_'))) || null;
   const avatarName = primaryText && typeof primaryText === 'string' && primaryText.trim().length > 0 ? primaryText.trim().charAt(0) : 'X';
-  // const avatarRoomNumber = member.get('currentRoomId') && 
+  // const avatarRoomNumber = member.get('currentRoomId') && ;
+  // console.log('avatarRoomNumber selector: ', avatarRoomNumber);
 
   if(!backgroundColor){
     var bgroundColor = '#fff';

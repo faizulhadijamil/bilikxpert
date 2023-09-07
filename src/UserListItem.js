@@ -30,6 +30,7 @@ class UserListItem extends React.Component {
       secondaryText,
       avatarImage,
       avatarName,
+      avatarRoomNumber,
       id,
       selectAction,
       viewAction,
@@ -39,11 +40,13 @@ class UserListItem extends React.Component {
     } = this.props;
 
     var avatar; // = <PersonIcon />
-    if (avatarImage) {
-      avatar = (<Avatar style={{width:44, height:44, marginRight:15}} src={avatarImage} />);
-    } else {
-      avatar = (<Avatar style={{width:44, height:44, marginRight:15}}>{avatarName}</Avatar>);
-    }
+    avatar = (<Avatar style={{width:44, height:44, marginRight:15}} src={avatarRoomNumber} />)
+    // if (avatarImage) {
+    //   avatar = (<Avatar style={{width:44, height:44, marginRight:15}} src={avatarImage} />);
+    // } else {
+
+    //   avatar = (<Avatar style={{width:44, height:44, marginRight:15}}>{avatarName}</Avatar>);
+    // }
 
     // console.log('render', viewAction);
 
