@@ -349,10 +349,11 @@ class People extends React.Component {
                 {staffLevel6 && this.renderUserList('Pandan Cahaya 5', 'cahaya5Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Pandan Cahaya 6', 'cahaya6Member', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Pandan Cahaya 7', 'cahaya7Member', searchText, selectedStaffId, true, false)}
-                {staffLevel6 && this.renderUserList('Cahaya Maju', 'majuMember', searchText, selectedStaffId, true, false)}
-                {staffLevel6 && this.renderUserList('Cahaya Warisan', 'warisanMember', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Maju', 'majuMember', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Warisan', 'warisanMember', searchText, selectedStaffId, true, false)}
+                {staffLevel6 && this.renderUserList('Oscar', 'oscarMember', searchText, selectedStaffId, true, false)}
                 {staffLevel6 && this.renderUserList('Taman Tenaga', 'tenagaMember', searchText, selectedStaffId, true, false)}
-                {staffLevel6 && this.renderUserList('Active TTDI', 'activeTTDI', searchText, selectedStaffId, true, false)}
+                {false && staffLevel6 && this.renderUserList('Active TTDI', 'activeTTDI', searchText, selectedStaffId, true, false)}
                 {/* {staffLevel6 && this.renderUserList('Billing Today/Overdue (KLCC)', 'expiredKLCC', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')}
                 {staffLevel6 && this.renderUserList('Billing Today/Overdue (TTDI)', 'expiredTTDI', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')} */}
 

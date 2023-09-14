@@ -842,6 +842,27 @@ const getWarisanMemberItems = createSelector(
   }
 );
 
+export const makeGetOscarMemberItems = () => {
+  return getOscarMemberItems;
+}
+
+const getOscarMemberItems = createSelector(
+  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
+  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+    const filteredByOscarMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === '6MxzoGlE18Q0Ak5onXYk'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByOscarMember, searchText, null, null, null, filteredStaffId, rooms);
+  }
+);
+
 export const makeGetTenagaMemberItems = () => {
   return getTenagaMemberItems;
 }

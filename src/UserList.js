@@ -20,6 +20,7 @@ import {
   makeGetIndahMemberItems,
   makeGetMajuMemberItems,
   makeGetWarisanMemberItems,
+  makeGetOscarMemberItems,
   makeGetTenagaMemberItems,
   makeGetWangsa1MemberItems,
   makeGetWangsa2MemberItems,
@@ -302,6 +303,11 @@ const makeMapStateToProps = () => {
       case 'warisanMember':{
         const getWarisanItems = makeGetWarisanMemberItems();
         items = getWarisanItems(state, props)
+        break;
+      }
+      case 'oscarMember':{
+        const getOscarItems = makeGetOscarMemberItems();
+        items = getOscarItems(state, props)
         break;
       }
       case 'tenagaMember':{
