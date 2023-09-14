@@ -415,22 +415,23 @@ const inGymArray = (gantnerLogs) =>{
 }
 
 const getNewUserItems = createSelector(
-  [ getUsers, getPackages, getSearchTextState, getFilteredStaffId ],
-  (users, packages, searchText, filteredStaffId) => {
+  [ getUsers, getPackages, getSearchTextState, getStaff, getFilteredStaffId ],
+  (users, packages, searchText, staffs, filteredStaffId) => {
     // console.log('getNewUserItems: ', users);
     if (users && users.size>0){
       const newUsers = users.filter(x=>{
-        const joinDate = x.get('joinDate')? getTheDate(x.get('joinDate')):null;
-        const isSameDay = moment(joinDate).isSame(moment(), 'day');
-        if(joinDate && isSameDay){
+        const joinDate = x.get('createdAt')? getTheDate(x.get('createdAt')):null;
+        // const isSameDay = moment(joinDate).isSame(moment(), 'day');
+        const isSameMonth = moment(joinDate).isSame(moment(), 'months');
+        if(joinDate && isSameMonth){
           return true;
         }else{
           // console.log('joinDateFalse: ', moment(joinDate));
           return false;
         }
       });
-      const sortedNewUsers = sortBy(newUsers, 'joinDate').reverse();
-      return filteredItemsForUsers(sortedNewUsers, searchText, packages, null, null, filteredStaffId, null, null);
+      const sortedNewUsers = sortBy(newUsers, 'createdAt').reverse();
+      return filteredItemsForUsers(sortedNewUsers, searchText, packages, null, staffs, filteredStaffId, null, null);
     }
   }
 );
@@ -546,9 +547,9 @@ export const makeGetActiveMemberItemsTTDI = () => {
   return getActiveMembersItemsTTDI;
 }
 const getActiveMembersItems = createSelector(
-  [ getActiveMembers, getPackages, getSearchTextState, getFilteredStaffId, getRooms ],
-  (activeMembers, packages, searchText, filteredStaffId, rooms) => {
-    return filteredItemsForUsers(activeMembers, searchText, packages, null, null, filteredStaffId, 'white', rooms);
+  [ getActiveMembers, getPackages, getSearchTextState, getFilteredStaffId, getRooms, getBranches ],
+  (activeMembers, packages, searchText, filteredStaffId, rooms, branches) => {
+    return filteredItemsForUsers(activeMembers, searchText, packages, null, null, filteredStaffId, 'green', rooms, branches);
   }
 );
 
@@ -657,9 +658,9 @@ export const makeGetHansonMemberItems = () => {
 }
 
 const getHansonMemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
-    console.log('getHansonRooms: ', rooms);
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
+    // console.log('getHansonRooms: ', rooms);
     const filteredByHansonMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -670,7 +671,7 @@ const getHansonMemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByHansonMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByHansonMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -679,8 +680,8 @@ export const makeGetMidahMemberItems = () => {
 }
 
 const getMidahMemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByMidahMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -691,7 +692,7 @@ const getMidahMemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByMidahMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByMidahMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -700,8 +701,8 @@ export const makeGetMelawatiMemberItems = () => {
 }
 
 const getMelawatiMemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByMelawatiMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -712,7 +713,7 @@ const getMelawatiMemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByMelawatiMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByMelawatiMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -721,8 +722,8 @@ export const makeGetMelawati2MemberItems = () => {
 }
 
 const getMelawati2MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByMelawatiMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -733,7 +734,7 @@ const getMelawati2MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByMelawatiMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByMelawatiMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -742,8 +743,8 @@ export const makeGetMelawati3MemberItems = () => {
 }
 
 const getMelawati3MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByMelawatiMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -754,7 +755,7 @@ const getMelawati3MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByMelawatiMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByMelawatiMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -763,8 +764,8 @@ export const makeGetCempakaMemberItems = () => {
 }
 
 const getCempakaMemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByCempakaMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -775,7 +776,7 @@ const getCempakaMemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByCempakaMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByCempakaMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -784,8 +785,8 @@ export const makeGetIndahMemberItems = () => {
 }
 
 const getIndahMemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByIndahMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -796,7 +797,7 @@ const getIndahMemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByIndahMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByIndahMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -805,8 +806,8 @@ export const makeGetMajuMemberItems = () => {
 }
 
 const getMajuMemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByMajuMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -817,7 +818,7 @@ const getMajuMemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByMajuMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByMajuMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -826,8 +827,8 @@ export const makeGetWarisanMemberItems = () => {
 }
 
 const getWarisanMemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByWarisanMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -838,7 +839,7 @@ const getWarisanMemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByWarisanMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByWarisanMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -847,8 +848,8 @@ export const makeGetOscarMemberItems = () => {
 }
 
 const getOscarMemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByOscarMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -859,7 +860,7 @@ const getOscarMemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByOscarMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByOscarMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -868,8 +869,8 @@ export const makeGetTenagaMemberItems = () => {
 }
 
 const getTenagaMemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByTenagaMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -880,7 +881,7 @@ const getTenagaMemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByTenagaMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByTenagaMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -889,8 +890,8 @@ export const makeGetWangsa1MemberItems = () => {
 }
 
 const getWangsa1MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByWangsa1Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -901,7 +902,7 @@ const getWangsa1MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByWangsa1Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByWangsa1Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -910,8 +911,8 @@ export const makeGetWangsa2MemberItems = () => {
 }
 
 const getWangsa2MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByWangsa2Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -922,7 +923,7 @@ const getWangsa2MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByWangsa2Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByWangsa2Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -931,8 +932,8 @@ export const makeGetWangsa3MemberItems = () => {
 }
 
 const getWangsa3MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByWangsa3Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -943,7 +944,7 @@ const getWangsa3MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByWangsa3Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByWangsa3Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -952,8 +953,8 @@ export const makeGetWangsa4MemberItems = () => {
 }
 
 const getWangsa4MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByWangsa4Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -964,7 +965,7 @@ const getWangsa4MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByWangsa4Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByWangsa4Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -973,8 +974,8 @@ export const makeGetWangsa5MemberItems = () => {
 }
 
 const getWangsa5MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByWangsa5Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -985,7 +986,7 @@ const getWangsa5MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByWangsa5Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByWangsa5Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -994,8 +995,8 @@ export const makeGetWangsa6MemberItems = () => {
 }
 
 const getWangsa6MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByWangsa6Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1006,7 +1007,7 @@ const getWangsa6MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByWangsa6Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByWangsa6Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1015,8 +1016,8 @@ export const makeGetWangsa7MemberItems = () => {
 }
 
 const getWangsa7MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByWangsa7Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1027,7 +1028,7 @@ const getWangsa7MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByWangsa7Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByWangsa7Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1036,8 +1037,8 @@ export const makeGetCahaya1MemberItems = () => {
 }
 
 const getCahaya1MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByCahaya1Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1048,7 +1049,7 @@ const getCahaya1MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByCahaya1Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByCahaya1Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1057,8 +1058,8 @@ export const makeGetCahaya2MemberItems = () => {
 }
 
 const getCahaya2MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByCahaya2Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1069,7 +1070,7 @@ const getCahaya2MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByCahaya2Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByCahaya2Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1078,8 +1079,8 @@ export const makeGetCahaya3MemberItems = () => {
 }
 
 const getCahaya3MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByCahaya3Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1090,7 +1091,7 @@ const getCahaya3MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByCahaya3Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByCahaya3Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1099,8 +1100,8 @@ export const makeGetCahaya4MemberItems = () => {
 }
 
 const getCahaya4MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByCahaya4Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1111,7 +1112,7 @@ const getCahaya4MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByCahaya4Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByCahaya4Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1120,8 +1121,8 @@ export const makeGetCahaya5MemberItems = () => {
 }
 
 const getCahaya5MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByCahaya5Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1132,7 +1133,7 @@ const getCahaya5MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByCahaya5Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByCahaya5Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1141,8 +1142,8 @@ export const makeGetCahaya6MemberItems = () => {
 }
 
 const getCahaya6MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByCahaya6Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1153,7 +1154,7 @@ const getCahaya6MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByCahaya6Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByCahaya6Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1162,8 +1163,8 @@ export const makeGetCahaya7MemberItems = () => {
 }
 
 const getCahaya7MemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByCahaya7Member = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1174,7 +1175,7 @@ const getCahaya7MemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByCahaya7Member, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByCahaya7Member, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1183,8 +1184,8 @@ export const makeGetWatanMemberItems = () => {
 }
 
 const getWatanMemberItems = createSelector(
-  [getUsers, getActiveMembers, getRooms, getSearchTextState, getFilteredStaffId ],
-  (allUsers, activeMembers, rooms, searchText, filteredStaffId) => {
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
     const filteredByWatanMember = allUsers && allUsers.filter(x=>{  
       const currentBranchId = x.get('currentBranch');
       const currentRoomId = x.get('currentRoomId');
@@ -1195,7 +1196,7 @@ const getWatanMemberItems = createSelector(
         return false;
       }
     });
-    return filteredItemsForUsers(filteredByWatanMember, searchText, null, null, null, filteredStaffId, rooms);
+    return filteredItemsForUsers(filteredByWatanMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1460,8 +1461,8 @@ const filterByFreezePayments = (freezePayments, members, isFrozen = false) => {
 }
 
 const getExpiredMembersItems = createSelector(
-  [ getExpiredMembers, getPackages, getSearchTextState, getStaff, getFilteredStaffId ],
-  (expiredMembers, packages, searchText, staff, filteredStaffId) => {
+  [ getExpiredMembers, getPackages, getRooms, getBranches, getSearchTextState, getStaff, getFilteredStaffId ],
+  (expiredMembers, packages, rooms, branches, searchText, staff, filteredStaffId) => {
     const groupedExpiredMembers = expiredMembers && expiredMembers.groupBy(x=>{
       return x.get('mcId') || null
     }).sort((a,b)=>{
@@ -1486,7 +1487,7 @@ const getExpiredMembersItems = createSelector(
     var filteredExpiredMemberItems = [];
     groupedExpiredMembers && groupedExpiredMembers.forEach((v,k)=>{
       // console.log(k, v);
-      const batch = filteredItemsForUsers(v, searchText, packages, staff, k || null, filteredStaffId);
+      const batch = filteredItemsForUsers(v, searchText, packages, staff, k || null, filteredStaffId, null, rooms, branches);
       // const batch = filteredItemsForUsers(v, searchText, packages, staff, k || null, filteredStaffId, '#F71A38');
       if(batch.length>0){
         filteredExpiredMemberItems = filteredExpiredMemberItems.concat(batch);
@@ -1702,9 +1703,9 @@ export const makeGetNeedsMembershipCardItems = () => {
 }
 
 const getCancelledMembersItems = createSelector(
-  [ getCancelledMembers, getPackages, getSearchTextState, getFilteredStaffId ],
-  (cancelledMembers, packages, searchText, filteredStaffId) => {
-    return filteredItemsForUsers(cancelledMembers, searchText, packages, null, null, filteredStaffId);
+  [ getCancelledMembers, getPackages, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (cancelledMembers, packages, rooms, branches, searchText, filteredStaffId) => {
+    return filteredItemsForUsers(cancelledMembers, searchText, packages, null, null, filteredStaffId, null, rooms, branches);
   }
 );
 
@@ -1768,15 +1769,15 @@ export const makeGetAdminItems = () => {
   return getAdminItems;
 }
 
-const filteredItemsForUsers = (users, searchText, packages, staff, staffId, filteredStaffId, backgroundColor = null, rooms = null) => {
+const filteredItemsForUsers = (users, searchText, packages, staff, staffId, filteredStaffId, backgroundColor = null, rooms = null, branches = null) => {
   if(!users){
     return null;
   }
-  console.log('filteredItemsForUsers rooms: ', backgroundColor);
+  // console.log('filteredItemsForUsers rooms: ', backgroundColor);
   var userItems = [];
   users.toKeyedSeq().forEach((v,k)=>{
     if(userMatchesSearchText(v, k, searchText, filteredStaffId)){
-      userItems.push(itemForMember(v, k, packages, staff, staffId, backgroundColor, rooms));
+      userItems.push(itemForMember(v, k, packages, staff, staffId, backgroundColor, rooms, branches));
     }
   });
   return userItems;
@@ -1807,29 +1808,27 @@ const userMatchesSearchText = (v, k, searchText, filteredStaffId) => {
   return true;
 }
 
-const itemForMember = (member, id, packages, staff = null, staffId = null, backgroundColor=null, rooms = null) =>{
+const itemForMember = (member, id, packages, staff = null, staffId = null, backgroundColor=null, rooms = null, branches = null) =>{
   const primaryText = member.get('name') || 'No Name';
-
   const packageId = member.get('packageId') || null;
   const packageData = ((packageId && packages) && packages.get(packageId)) || null;
   const packageName = (packageData && packageData.get('name')) || null;
-  const roomId = (member.get('currentroomId')) || null;
+  const roomId = (member.get('currentRoomId')) || null;
   const roomData = (roomId && rooms) && rooms.get(roomId) || null;
-  const roomNumber = roomData && roomData.get('roomNumber') || null
-  console.log('rooms itemForNumber: ', rooms)
-  // console.log('roomNumber itemForMember: ', roomNumber);
+  const roomNumber = roomData && roomData.get('roomNumber') || null;
+  const branchId = (member.get('currentBranch')) || null;
+  const branchData = (branchId && branches) && branches.get(branchId) || null;
+  const branchName = branchData && branchData.get('name') || null;
   
-
-
   // const roomData = rooms && rooms.get(roomId);
   // const roomNumber = roomData && roomData.roomNumber;
 
-  var secondaryText = packageName;
+  var secondaryText = branchName;
   if(member && member.get('tier')){
     secondaryText = `Tier ${member.get('tier')}`;
   }
   if(staff ||staffId){
-    const staffData = staff.get(staffId) || null;
+    const staffData = (staff && staff.get(staffId)) || null;
     const staffName = (staffData && staffData.get('name')) || null;
     if(staffName){
       secondaryText = `${secondaryText} (${staffName})`
@@ -1854,13 +1853,14 @@ const itemForMember = (member, id, packages, staff = null, staffId = null, backg
 
   const avatarImage = (member.get('image') && member.get('image').replace(encodeURIComponent('images/'), encodeURIComponent('images/thumb_64_'))) || null;
   const avatarName = primaryText && typeof primaryText === 'string' && primaryText.trim().length > 0 ? primaryText.trim().charAt(0) : 'X';
-  // const avatarRoomNumber = member.get('currentRoomId') && ;
-  // console.log('avatarRoomNumber selector: ', avatarRoomNumber);
+  const avatarRoomNumber = roomNumber && roomNumber.toString();
+  // avatarName && console.log('avatarName selector: ', avatarName);
+  // avatarRoomNumber && console.log('avatarRoomNumber selector: ', avatarRoomNumber);
 
   if(!backgroundColor){
     var bgroundColor = '#fff';
     const membershipEnds =  member.get('autoMembershipEnds')
-    if(packageId){
+    if(roomId){
       if(member.get('cancellationDate') && moment(getTheDate(member.get('cancellationDate'))).isSameOrBefore(moment(), 'day')){
         bgroundColor = '#ccc';
       }else if(membershipEnds && moment(getTheDate(membershipEnds)).isSameOrBefore(moment(), 'day')){
@@ -1878,7 +1878,7 @@ const itemForMember = (member, id, packages, staff = null, staffId = null, backg
     }
     backgroundColor = bgroundColor;
   }
-  return {id, primaryText, secondaryText, avatarImage, avatarName, backgroundColor};
+  return {id, primaryText, secondaryText, avatarImage, avatarName, avatarRoomNumber, backgroundColor};
 }
 
 const itemForInGym = (member, id, createdAt) =>{

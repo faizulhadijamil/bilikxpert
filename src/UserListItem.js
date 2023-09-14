@@ -40,7 +40,7 @@ class UserListItem extends React.Component {
     } = this.props;
 
     var avatar; // = <PersonIcon />
-    avatar = (<Avatar style={{width:44, height:44, marginRight:15}} src={avatarRoomNumber} />)
+    avatar = (<Avatar style={{width:44, height:44, marginRight:15, backgroundColor:'#062845', color:'white'}}> {avatarRoomNumber} </Avatar>)
     // if (avatarImage) {
     //   avatar = (<Avatar style={{width:44, height:44, marginRight:15}} src={avatarImage} />);
     // } else {
