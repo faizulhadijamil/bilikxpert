@@ -323,7 +323,7 @@ class People extends React.Component {
             </Grid>
                 {false && isAdmin && this.renderUserList('All Users', 'allUsers', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}
                 {staffLevel2 && this.renderUserList('Active', 'active', searchText, selectedStaffId, true, false)}
-                {staffLevel6 && this.renderUserList('Expired', 'expired', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')}
+                {staffLevel6 && this.renderUserList('Outstanding', 'expired', searchText, selectedStaffId, true, false, 'rgb(247, 26, 56)')}
                 {true && (isSuperUser || isAdmin) && this.renderUserList('New', 'new', searchText, selectedStaffId, true, false)}
                 {false && staffLevel6 && this.renderUserList('Customers Needs Attention (Hotel)', 'CustomersNeedsAttentionHotel', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}
                 {false && staffLevel6 && this.renderUserList('Customers Needs Attention (Bilik Sewa)', 'CustomersNeedsAttentionBilikSewa', searchText, selectedStaffId, true, true, 'rgb(255, 117, 27)')}

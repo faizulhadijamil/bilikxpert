@@ -2522,15 +2522,15 @@ const getSelectedUserPaymentItems = createSelector(
       // console.log('userFreeze: ', userFreezes);
       membershipHistoryList.forEach((x, indexx)=>{
         if (combinedData && combinedData.length>0 && indexx<combinedData.length){
-          const visitText = combinedData[indexx].visitLeft? `(${combinedData[indexx].visitLeft}/${combinedData[indexx].visitMax})`:null;
+          // const visitText = combinedData[indexx].visitLeft? `(${combinedData[indexx].visitLeft}/${combinedData[indexx].visitMax})`:null;
           const referredUserTxt = (combinedData[indexx].referredUser!=null)?combinedData[indexx].referredUser:null;
           const paymentDate = combinedData[indexx].paymentDate? combinedData[indexx].paymentDate:combinedData[indexx].date;
           const paymentType = combinedData[indexx].paymentType? combinedData[indexx].paymentType:null;
           const cardSummary = combinedData[indexx].cardSummary? combinedData[indexx].cardSummary:null;
           const cardExpired = combinedData[indexx].cardExpired? combinedData[indexx].cardExpired:null;
           const freezeTypeText = combinedData[indexx].freezeType? combinedData[indexx].freezeType:null;
-          console.log('combinedData[indexx].paymentType: ', combinedData[indexx]);
-          secondaryText = createSecondaryText(combinedData[indexx].paymentType, paymentDate, paymentType, cardSummary, cardExpired, visitText, combinedData[indexx].price, referredUserTxt, freezeCount, freezeTypeText);
+          // console.log('combinedData[indexx].paymentType: ', combinedData[indexx]);
+          secondaryText = createSecondaryText(combinedData[indexx].paymentType, paymentDate, paymentType, cardSummary, cardExpired, null, combinedData[indexx].price, referredUserTxt, freezeCount, freezeTypeText);
           combinedItems[indexx].secondaryText = secondaryText;
           combinedItems[indexx].primaryText = `${combinedItems[indexx].effectiveDate.format('D MMM')} - ${combinedItems[indexx].effectiveDate.add(1, 'month').subtract(1, 'days').format('D MMM YYYY')}`
           combinedItems[indexx].bgroundColor = combinedData[indexx].bgroundColor? combinedData[indexx].bgroundColor : null;
