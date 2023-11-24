@@ -277,8 +277,8 @@ var ismobile = window.innerWidth<=550?true:false;
   class CreateInvoice extends React.Component {
   
     state = {
-        currentSelectedUserId:null,
-        currentSelectedRoomId:null,
+      currentSelectedUserId:null,
+      currentSelectedRoomId:null,
       email: null,
       name: '',
       phone: '',
@@ -289,7 +289,7 @@ var ismobile = window.innerWidth<=550?true:false;
       roomPrice: '',
       startDate: '',
       endDate: '',
-      transDate:'',
+      transDate:moment().tz('Asia/Kuala_Lumpur').format('YYYY-MM-DD'),
       mcId:null,
       icnumber: '',
       className: '',
@@ -302,7 +302,6 @@ var ismobile = window.innerWidth<=550?true:false;
       checked:false,
       refSource: null,
       mcId: null,
-      package:'Month',
       paymentType:'Cash',
       paymentStatus:'PAID',
       disableContinueButton:false,
@@ -311,8 +310,6 @@ var ismobile = window.innerWidth<=550?true:false;
       mainImgUrl:null,
       bottomImgUrl:null,
       showSelection:true,
-      showKLCC:true,
-      showTTDI:false,
       showTermNCondition:false,
       showKeyInDetails:false,
       showLoading:false,
@@ -323,7 +320,6 @@ var ismobile = window.innerWidth<=550?true:false;
   
     componentDidMount() {
         const pathname = this.props.location && this.props.location.pathname;
-        console.log('pathname: ', pathname);
         const pathStringSplit = pathname && pathname.split("/");
         console.log('pathStringSplit: ', pathStringSplit);
         if (pathStringSplit && pathStringSplit.length===3){
@@ -462,9 +458,6 @@ var ismobile = window.innerWidth<=550?true:false;
         const selectedUserRoomNumber = (selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('roomNumber'):'';
         //console.log('selectedUserRoomNumber: ', selectedUserRoomNumber);
 
-        const selectedUserDeposit = this.state.monthlyDeposit? this.state.monthlyDeposit:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.has('monthlyDeposit')? selectedRoomData.get('monthlyDeposit'):'':'';
-       // console.log('selectedUserDeposit: ', selectedUserDeposit);
-
         //const selectedCurrentRoomNumber = rooms && rooms.get(currentSelectedRoomNumber);
         //const selectedRoomData = users && users.get(currentSelectedUserId);
         //const currentRoomId = users && users.get(currentRoomId);
@@ -475,7 +468,6 @@ var ismobile = window.innerWidth<=550?true:false;
         
         const selectedUserPackage = this.state.package? this.state.package:(selectedUserData && selectedUserData.has('package'))? selectedUserData.get('package'):'';
         
-        //  const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedRoomData && selectedRoomData.has('monthlyDeposit'))? selectedRoomData.get('monthlyDeposit'):'';
         const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('monthlyPrice'):'';
         //console.log('selectedRoomPrice: ', selectedRoomPrice);
         //const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedRoomData && selectedRoomData.has('monthlyPrice'))? selectedRoomData.get('monthlyPrice'):'RM650';
@@ -526,7 +518,7 @@ var ismobile = window.innerWidth<=550?true:false;
            <div>
 
           <Typography type="display1" component="h1" color="primary" style={{textAlign:'center', marginBottom:32}}>
-            Welcome to BilikXpert Invoice
+            Rental Invoice
           </Typography>
 
           <div>
@@ -621,8 +613,8 @@ var ismobile = window.innerWidth<=550?true:false;
 
               <TextField 
               margin="dense"
-              id="package" 
-               label="Package"
+              id="contract" 
+              label="Contract"
                value={this.state.package} 
                defaultValue={'Month'}
                onChange={this.handleChange('package')}
@@ -633,16 +625,16 @@ var ismobile = window.innerWidth<=550?true:false;
                <MenuItem value="Day">Day</MenuItem>
               </TextField>
 
-              {/* <TextField
+              <TextField
                 margin="dense"
                 id="deposit"
                 label="Deposit"
-                // defaultValue={selectedUserDeposit}
-                value={selectedUserDeposit}
+                defaultValue={this.state.monthlyDeposit}
+                value={this.state.monthlyDeposit}
                 fullWidth
                 onChange={this.handleChange('monthlyDeposit')}
                 required
-              /> */}
+              />
 
               <TextField
                 margin="dense"
@@ -781,7 +773,8 @@ var ismobile = window.innerWidth<=550?true:false;
                   currentSelectedUserId, 
                   selectedUserCurrentBranch, 
                   selectedUserCurrentRoom, 
-                  selectedUserPackage, // hardcode temporary
+                  // selectedUserPackage, // hardcode temporary
+                  this.state.package? this.state.package:'Month',
                   this.state.monthlyDeposit? this.state.monthlyDeposit: null,
                   this.state.roomPrice? this.state.roomPrice:selectedRoomPrice,
                   this.state.startDate? this.state.startDate:selectedUserStartDate,
@@ -798,7 +791,6 @@ var ismobile = window.innerWidth<=550?true:false;
                     if (response){
                       this.setState({disableContinueButton:false});
                       this.setState({showCircularProgress:false});
-                      
                     }
                   })
   

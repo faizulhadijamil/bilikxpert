@@ -193,37 +193,57 @@ exports.modifyUser = functions.firestore
         paymentsResults.forEach(doc=>{  
           paymentsForUser.push(doc.data());
         });
-        // sort the payment data
-        // paymentsForUser.sort((a,b)=>{
-        //   var dateA = a.createdAt;
-        //   var dateB = b.createdAt;
-        //   if (dateA < dateB) {return -1}
-        //   if (dateA > dateB) {return 1}
-        //   return 0;
-        // });
+
+
+        // sort the payment data by createdDate
+        // paymentsForUser.sort((a,b)=>{b.createdAt.toDate() - a.createdAt.toDate()});
+        // sort the payment data by endDate
+        paymentsForUser.sort((a,b)=>{b.endDate.toDate() - a.endDate.toDate()});
 
         var months = 0;
-        var endMoment = moment(getTheDate(membershipStarts)).tz('Asia/Kuala_Lumpur').startOf('day');
-        // console.log('momentMembershipStart: ', endMoment.format('DD MM YYYY'));
 
-        //total up paid membership months without freeze
-        paymentsForUser.forEach(payment=>{
-          const renewalTerm = payment.renewalTerm ? payment.renewalTerm : 'month';
-          const quantity = payment.quantity ? payment.quantity : 1;
-          // const freeMonthQuantity = payment.freeMonthQuantity? payment.freeMonthQuantity:0;
-          if((renewalTerm.includes('month') || !renewalTerm)){
-            months += quantity;
+        // if found any daily package, ignore monthly. endmoment should follow from the invoice or payment
+        var endMoment;
+        // console.log('momentMembershipStart: ', endMoment.format('DD MM YYYY'));
+        var isDaily = false;
+        for (let i = 0; i < paymentsForUser.length; i++) {
+          if ((paymentsForUser[i].packages && paymentsForUser[i].packages === "Day" && paymentsForUser[i].endDate)||
+          (paymentsForUser[i].packages && paymentsForUser[i].packages === "Week" && paymentsForUser[i].endDate)){
+            // endMoment = moment(getTheDate(paymentsForUser[i].endDate)).tz('Asia/Kuala_Lumpur').startOf('day').add(14, 'hours');
+            endMoment = moment(getTheDate(paymentsForUser[i].endDate));
+            // console.log('endMomentDaily: ', endMoment);
+            isDaily = true;
+            // break;
           }
-        });
-        // console.log('years: ', years);
-        endMoment.add(moment.duration({months:months}));
-        const autoMembershipEnds = endMoment.tz('Asia/Kuala_Lumpur').toDate();
-        if(moment(getTheDate(membershipStarts)).isSame(moment(autoMembershipEnds), 'day')){
-          updates.autoMembershipEnds = null;
         }
-        else{
-          updates.autoMembershipEnds = autoMembershipEnds;
+
+        // for monthly
+        if (!isDaily){
+          endMoment = moment(getTheDate(membershipStarts)).tz('Asia/Kuala_Lumpur').startOf('day');
+          //total up paid membership months without freeze
+          paymentsForUser.forEach(payment=>{
+            const renewalTerm = payment.package ? payment.package : 'Month';
+            const quantity = payment.quantity ? payment.quantity : 1;
+            // const freeMonthQuantity = payment.freeMonthQuantity? payment.freeMonthQuantity:0;
+            if((renewalTerm.includes('onth') || !renewalTerm)){
+              months += quantity;
+            }
+            // if (renewalTerm.includes('Day')){
+            //   days += quantity;
+            // }
+          });
+          // console.log('years: ', years);
+          endMoment.add(moment.duration({months:months}));
         }
+   
+        const autoMembershipEnds = isDaily? endMoment.tz('Asia/Kuala_Lumpur').startOf('day').add(13, 'hours').toDate():endMoment.startOf('day').tz('Asia/Kuala_Lumpur').toDate();
+        updates.autoMembershipEnds = autoMembershipEnds;
+        // if(moment(getTheDate(membershipStarts)).isBefore(moment(autoMembershipEnds), 'day')){
+        //   updates.autoMembershipEnds = null;
+        // }
+        // else{
+        //   updates.autoMembershipEnds = autoMembershipEnds;
+        // }
       }
       // updates.updatedAt = timestamp;
       console.log('modifyUserUpdates: ', updates);

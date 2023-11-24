@@ -104,8 +104,6 @@ const styles = theme => ({
   fileInput: {display: 'none'},
 });
 
-const joinOptions = ["Cahaya Maju", "Cahaya Warisan", "Cahaya Midah", "Cahaya Hanson", "Pandan Cahaya", "Pandan Indah", "Cempaka", "Tenaga", "Wangsa Maju"];
-
 class UserRegByCRO extends React.Component {
 
   state = {
@@ -127,8 +125,6 @@ class UserRegByCRO extends React.Component {
     imagePath:null,
     postcode:null,
     slideshowOpen:true,
-    joinOption:joinOptions[0],
-
     showDetails:false
   }
 
@@ -224,10 +220,9 @@ class UserRegByCRO extends React.Component {
     // });
     // console.log('enteredUserId: ', enteredUserId);
 
-    const joinOption = this.state.joinOption;
     const isPromo = this.props.match.path === '/promo';
     if (enteredUserId && !isPromo) {
-      const checkInOption = (joinOption === 'KLCC')? 'App - Registration (KLCC)':'App - Registration';
+      const checkInOption = 'App - Registration';
       //console.log('checkIn Option: ', checkInOption);
       this.props.actions.addCheckIn(enteredUserId, checkInOption);
       setTimeout(() => {
@@ -245,7 +240,6 @@ class UserRegByCRO extends React.Component {
         mcId: this.state.mcId,
         refSource: this.state.refSource,
         postcode:this.state.postcode,
-        firstJoinVisit:this.state.joinOption,
         achieveTarget:this.state.achieveTargetSource
       }
 
@@ -324,19 +318,20 @@ class UserRegByCRO extends React.Component {
       //console.log('invalid phone');
       return;
     }
-    else if (!this.state.branch){
-      //console.log('no branch');
-      return;
-    }
+    // allo without branch
+    // else if (!this.state.branch){
+    //   //console.log('no branch');
+    //   return;
+    // }
 
     var userData = {
         email: this.state.email,
         name: this.state.name,
         phone: this.state.phone,
-        currentBranch: this.state.branch,
-        currentRoomId: this.state.roomId,
+        currentBranch: this.state.branch? this.state.branch:null,
+        currentRoomId: this.state.roomId? this.state.roomId:null,
         autoMembershipStarts:this.state.autoMembershipStarts? this.state.autoMembershipStarts:moment().tz('Asia/Kuala_Lumpur').format('YYYY-MM-DD'),
-        mcId: this.state.mcId,
+        mcId: this.state.mcId? this.state.mcId:null,
         nric: this.state.nric? this.state.nric:null,
         ...this.state  
     }
@@ -368,7 +363,6 @@ class UserRegByCRO extends React.Component {
   }
 
   handleContinueRegistration = () => {this.setState({continueRegistration: true})}
-  handleChangeJoinOptions = (event, value) => {this.setState({ joinOption:value });};
 
   handleCompleteSignUp = () => {
     if (this.props.currentUser && this.props.currentUser.get('id')) {
@@ -511,30 +505,6 @@ class UserRegByCRO extends React.Component {
     //console.log(isValidEmail, isValidName, isValidPhone, isValidReferralSource, isValidConsultant, !checkinDisabled);
     // console.log('refSOurce: ', this.state.refSource);
 
-
-    const {joinOption} = this.state;
-    const radioButtonOptionsLayout = 
-    <FormControl style={{marginTop:16}} component="fieldset" className={classes.formControl}>
-      <FormLabel component="legend">Branch that you rent?</FormLabel>
-      <RadioGroup
-        aria-label="Location"
-        name="joinOptions"
-        className={classes.group}
-        value={joinOption}
-        onChange={this.handleChangeJoinOptions}
-      >
-        <FormControlLabel value={joinOptions[0]} control={<Radio />} label={joinOptions[0]} />
-        <FormControlLabel value={joinOptions[1]} control={<Radio />} label={joinOptions[1]} />
-        <FormControlLabel value={joinOptions[2]} control={<Radio />} label={joinOptions[2]} />
-        <FormControlLabel value={joinOptions[3]} control={<Radio />} label={joinOptions[3]} />
-        <FormControlLabel value={joinOptions[4]} control={<Radio />} label={joinOptions[4]} />
-        <FormControlLabel value={joinOptions[5]} control={<Radio />} label={joinOptions[5]} />
-        <FormControlLabel value={joinOptions[6]} control={<Radio />} label={joinOptions[6]} />
-        <FormControlLabel value={joinOptions[7]} control={<Radio />} label={joinOptions[7]} />
-      </RadioGroup>
-    </FormControl>;
-
-    
 
     var signUpDisabled = false;
     if (this.props.emailNeedsSignUpDetails) {
@@ -771,7 +741,6 @@ class UserRegByCRO extends React.Component {
                   </div>
                 }
                 {postCodeTextInput}
-                {radioButtonOptionsLayout}
               </div>
             }
               <Button raised color='primary' key={'continue2'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} onClick={()=>{
@@ -848,8 +817,6 @@ class UserRegByCRO extends React.Component {
               </div>
             }
             {postCodeTextInput}
-
-            {radioButtonOptionsLayout}
             <Button raised color='primary' key={'checkin'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} onClick={()=>this.handleCheckin(enteredUserId)} disabled={!(isValidEmail && isValidName && isValidPhone && isValidRefSource && isValidAchieveTarget && isValidPostCode && isValidConsultant && !checkinDisabled)}>
               {isPromo ? 'Continue' : 'Check In'}
             </Button>
