@@ -641,8 +641,8 @@ var ismobile = window.innerWidth<=550?true:false;
                 id="roomPrice"
                 label="Room Price"
                 type="price"
-                defaultValue={selectedRoomPrice}
-                value={selectedRoomPrice}
+                defaultValue={this.state.roomPrice}
+                value={this.state.roomPrice}
                 fullWidth
                 onChange={this.handleChange('roomPrice')}
                 required
