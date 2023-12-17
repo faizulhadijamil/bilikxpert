@@ -14,9 +14,12 @@
   },
   "main": "index.js",
   "dependencies": {
+    "@google-cloud/local-auth": "^2.1.0",
     "eslint-plugin-promise": "^6.0.1",
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.18.0",
+    "google-auth-library": "^9.4.1",
+    "googleapis": "^105.0.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.37"
   },

@@ -7,6 +7,8 @@ const admin = require("firebase-admin");
 const moment = require('moment-timezone');
 admin.initializeApp();
 
+exports.googleSheets = require('./files/googleSheets');
+
 const timestamp = admin.firestore.FieldValue.serverTimestamp();
 
 
@@ -195,24 +197,27 @@ exports.modifyUser = functions.firestore
         });
 
 
-        // sort the payment data by createdDate
-        // paymentsForUser.sort((a,b)=>{b.createdAt.toDate() - a.createdAt.toDate()});
+        // sorting sometimes doesnt work?
         // sort the payment data by endDate
-        paymentsForUser.sort((a,b)=>{b.endDate.toDate() - a.endDate.toDate()});
+        // paymentsForUser.sort((a,b)=>{b.endDate.toDate() - a.endDate.toDate()});
 
         var months = 0;
 
         // if found any daily package, ignore monthly. endmoment should follow from the invoice or payment
         var endMoment;
+        var latestEndMoment;
         // console.log('momentMembershipStart: ', endMoment.format('DD MM YYYY'));
         var isDaily = false;
         for (let i = 0; i < paymentsForUser.length; i++) {
           if ((paymentsForUser[i].packages && paymentsForUser[i].packages === "Day" && paymentsForUser[i].endDate)||
           (paymentsForUser[i].packages && paymentsForUser[i].packages === "Week" && paymentsForUser[i].endDate)){
             // endMoment = moment(getTheDate(paymentsForUser[i].endDate)).tz('Asia/Kuala_Lumpur').startOf('day').add(14, 'hours');
-            endMoment = moment(getTheDate(paymentsForUser[i].endDate));
-            // console.log('endMomentDaily: ', endMoment);
+            latestEndMoment = moment(getTheDate(paymentsForUser[i].endDate));
+            // console.log('endMomentDailyWeekly: ', latestEndMoment);
             isDaily = true;
+            if (!endMoment || endMoment.isBefore(latestEndMoment)){
+              endMoment = latestEndMoment;
+            }
             // break;
           }
         }
