@@ -73,7 +73,8 @@ exports.addInvoiceForRental = functions.https.onCall((data, context) => {
   const paymentStatus = data.paymentStatus? data.paymentStatus:'PAID'; 
   const paid = data.paymentStatus && data.paymentStatus === 'PAID'? true:false;
   const remark = data.remark;
-  const totalPrice = (monthlyDeposit+roomPrice).toFixed(2);
+  // const totalPrice = (monthlyDeposit+roomPrice).toFixed(2); need to check again 
+  const totalPrice = parseFloat(roomPrice).toFixed(2);
 
   if (!userId || !branchId || !roomId || !roomPrice || !startDate || !endDate || !transDate || !paymentType || !paymentStatus){
     console.log('data missing....')

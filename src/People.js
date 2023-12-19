@@ -125,6 +125,22 @@ class People extends React.Component {
 
   componentDidMount() {
     window.scrollTo(0, 0);
+    // todo:- add geolocation for each created invoices, payments and users collection
+    console.log('Browser Name:', navigator.appName);
+    console.log('Browser Version:', navigator.appVersion);
+    console.log('User Agent:', navigator.userAgent);
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        console.log('Latitude:', position.coords.latitude);
+        console.log('Longitude:', position.coords.longitude);
+      }, (error) => {
+        console.error('Error getting location:', error);
+      });
+    } else {
+      console.log('Geolocation is not supported in this browser.');
+    }
+    
   }
 
   shouldComponentUpdate(nextProps, nextState) {

@@ -478,7 +478,12 @@ var ismobile = window.innerWidth<=550?true:false;
         // endDate.setDate(endDate.get('autoMembershipStarts') + 30);
         // const selectedUserEndDate = this.state.endDate? this.state.endDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? new Date((selectedUserData.get('autoMembershipStarts'))).getMonth()+1:null;
         
-        const selectedUserEndDate = this.state.endDate? this.state.endDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYY-MM-DD'):moment().format('YYYY-MM-DD');
+        // const selectedUserEndDate = this.state.endDate? this.state.endDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYY-MM-DD'):moment().format('YYYY-MM-DD');
+        const selectedUserEndDate = this.state.endDate? this.state.endDate : 
+          this.state.package === 'Month'? (selectedUserData && selectedUserData.has('autoMembershipStarts'))? moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYY-MM-DD'):moment().format('YYYY-MM-DD'):
+          this.state.package === 'Week'? (selectedUserData && selectedUserData.has('autoMembershipStarts'))? moment(selectedUserData.get('autoMembershipStarts')).add(1, 'weeks').format('YYYY-MM-DD'):moment().format('YYYY-MM-DD'):
+          this.state.package === 'Day'? (selectedUserData && selectedUserData.has('autoMembershipStarts'))? moment(selectedUserData.get('autoMembershipStarts')).add(1, 'days').format('YYYY-MM-DD'):moment().format('YYYY-MM-DD'):
+          moment().format('YYYY-MM-DD');
         
         //console.log('autoMembershipStarts: ', selectedUserData && selectedUserData.has('autoMembershipStarts') && moment(selectedUserData.get('autoMembershipStarts')).add(1, 'months').format('YYYYMMDD'))
         //const selectedUserCRO = (selectedUserData && selectedUserData.has('mcId'))? selectedUserData.get('name'):this.state.mcId;

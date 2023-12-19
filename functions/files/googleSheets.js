@@ -152,14 +152,107 @@ exports.getUsers = functions.https.onRequest((req, res) => {
     const updateSheetPromise = updateGoogleSheet({
       spreadsheetId: bilikXpertSheetId,
       resource: {
-        // How the input data should be interpreted.
-        valueInputOption: 'RAW',  // TODO: Update placeholder value.
-        // The new values to apply to the spreadsheet.
+        valueInputOption: 'RAW',  
         data: [
           {
             range: `All Users!A2:S`,
             majorDimension: "ROWS",
             values: userDataArray
+          }
+        ], 
+      },
+    });
+
+    return updateSheetPromise.then((result)=>{
+      // console.log('theresult: ', result);
+      return res.status(200).send({
+        success:true,
+      });
+    }).catch(err=>{
+      return res.status(200).send({success:false, err});
+    });
+  });
+});
+
+exports.getPayments = functions.https.onRequest((req, res) => {
+  
+  const usersQuery = admin.firestore().collection('users').get();
+  const branchQuery = admin.firestore().collection('branches').get();
+  const roomQuery = admin.firestore().collection('rooms').get();
+  const paymentQuery = admin.firestore().collection('payments').get();
+
+  return Promise.all([usersQuery, branchQuery, roomQuery, paymentQuery]).then(results=>{
+    const userRes = results[0];
+    const branchRes = results[1];
+    const roomRes = results[2];
+    const paymentRes = results[3];
+
+    var branchMap = {};
+    branchRes.forEach(doc=>{branchMap[doc.id]=doc.data()});
+    var roomMap = {};
+    roomRes.forEach(doc=>{roomMap[doc.id]=doc.data()});
+    var croMapName = {};
+    var userMap = {};
+    userRes.forEach(doc=>{
+      const data = doc.data();
+      const isStaff = data.isStaff;
+      const name = data.name;
+      userMap[doc.id] = data;
+      if (isStaff){
+        croMapName[doc.id]=name;
+      }
+    });
+
+    var paymentArray = [];
+    paymentRes.forEach(doc=>{
+      const data = doc.data();
+      const userData = data.userId && userMap[data.userId];
+      const branchData = data.branchId && branchMap[data.branchId];
+      const roomData = data.roomId && roomMap[data.roomId];
+      const mcId = userData && userData.mcId;
+      const croName = mcId && croMapName[mcId];
+
+      if (data){
+        paymentArray.push([
+          (data.createdAt && moment(getTheDate(data.createdAt)) && moment(getTheDate(data.createdAt)))?
+          moment(getTheDate(data.createdAt)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD HH:mm:ss'):'',
+          (data.transDate && moment(getTheDate(data.transDate)) && moment(getTheDate(data.transDate)))?
+          moment(getTheDate(data.transDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD HH:mm:ss'):'',
+          doc.id,
+          data.invoiceId? data.invoiceId:'',
+          data.userId? data.userId:'',
+          userData? userData.name? userData.name:'':'',
+          userData? userData.email? userData.email:'':'',
+          userData? userData.phone? userData.phone:'':'',
+          branchData? branchData.name? branchData.name:'':'',
+          roomData? roomData.roomNumber? roomData.roomNumber:'':'',
+          data.status? data.status:'',
+          data.packages? data.packages:'',
+          (data.startDate && moment(getTheDate(data.startDate)) && moment(getTheDate(data.startDate)))?
+          moment(getTheDate(data.startDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD'):'',
+          (data.endDate && moment(getTheDate(data.endDate)) && moment(getTheDate(data.endDate)))?
+          moment(getTheDate(data.endDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD'):'',
+          data.monthlyDeposit? data.monthlyDeposit:'',
+          data.totalPrice? parseFloat(data.totalPrice).toFixed(2):'',
+          data.paymentType? data.paymentType:'',
+          data.imgURL? data.imgURL:'',
+          data.remark? data.remark:'',
+          croName? croName:''						
+        ]);
+      }
+    });
+
+    const updateSheetPromise = updateGoogleSheet({
+      spreadsheetId: bilikXpertSheetId,
+      resource: {
+        // How the input data should be interpreted.
+        valueInputOption: 'RAW',  // TODO: Update placeholder value.
+        // The new values to apply to the spreadsheet.
+        data: [
+          {
+            range: `All Payments!A2:T`,
+            majorDimension: "ROWS",
+            values: paymentArray
           }
         ],  // TODO: Update placeholder value.
         // TODO: Add desired properties to the request body.
@@ -174,14 +267,111 @@ exports.getUsers = functions.https.onRequest((req, res) => {
     }).catch(err=>{
       return res.status(200).send({success:false, err});
     });
-
-    // // return batchUpdateValues(bilikxpertSheetsId, `Users!A2:S`, 'RAW', userDataArray)
-  
-    // return res.status(200).send({success:true});
   });
 });
 
-const timestamp = admin.firestore.FieldValue.serverTimestamp();
+// this function will auto create all payments by months.
+// Need to add manually first
+exports.getPaymentsByMonth = functions.https.onRequest((req, res) => {
+  
+  let startOfTheMonth = moment().tz('Asia/Kuala_Lumpur').startOf('month');
+  const monthName = startOfTheMonth.format('MMMM');
+  const yearFormat = startOfTheMonth.format('YYYY');
+  let startOfTheMonthDate = startOfTheMonth.toDate();
+
+  const usersQuery = admin.firestore().collection('users').get();
+  const branchQuery = admin.firestore().collection('branches').get();
+  const roomQuery = admin.firestore().collection('rooms').get();
+  const paymentQuery = admin.firestore().collection('payments').where('transDate', '>=', startOfTheMonthDate).get();
+  
+
+  return Promise.all([usersQuery, branchQuery, roomQuery, paymentQuery]).then(results=>{
+    const userRes = results[0];
+    const branchRes = results[1];
+    const roomRes = results[2];
+    const paymentRes = results[3];
+
+    var branchMap = {};
+    branchRes.forEach(doc=>{branchMap[doc.id]=doc.data()});
+    var roomMap = {};
+    roomRes.forEach(doc=>{roomMap[doc.id]=doc.data()});
+    var croMapName = {};
+    var userMap = {};
+    userRes.forEach(doc=>{
+      const data = doc.data();
+      const isStaff = data.isStaff;
+      const name = data.name;
+      userMap[doc.id] = data;
+      if (isStaff){
+        croMapName[doc.id]=name;
+      }
+    });
+
+    var paymentArray = [];
+    paymentRes.forEach(doc=>{
+      const data = doc.data();
+      const userData = data.userId && userMap[data.userId];
+      const branchData = data.branchId && branchMap[data.branchId];
+      const roomData = data.roomId && roomMap[data.roomId];
+      const mcId = userData && userData.mcId;
+      const croName = mcId && croMapName[mcId];
+
+      if (data){
+        paymentArray.push([
+          (data.createdAt && moment(getTheDate(data.createdAt)) && moment(getTheDate(data.createdAt)))?
+          moment(getTheDate(data.createdAt)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD HH:mm:ss'):'',
+          (data.transDate && moment(getTheDate(data.transDate)) && moment(getTheDate(data.transDate)))?
+          moment(getTheDate(data.transDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD HH:mm:ss'):'',
+          doc.id,
+          data.invoiceId? data.invoiceId:'',
+          data.userId? data.userId:'',
+          userData? userData.name? userData.name:'':'',
+          userData? userData.email? userData.email:'':'',
+          userData? userData.phone? userData.phone:'':'',
+          branchData? branchData.name? branchData.name:'':'',
+          roomData? roomData.roomNumber? roomData.roomNumber:'':'',
+          data.status? data.status:'',
+          data.packages? data.packages:'',
+          (data.startDate && moment(getTheDate(data.startDate)) && moment(getTheDate(data.startDate)))?
+          moment(getTheDate(data.startDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD'):'',
+          (data.endDate && moment(getTheDate(data.endDate)) && moment(getTheDate(data.endDate)))?
+          moment(getTheDate(data.endDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD'):'',
+          data.monthlyDeposit? data.monthlyDeposit:'',
+          data.totalPrice? parseFloat(data.totalPrice).toFixed(2):'',
+          data.paymentType? data.paymentType:'',
+          data.imgURL? data.imgURL:'',
+          data.remark? data.remark:'',
+          croName? croName:''						
+        ]);
+      }
+    });
+
+    const updateSheetPromise = updateGoogleSheet({
+      spreadsheetId: bilikXpertSheetId,
+      resource: {
+        // How the input data should be interpreted.
+        valueInputOption: 'RAW',  // TODO: Update placeholder value.
+        // The new values to apply to the spreadsheet.
+        data: [
+          {
+            range: `All Payments ${monthName} ${yearFormat}!A2:T`,
+            majorDimension: "ROWS",
+            values: paymentArray
+          }
+        ], 
+      },
+    });
+
+    return updateSheetPromise.then((result)=>{
+      // console.log('theresult: ', result);
+      return res.status(200).send({
+        success:true,
+      });
+    }).catch(err=>{
+      return res.status(200).send({success:false, err});
+    });
+  });
+});
 
 function getTheDate(theDate){
     if (theDate === null){return}
