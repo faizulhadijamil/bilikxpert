@@ -2288,7 +2288,10 @@ export function addCheckInOut(userId){
         const currentRoomId = (user && user.get('currentRoomId'))
         firestore.collection("users").doc(userId).update({
           currentRoomId : null,
-          cancellationDate:timestamp
+          cancellationDate:timestamp,
+          currentBranch: null,
+          branch:null,
+          roomId:null
         }).then(()=>{
           firestore.collection('rooms').doc(currentRoomId).update({
             isAvailable:true
