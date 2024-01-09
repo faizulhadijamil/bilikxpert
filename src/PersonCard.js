@@ -1340,17 +1340,22 @@ class PersonCard extends React.Component {
                       <ListItem divider>Join Date<Chip className={classes.userDetailChip} label={selectedUserJoinDate}/></ListItem>
                     }
                     {(staffLevel4) && selectedUserInvoiceId &&
-                      <Button key={'invoiceButton'} className={classes.addButton} onClick={()=>window.open(`/payments/${selectedUserInvoiceId}`, '_blank')}>
+                      <Button key={'viewinvoiceButton'} className={classes.addButton} onClick={()=>window.open(`/payments/${selectedUserInvoiceId}`, '_blank')}>
                         {'View Invoice'}
                       </Button>
                     }
-                    {(isSuperUser) &&
-                      <Button key={'createInvoiceBtn'} className={classes.addInvoiceButton} onClick={()=>{this.handleAddInvoice(selectedUserId)}}>
+                    {false && (isSuperUser) &&
+                      <Button key={'createInvoiceBtn'} className={classes.addButton} onClick={()=>{this.handleAddInvoice(selectedUserId)}}>
                         {'Create Invoice'}
                       </Button>
                     }
-                    {(isSuperUser) &&
-                      <Button key={'viewInvoicesBtn'} className={classes.addInvoiceButton} onClick={()=>{this.handleViewInvoices(selectedUserId)}}>
+                    {(isSuperUser) && userData && (selectedUserId && selectedUserId.length > 0 && selectedUserRoomId) &&
+                        <Button key={'createInvoiceBtn'} className={classes.addButton} onClick={()=>{this.handleAddInvoice(selectedUserId)}}>
+                         {'Create Invoice'}
+                      </Button>
+                    }
+                    {(isSuperUser) && userData && (selectedUserId && selectedUserId.length > 0 && selectedUserRoomId) &&
+                      <Button key={'viewInvoicesBtn'} className={classes.addButton} onClick={()=>{this.handleViewInvoices(selectedUserId)}}>
                         {'View Invoices'}
                       </Button>
                     }
@@ -1394,6 +1399,7 @@ class PersonCard extends React.Component {
                     <CircularProgress style={{color:'white', marginLeft:8}}/>
                   }
                 </Button>
+
               </label>
             </div>
                   {/* <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>

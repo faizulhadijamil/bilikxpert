@@ -8,7 +8,7 @@
     "@material-ui/icons": "^4.0.0",
     "@material-ui/styles": "^4.2.1",
     "@zoomus/websdk": "^1.8.6",
-    "axios": "^0.21.4",
+    "axios": "^1.6.3",
     "cors": "^2.8.4",
     "create-react-class": "^15.7.0",
     "crypto-js": "^3.1.9-1",
@@ -36,10 +36,10 @@
     "reselect": "^4.1.6"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "start": "react-scripts --openssl-legacy-provider start",
+    "build": "react-scripts --openssl-legacy-provider build"
   },
   "devDependencies": {
     "fast-levenshtein": "^2.0.6",
