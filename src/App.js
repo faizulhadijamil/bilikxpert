@@ -292,6 +292,9 @@ class App extends Component {
             {(user) &&
               <BottomNavigationAction label="Profile" icon={<PersonIcon />} onClick={()=>this.props.actions.viewProfile()}/>
             }
+              {(user) &&
+              <BottomNavigationAction label="People" icon={<PeopleIcon />} onClick={()=>this.props.actions.viewPeople()}/>
+            }
           </BottomNavigation>
         }
         {(user && showDoneNav) &&

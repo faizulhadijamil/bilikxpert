@@ -287,7 +287,7 @@ import {
               className = {classes.contentInner}
               >
               <Typography type="title" component="h1" color="primary" style={{textAlign:'center', marginBottom:8}}>
-                Success! Once they sign up we'll seal the deal ;)
+                (Success! Once they sign up we'll seal the deal ;)
               </Typography>
               <div style = {{alignItems:'center', justifyContent:'center', flexDirection:'row', display:'flex',}}>
                 <Button 

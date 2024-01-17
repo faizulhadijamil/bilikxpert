@@ -14,15 +14,17 @@
   import BabelLogo from './BabelLogo';
   import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 
-  import StdButton from './components/StdButton';
+  import InvoiceCard from './Cards/InvoiceCard';
   
   import PropTypes from 'prop-types';
   
-  import {makeGetStaff,  makeGetCurrentUser, makeGetSelectedUser, makeGetAllUsers,  makeGetBranch, makeGetRoom, makeGetSelectedUserInvoices} from './selectors';
+  import {makeGetStaff,  makeGetCurrentUser, makeGetSelectedUser, makeGetAllUsers,  makeGetBranch, makeGetRoom, makeGetSelectedUserInvoices, getBranchesList, getRoomsList} from './selectors';
   import * as Actions from './actions';
 
   import firebase from 'firebase/app';
   import 'firebase/firestore';
+
+  import {getTheDate} from './actions'; 
 
   // import ReactPixel from 'react-facebook-pixel';
   
@@ -281,7 +283,7 @@ var ismobile = window.innerWidth<=550?true:false;
         currentSelectedUserId:null,
         currentSelectedRoomId:null,
       email: null,
-      name: '',
+      name: null,
       phone: '',
       currentBranch: '',
       currentRoomId: '',
@@ -369,7 +371,7 @@ var ismobile = window.innerWidth<=550?true:false;
 
         const imageFile = event.target.files[0];
         if (imageFile) {
-          // console.log('imageFile: ', imageFile);
+          console.log('imageFile: ', imageFile);
           this.props.actions.uploadInvoiceImage(imageFile, (imageURL, imagePath, addUserInvoice) => {
             if (imageURL) {
               console.log('imageURL: ', imageURL);
@@ -435,20 +437,22 @@ var ismobile = window.innerWidth<=550?true:false;
         //const {currentSelectedRoomId} = this.state;
 
         const users = this.props.users || null;
-        const selectedUserData = users && users.get(currentSelectedUserId);
+        console.log('theUsers: ', users);
+        const selectedUserData = users && users.get(selectedUserId);
 
+        console.log('selectedUserData: ', selectedUserData);
         const {currentSelectedBranchId} = this.state;
-        // console.log('currentSelectedBranchId: ', currentSelectedBranchId);
+        //console.log('currentSelectedBranchId: ', currentSelectedBranchId);
 
         const {currentSelectedRoomNumber} = this.state;
-        // console.log('currentSelectedRoomNumber: ', currentSelectedRoomNumber);
+        //console.log('currentSelectedRoomNumber: ', currentSelectedRoomNumber);
 
         const branch = this.props.branch || null;
         const selectedUserCurrentBranch = (selectedUserData && selectedUserData.has('currentBranch'))? selectedUserData.get('currentBranch'):this.state.branch;
         const selectedBranchData = branch && branch.get(selectedUserCurrentBranch);
-        //console.log('selectedBranchData: ', selectedBranchData);
+        console.log('selectedBranchData: ', selectedBranchData);
         const selectedUserBranchName = (selectedBranchData && selectedBranchData.has('name'))? selectedBranchData.get('name'):'';
-        //console.log('selectedUserBranchName: ', selectedUserBranchName);
+        console.log('selectedUserBranchName: ', selectedUserBranchName);
 
         const rooms = this.props.rooms || null;
         const selectedUserCurrentRoom = (selectedUserData && selectedUserData.has('currentRoomId'))? selectedUserData.get('currentRoomId'):this.state.roomId;
@@ -457,20 +461,22 @@ var ismobile = window.innerWidth<=550?true:false;
         const selectedUserRoomNumber = (selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('roomNumber'):'';
         //console.log('selectedUserRoomNumber: ', selectedUserRoomNumber);
 
-        const selectedUserDeposit = this.state.monthlyDeposit? this.state.monthlyDeposit:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.has('monthlyDeposit')? selectedRoomData.get('monthlyDeposit'):'':'';
+        //const selectedUserDeposit = this.state.monthlyDeposit? this.state.monthlyDeposit:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.has('monthlyDeposit')? selectedRoomData.get('monthlyDeposit'):'':'';
        // console.log('selectedUserDeposit: ', selectedUserDeposit);
 
-        //const selectedCurrentRoomNumber = rooms && rooms.get(currentSelectedRoomNumber);
+        const selectedCurrentRoomNumber = rooms && rooms.get(currentSelectedRoomNumber);
         //const selectedRoomData = users && users.get(currentSelectedUserId);
         //const currentRoomId = users && users.get(currentRoomId);
         //console.log('selectedUserData: ', selectedUserData);
         const selectedUserEmail = this.state.email? this.state.email:(selectedUserData && selectedUserData.has('email'))? selectedUserData.get('email'):'';
+        console.log('selectedUserEmail: ', selectedUserEmail);
         const selectedUserName = (selectedUserData && selectedUserData.has('name'))? selectedUserData.get('name'):this.state.name;
+        console.log('selectedUserName: ', selectedUserName);
         const selectedUserPhone = (selectedUserData && selectedUserData.has('phone'))? selectedUserData.get('phone'):this.state.phone;
         
         const selectedUserPackage = this.state.package? this.state.package:(selectedUserData && selectedUserData.has('package'))? selectedUserData.get('package'):'Monthly';
         
-        //  const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedRoomData && selectedRoomData.has('monthlyDeposit'))? selectedRoomData.get('monthlyDeposit'):'';
+        //const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedRoomData && selectedRoomData.has('monthlyDeposit'))? selectedRoomData.get('monthlyDeposit'):'';
         const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('monthlyPrice'):'';
         //console.log('selectedRoomPrice: ', selectedRoomPrice);
         //const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedRoomData && selectedRoomData.has('monthlyPrice'))? selectedRoomData.get('monthlyPrice'):'RM650';
@@ -496,16 +502,17 @@ var ismobile = window.innerWidth<=550?true:false;
         var addUserInvoice = editUserInvoice && editUserInvoice.has('image') ? editUserInvoice.get('image') : null;
         var editUserInvoice = <PhotoCameraIcon style={{width:64, height:64}} />;
         if (addUserInvoice) {
-          editUserInvoice = <Avatar style={{width:64, height:64, marginLeft:'auto', marginRight:'auto'}} src={addUserInvoice} />;
+          editUserInvoice = <Avatar  style={{width:64, height:64, marginLeft:'auto', marginRight:'auto'}} src={addUserInvoice} />;
         }
         
         const image = this.state.image;
         var editUserInvoice = <PhotoCameraIcon style={{width:128, height:128}} />;
         if (image) {
-          addUserInvoice = <Avatar style={{width:128, height:128, marginLeft:'auto', marginRight:'auto'}} src={image} />;
+          addUserInvoice = <Avatar  style={{width:128, height:128, marginLeft:'auto', marginRight:'auto'}} src={image} />;
         }
+
         
-        console.log('this.props.invoices: ', this.props);
+       console.log('this.props.invoices: ', this.props);
         const {invoicesArray} = this.state;
 
         return (
@@ -519,17 +526,58 @@ var ismobile = window.innerWidth<=550?true:false;
           <Typography type="display1" component="h1" color="primary" style={{textAlign:'center', marginBottom:32}}>
             Welcome to BilikXpert Invoices
           </Typography>
+
             
             {invoicesArray && invoicesArray.length>0 && invoicesArray.map((invoice, index)=>{
                 const paymentStatus = invoice.paymentStatus;
 
-
                 console.log('invoices: ', invoice);
+                const startDate = invoice.startDate? moment(getTheDate(invoice.startDate)).format('DD/MM/YYYY'):'';
+                const endDate = invoice.endDate? moment(getTheDate (invoice.endDate)).format('DD/MM/YYYY'):'';
+                const transDate = invoice.transDate? moment(getTheDate(invoice.transDate)).format('DD/MM/YYYY'):'';
+                const branchId = invoice.branchId;
+                const roomNumber = invoice.roomNumber;
+                const totalPrice = invoice.totalPrice;
+                
                 return (
                     <div>
-                         <Typography type="display1" component="h1" color="primary" style={{marginTop:20}}>
+                        <InvoiceCard
+                          key={index}
+                          text={`invoice ${index+1}`}
+                          startDate={startDate}
+                          endDate={endDate}
+                          transDate={transDate}
+                          branchId={branchId }
+                          roomNumber={roomNumber}
+                          totalPrice={totalPrice}
+                          defaultEmail = {selectedUserEmail}
+                        />
+                         <Typography type="display1" component="h1" color="primary" style={{textAlign:'center', marginTop:20}}>
                             {`Invoice ${index+1}:`}
                         </Typography>
+
+                        <div>
+          {this.state.imageURLToUpload}
+            {this.state.addUserInvoice}
+            <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+              <IconButton color="primary" component="span" style={{marginTop:32, marginBottom:48}} disabled={this.props.isUploadingImage} onClick={()=>this.props.actions.useNativeCamera()}>
+                {addUserInvoice}
+              </IconButton>
+            </div>
+            <div style={{display:'flex', flex:1, marginLeft:'auto', marginRight:'auto', justifyContent:'center'}}>
+              <input accept="/*" className={classes.fileInput} id="icon-button-file" type="file" onChange={this.handleChange('image')} />
+              <label htmlFor="icon-button-file" >
+                <Button raised component="span" color='primary' key={'uploadPhoto'} classes={{raisedPrimary:classes.button, disabled:classes.buttonDisabled}} disabled={this.props.isUploadingImage} style={{marginBottom:32}}>
+                  {this.state.image ? 'Change Photo' : 'Upload Photo' }
+                  {this.props.isUploadingImage &&
+                    <CircularProgress style={{color:'white', marginLeft:8}}/>
+                  }
+                </Button>
+              </label>
+            </div>
+          </div>
+  
+
                         <TextField
                             margin="dense"
                             id="email"
@@ -550,7 +598,7 @@ var ismobile = window.innerWidth<=550?true:false;
                             value={selectedUserName}
                             fullWidth
                             onChange={this.handleChange('name')}
-                            disabled={true}
+                            //disabled={true}
                             // required
                         />
 
@@ -563,7 +611,7 @@ var ismobile = window.innerWidth<=550?true:false;
                             value={selectedUserPhone}
                             fullWidth
                             onChange={this.handleChange('phone')}
-                            disabled={true}
+                            //disabled={true}
                             required
                         />
                         <TextField
@@ -574,7 +622,7 @@ var ismobile = window.innerWidth<=550?true:false;
                             value={selectedUserBranchName}
                             fullWidth
                             onChange={this.handleChange('currentBranchName')}
-                            disabled={true}
+                            //disabled={true}
                             // required
                         />
                         <TextField
@@ -585,7 +633,7 @@ var ismobile = window.innerWidth<=550?true:false;
                             value={selectedUserRoomNumber}
                             fullWidth
                             onChange={this.handleChange('roomNumber')}
-                            disabled={true}
+                            //disabled={true}
                             required
                         />
                         <TextField
@@ -602,8 +650,8 @@ var ismobile = window.innerWidth<=550?true:false;
                             margin="dense"
                             id="deposit"
                             label="Deposit"
-                            // defaultValue={selectedUserDeposit}
-                            value={selectedUserDeposit}
+                            //defaultValue={selectedUserDeposit}
+                            //value={selectedUserDeposit}
                             fullWidth
                             onChange={this.handleChange('monthlyDeposit')}
                             required
@@ -682,6 +730,9 @@ var ismobile = window.innerWidth<=550?true:false;
                             required
                         />
                        
+                      
+
+
                     </div>
                 )}
             )}

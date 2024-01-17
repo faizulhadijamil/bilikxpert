@@ -260,7 +260,7 @@ export function bootstrap(){
             console.log('createInvoice path');
             dispatch(getRooms);
             dispatch(getBranches());
-            // dispatch(getUsers());
+            dispatch(getUsers());
           }
           else{
             //console.log('verifyAuth...')

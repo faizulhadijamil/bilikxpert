@@ -55,7 +55,7 @@ class SmallButton extends React.Component {
     render() {
         // console.log('renderBtnProps: ', this.props);
         const {classes, key, selectedButton} = this.props;
-        const selectedBtnStyle = selectedButton? {backgroundColor: '#A7998B',  border: '1.3px #A7998B'}:null
+        const selectedBtnStyle = selectedButton? {backgroundColor: '#A7998B',  border: '1.3px #A7998B'}:this.props.style;
         //const buttonwidth = this.props.width||null
         return (
             <div 
@@ -64,7 +64,7 @@ class SmallButton extends React.Component {
                 onClick={this.props.onClick} 
                 className = {classes.buttonStyle}
                 disabled={this.props.disabled? this.props.disabled:false}
-                style = {this.props.style, selectedBtnStyle}
+                style = {selectedBtnStyle}
                 >
                 <Typography className={this.props.bigbutton? classes.buttonTextBig:classes.buttonText} style={this.props.textStyle}>
                     {this.props.text}

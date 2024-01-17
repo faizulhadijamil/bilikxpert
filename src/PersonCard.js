@@ -1344,11 +1344,6 @@ class PersonCard extends React.Component {
                         {'View Invoice'}
                       </Button>
                     }
-                    {false && (isSuperUser) &&
-                      <Button key={'createInvoiceBtn'} className={classes.addButton} onClick={()=>{this.handleAddInvoice(selectedUserId)}}>
-                        {'Create Invoice'}
-                      </Button>
-                    }
                     {(isSuperUser) && userData && (selectedUserId && selectedUserId.length > 0 && selectedUserRoomId) &&
                         <Button key={'createInvoiceBtn'} className={classes.addButton} onClick={()=>{this.handleAddInvoice(selectedUserId)}}>
                          {'Create Invoice'}

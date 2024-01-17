@@ -115,6 +115,7 @@ class People extends React.Component {
     searchDisplay: ''
   }
 
+
   // componentWillMount() {
   //   this.timer = null;
   // }
@@ -258,6 +259,7 @@ class People extends React.Component {
      const staffLevel6 = isSuperUser || isAdmin || isSuperVisor || isSeniorCRO || isCRO || isTrainer || isShared;
 
     const users = this.props.users || null;
+    console.log('theUserPeople: ', users);
     // console.log('isTrainer: ', isTrainer);
     // console.log('staffLevel5: ', staffLevel5);
 
@@ -406,6 +408,9 @@ class People extends React.Component {
                 </Grid>
                 // <PersonCard userId={selectedUserId} clearAction={()=>this.handleSelectPerson(null)} elevation={2} />
               }
+              
+
+
               </Grid>
             </Grid>
           </Grid>
