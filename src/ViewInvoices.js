@@ -1,7 +1,7 @@
 
   import {bindActionCreators} from 'redux';
   import {connect} from 'react-redux';
-  import {withStyles, Button, Typography, Card, CardMedia, TextField, CircularProgress, IconButton, Avatar
+  import {withStyles, Button, Typography, Card, CardMedia, TextField, CircularProgress, IconButton, Avatar, Grid
   } from '@material-ui/core';
   
   import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -272,6 +272,11 @@ var ismobile = window.innerWidth<=550?true:false;
       marginBottom: theme.spacing(2),
       justifyContent: 'flexEnd'
     },
+
+  selectedUser: {
+      position: 'fixed',
+      zIndex: 1200
+    },
     
   });
 
@@ -306,7 +311,7 @@ var ismobile = window.innerWidth<=550?true:false;
       mcId: null,
       paymentType:'Cash',
       paymentStatus:'PAID',
-
+      showDetails :false,
       mainImgUrl:null,
       bottomImgUrl:null,
       showSelection:true,
@@ -413,12 +418,23 @@ var ismobile = window.innerWidth<=550?true:false;
       }
     }
 
-    
+    handleShowDetails = () =>{
+      // !this.state.showDetails?  this.setState({ ShowDetails:true }): this.setState({ ShowDetails: false });
+      if (!this.state.showDetails){
+        this.setState({showDetails:true});
+      }
+      else{
+        this.setState({showDetails:false});
+      }
+      console.log('handleShowDetails: ', this.state.showDetails);
+    }
+
     scrollTo(number){
         window.scrollTo({
             top: number,
             behavior: "smooth"
         });
+   
     }
 
     render() {
@@ -478,6 +494,7 @@ var ismobile = window.innerWidth<=550?true:false;
         
         //const selectedUserDeposit = this.state.deposit? this.state.deposit:(selectedRoomData && selectedRoomData.has('monthlyDeposit'))? selectedRoomData.get('monthlyDeposit'):'';
         const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('monthlyPrice'):'';
+        console.log('selectedroomprice:',selectedRoomPrice );
         //console.log('selectedRoomPrice: ', selectedRoomPrice);
         //const selectedRoomPrice = this.state.roomPrice? this.state.roomPrice:(selectedRoomData && selectedRoomData.has('monthlyPrice'))? selectedRoomData.get('monthlyPrice'):'RM650';
         const selectedUserStartDate = this.state.startDate? this.state.startDate:(selectedUserData && selectedUserData.has('autoMembershipStarts'))? selectedUserData.get('autoMembershipStarts'):'';
@@ -511,8 +528,8 @@ var ismobile = window.innerWidth<=550?true:false;
           addUserInvoice = <Avatar  style={{width:128, height:128, marginLeft:'auto', marginRight:'auto'}} src={image} />;
         }
 
-        
-       console.log('this.props.invoices: ', this.props);
+        console.log('this.state.showDetails: ', this.state.showDetails);
+       // console.log('this.props.invoices: ', this.props);
         const {invoicesArray} = this.state;
 
         return (
@@ -528,6 +545,7 @@ var ismobile = window.innerWidth<=550?true:false;
           </Typography>
 
             
+
             {invoicesArray && invoicesArray.length>0 && invoicesArray.map((invoice, index)=>{
                 const paymentStatus = invoice.paymentStatus;
 
@@ -538,9 +556,12 @@ var ismobile = window.innerWidth<=550?true:false;
                 const branchId = invoice.branchId;
                 const roomNumber = invoice.roomNumber;
                 const totalPrice = invoice.totalPrice;
+                const UserName = invoice.Username;
+                
                 
                 return (
                     <div>
+                      <button> </button>
                         <InvoiceCard
                           key={index}
                           text={`invoice ${index+1}`}
@@ -551,6 +572,9 @@ var ismobile = window.innerWidth<=550?true:false;
                           roomNumber={roomNumber}
                           totalPrice={totalPrice}
                           defaultEmail = {selectedUserEmail}
+                          UserName = {UserName}
+                          showDetails = {this.state.showDetails}
+                          onClick = {()=>{this.handleShowDetails()}}
                         />
                          <Typography type="display1" component="h1" color="primary" style={{textAlign:'center', marginTop:20}}>
                             {`Invoice ${index+1}:`}
@@ -577,6 +601,10 @@ var ismobile = window.innerWidth<=550?true:false;
             </div>
           </div>
   
+        
+      
+                    
+
 
                         <TextField
                             margin="dense"
