@@ -123,6 +123,8 @@ exports.getUsers = functions.https.onRequest((req, res) => {
       const mcId = data.mcId;
       const mcName = mcId && croMapName[mcId];
       const remarks = data.remarks;
+      const monthlyPrice = roomData && roomData.monthlyPrice;
+      const status = moment().tz('Asia/Kuala_Lumpur').isAfter(moment(getTheDate(endDate)))? 'OUTSTANDING':'ACTIVE';
 
       if (data){
         userMap[doc.id]=data;
@@ -143,8 +145,10 @@ exports.getUsers = functions.https.onRequest((req, res) => {
           moment(getTheDate(endDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD HH:mm:ss'):'',
           (cancellationDate && moment(getTheDate(cancellationDate)) && moment(getTheDate(cancellationDate)))?
           moment(getTheDate(cancellationDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD HH:mm:ss'):'',
+          monthlyPrice? monthlyPrice:'',
           mcName? mcName:'',
-          remarks? remarks:''
+          remarks? remarks:'',
+          status? status:''
         ]);
       }
     });
