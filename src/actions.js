@@ -2514,6 +2514,19 @@ export function transferGantner (currentUserId, transferUserId){
   }
 }
 
+export function voidInvoice(invoiceId){
+  return function action(dispatch, getState) {
+    console.log('voiding invoice.., ', invoiceId);
+    if(invoiceId){
+      dispatch(showMessage("void invoice data.."));
+      return firestore.collection('invoices').doc(invoiceId).update({status:'VOID', paid:false}).then(()=>{
+        dispatch(showMessage("void invoice!"));
+        window.location.reload(true); // refresh the page..
+      });
+    }
+  }
+}
+
 export function removeUser(userId){
   return function action(dispatch, getState) {
     if(userId){

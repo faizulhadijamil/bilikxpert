@@ -19,7 +19,6 @@ import * as Actions from './actions';
 import Booking from './Booking'
 import Buy from './Buy'
 import Classes from './Classes';
-import createClass from './gymClass/createClass';
 import Rooms from './Rooms';
 import Feed from './Feed'
 // import Payments from './Payments';

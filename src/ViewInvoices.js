@@ -338,7 +338,10 @@ var ismobile = window.innerWidth<=550?true:false;
             invoicesRef && invoicesRef.then((querySnapshot)=>{
                 querySnapshot.forEach(doc=>{
                 const invoiceData = doc.data();
-                invoicesArray.push(invoiceData);
+                invoicesArray.push({
+                  ...invoiceData,
+                  invoiceId: doc.id
+                  })
                 });
                 this.setState({invoicesArray});
             });
@@ -439,6 +442,7 @@ var ismobile = window.innerWidth<=550?true:false;
 
     render() {
         console.log('theState: ', this.state);
+        console.log('viewInvoice theProps: ', this.props);
         const {classes} = this.props;
         const currentUser = this.props.currentUser;
         const roles = currentUser && currentUser.get('roles');
@@ -457,8 +461,6 @@ var ismobile = window.innerWidth<=550?true:false;
         const selectedUserData = users && users.get(selectedUserId);
 
         console.log('selectedUserData: ', selectedUserData);
-        const {currentSelectedBranchId} = this.state;
-        //console.log('currentSelectedBranchId: ', currentSelectedBranchId);
 
         const {currentSelectedRoomNumber} = this.state;
         //console.log('currentSelectedRoomNumber: ', currentSelectedRoomNumber);
@@ -477,13 +479,6 @@ var ismobile = window.innerWidth<=550?true:false;
         const selectedUserRoomNumber = (selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.get('roomNumber'):'';
         //console.log('selectedUserRoomNumber: ', selectedUserRoomNumber);
 
-        //const selectedUserDeposit = this.state.monthlyDeposit? this.state.monthlyDeposit:(selectedUserData && selectedUserData.has('currentRoomId'))? selectedRoomData.has('monthlyDeposit')? selectedRoomData.get('monthlyDeposit'):'':'';
-       // console.log('selectedUserDeposit: ', selectedUserDeposit);
-
-        const selectedCurrentRoomNumber = rooms && rooms.get(currentSelectedRoomNumber);
-        //const selectedRoomData = users && users.get(currentSelectedUserId);
-        //const currentRoomId = users && users.get(currentRoomId);
-        //console.log('selectedUserData: ', selectedUserData);
         const selectedUserEmail = this.state.email? this.state.email:(selectedUserData && selectedUserData.has('email'))? selectedUserData.get('email'):'';
         console.log('selectedUserEmail: ', selectedUserEmail);
         const selectedUserName = (selectedUserData && selectedUserData.has('name'))? selectedUserData.get('name'):this.state.name;
@@ -544,8 +539,6 @@ var ismobile = window.innerWidth<=550?true:false;
             Welcome to BilikXpert Invoices
           </Typography>
 
-            
-
             {invoicesArray && invoicesArray.length>0 && invoicesArray.map((invoice, index)=>{
                 const paymentStatus = invoice.paymentStatus;
 
@@ -554,6 +547,11 @@ var ismobile = window.innerWidth<=550?true:false;
                 const endDate = invoice.endDate? moment(getTheDate (invoice.endDate)).format('DD/MM/YYYY'):'';
                 const transDate = invoice.transDate? moment(getTheDate(invoice.transDate)).format('DD/MM/YYYY'):'';
                 const branchId = invoice.branchId;
+                const roomId = invoice.roomId;
+                const roomData = roomId && rooms && rooms.get(roomId);
+                console.log('roomData: ', roomData);
+                const branchData = branchId && branch && branch.get(branchId);
+                console.log('branchData: ', branchData);
                 const roomNumber = invoice.roomNumber;
                 const totalPrice = invoice.totalPrice;
                 const UserName = invoice.Username;
@@ -561,7 +559,6 @@ var ismobile = window.innerWidth<=550?true:false;
                 
                 return (
                     <div>
-                      <button> </button>
                         <InvoiceCard
                           key={index}
                           text={`invoice ${index+1}`}
@@ -574,7 +571,8 @@ var ismobile = window.innerWidth<=550?true:false;
                           defaultEmail = {selectedUserEmail}
                           UserName = {UserName}
                           showDetails = {this.state.showDetails}
-                          onClick = {()=>{this.handleShowDetails()}}
+                          invoiceData = {invoice}
+                          // onClick = {()=>{this.handleShowDetails()}}
                         />
                          <Typography type="display1" component="h1" color="primary" style={{textAlign:'center', marginTop:20}}>
                             {`Invoice ${index+1}:`}

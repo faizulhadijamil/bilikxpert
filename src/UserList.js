@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import {
   getFilteredStaffIdState,
   getSearchTextState,
+  makeGetCherasBaruItems,
   makeGetHansonMemberItems,
   makeGetMidahMemberItems,
   makeGetMelawatiMemberItems,
@@ -258,6 +259,11 @@ const makeMapStateToProps = () => {
       case 'active':{
         const getActiveMembersItems = makeGetActiveMemberItems();
         items = getActiveMembersItems(state, props)
+        break;
+      }
+      case 'CBMember':{
+        const getCherasBaruItems = makeGetCherasBaruItems();
+        items = getCherasBaruItems(state, props)
         break;
       }
       case 'hansonMember':{

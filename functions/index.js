@@ -335,7 +335,18 @@ exports.modifyInvoice = functions.firestore
     //   return afterRef.ref.update({receiptMailed:true, receiptMailedAt:timestamp});
     // });
 
-  }else{
+  }
+  else if (!afterData.paid && beforeData.paid && afterData.status && afterData.status === 'VOID'){
+    //invoice marked as unpaid so update payment status to unpaid
+    console.log('invoice marked as unpaid so update payment status to unpaid');
+    return admin.firestore().collection('payments').where('invoiceId', '==', invoiceId).limit(1).get().then(querySnapshot=>{
+      return querySnapshot.forEach(doc=>{
+        doc.ref.update({status:'VOID', updatedAt:timestamp});
+      });
+    });
+  }
+  else
+  {
     //do nothing
     return Promise.resolve();
   }

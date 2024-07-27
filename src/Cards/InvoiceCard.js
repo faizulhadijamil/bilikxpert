@@ -142,17 +142,13 @@ class InvoiceCard extends React.Component {
                     {`End Date: ${this.props.endDate}`}
                 </Typography>
                 <Typography className={classes.buttonText} style={this.props.textStyle}>
-                    {`branch: ${this.props.branchId}`}
-                   
+                    {`Branch: ${this.props.branchId}`}
+                </Typography>
+                <Typography className={classes.buttonText} style={this.props.textStyle}>
+                    {`roomNumber: ${this.props.roomNumber}`}
                 </Typography>
                 <Typography className={classes.buttonText} style={this.props.textStyle}>
                     {`Trans Date: ${this.props.transDate}`}
-                </Typography>
-
-                <Typography className={classes.buttonText} style={this.props.textStyle}>
-                    
-                    {`roomNumber: ${this.props.roomNumber}`}
-
                 </Typography>
                 <Typography className={classes.buttonText} style={this.props.textStyle}>
                   
@@ -307,7 +303,17 @@ class InvoiceCard extends React.Component {
                         />}
                         
 
-                    <Button> Edit </Button> <Button>VOID</Button> 
+                    <Button> Edit </Button> 
+                    <Button
+                        onClick={() => {
+                            console.log('void invoice:', this.props);
+                            if (this.props.invoiceData && this.props.invoiceData.invoiceId){
+                                this.props.actions.voidInvoice(this.props.invoiceData.invoiceId)
+                            }
+                        }}
+                    >
+                        VOID
+                    </Button> 
 
                      
             </div>

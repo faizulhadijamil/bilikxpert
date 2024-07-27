@@ -254,7 +254,7 @@ exports.getPayments = functions.https.onRequest((req, res) => {
         // The new values to apply to the spreadsheet.
         data: [
           {
-            range: `All Payments!A2:T`,
+            range: `All Payments!A2:Z`,
             majorDimension: "ROWS",
             values: paymentArray
           }
@@ -323,29 +323,29 @@ exports.getPaymentsByMonth = functions.https.onRequest((req, res) => {
       if (data){
         paymentArray.push([
           (data.createdAt && moment(getTheDate(data.createdAt)) && moment(getTheDate(data.createdAt)))?
-          moment(getTheDate(data.createdAt)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD HH:mm:ss'):'',
+          moment(getTheDate(data.createdAt)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD HH:mm:ss'):'', // A
           (data.transDate && moment(getTheDate(data.transDate)) && moment(getTheDate(data.transDate)))?
-          moment(getTheDate(data.transDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD HH:mm:ss'):'',
-          doc.id,
-          data.invoiceId? data.invoiceId:'',
-          data.userId? data.userId:'',
-          userData? userData.name? userData.name:'':'',
-          userData? userData.email? userData.email:'':'',
-          userData? userData.phone? userData.phone:'':'',
-          branchData? branchData.name? branchData.name:'':'',
-          roomData? roomData.roomNumber? roomData.roomNumber:'':'',
-          data.status? data.status:'',
-          data.packages? data.packages:'',
+          moment(getTheDate(data.transDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD HH:mm:ss'):'', // B
+          doc.id, // C
+          data.invoiceId? data.invoiceId:'', // D
+          data.userId? data.userId:'', // E
+          userData? userData.name? userData.name:'':'', // F
+          userData? userData.email? userData.email:'':'', // G
+          userData? userData.phone? userData.phone:'':'', // H
+          branchData? branchData.name? branchData.name:'':'', // I
+          roomData? roomData.roomNumber? roomData.roomNumber:'':'', // J
+          data.status? data.status:'', // K
+          data.packages? data.packages:'', // L
           (data.startDate && moment(getTheDate(data.startDate)) && moment(getTheDate(data.startDate)))?
-          moment(getTheDate(data.startDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD'):'',
+          moment(getTheDate(data.startDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD'):'', // M
           (data.endDate && moment(getTheDate(data.endDate)) && moment(getTheDate(data.endDate)))?
-          moment(getTheDate(data.endDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD'):'',
-          data.monthlyDeposit? data.monthlyDeposit:'',
-          data.totalPrice? parseFloat(data.totalPrice).toFixed(2):'',
-          data.paymentType? data.paymentType:'',
-          data.imgURL? data.imgURL:'',
-          data.remark? data.remark:'',
-          croName? croName:''						
+          moment(getTheDate(data.endDate)).tz('Asia/Kuala_Lumpur').format('YYYYMMDD'):'', // N
+          data.monthlyDeposit? data.monthlyDeposit:'', // O
+          data.totalPrice? parseFloat(data.totalPrice).toFixed(2):'', // P
+          data.paymentType? data.paymentType:'', // Q
+          data.imgURL? data.imgURL:'', // R
+          data.remark? data.remark:'', // S
+          croName? croName:''	// T					
         ]);
       }
     });
@@ -358,7 +358,8 @@ exports.getPaymentsByMonth = functions.https.onRequest((req, res) => {
         // The new values to apply to the spreadsheet.
         data: [
           {
-            range: `All Payments ${monthName} ${yearFormat}!A2:T`,
+            // range: `All Payments ${monthName} ${yearFormat}!A2:T`,
+            range:`All Payments February 2024!A2:T`,
             majorDimension: "ROWS",
             values: paymentArray
           }
@@ -370,9 +371,11 @@ exports.getPaymentsByMonth = functions.https.onRequest((req, res) => {
       // console.log('theresult: ', result);
       return res.status(200).send({
         success:true,
+        range: `All Payments ${monthName} ${yearFormat}!A2:T`,
+        paymentArray
       });
     }).catch(err=>{
-      return res.status(200).send({success:false, err});
+      return res.status(200).send({success:false, err, range: `All Payments ${monthName} ${yearFormat}!A2:T`, paymentArray});
     });
   });
 });
