@@ -12,6 +12,7 @@ import {
   getFilteredStaffIdState,
   getSearchTextState,
   makeGetCherasBaruItems,
+  makeGet98InnMemberItems,
   makeGetHansonMemberItems,
   makeGetMidahMemberItems,
   makeGetMelawatiMemberItems,
@@ -264,6 +265,11 @@ const makeMapStateToProps = () => {
       case 'CBMember':{
         const getCherasBaruItems = makeGetCherasBaruItems();
         items = getCherasBaruItems(state, props)
+        break;
+      }
+      case '98InnMember':{
+        const get98InnItems = makeGet98InnMemberItems();
+        items = get98InnItems(state, props)
         break;
       }
       case 'hansonMember':{

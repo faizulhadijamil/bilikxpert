@@ -653,6 +653,29 @@ const getComplementaryMembersItems = createSelector(
   }
 );
 
+
+export const makeGet98InnMemberItems = () => {
+  return get98InnMemberItems;
+}
+
+const get98InnMemberItems = createSelector(
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
+    // console.log('getHansonRooms: ', rooms);
+    const filteredByCBMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'HSZqwlL8kAYgaqu4Z4Wt'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredByCBMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
+  }
+);
+
 export const makeGetCherasBaruItems = () => {
   return getCherasBaruMemberItems;
 }
