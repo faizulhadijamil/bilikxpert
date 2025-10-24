@@ -698,6 +698,28 @@ const getCherasBaruMemberItems = createSelector(
   }
 );
 
+export const makeGetSetapakItems = () => {
+  return getSetapakMemberItems;
+}
+
+const getSetapakMemberItems = createSelector(
+  [getUsers, getRooms, getBranches, getSearchTextState, getFilteredStaffId ],
+  (allUsers, rooms, branches, searchText, filteredStaffId) => {
+    // console.log('getHansonRooms: ', rooms);
+    const filteredBySetapakMember = allUsers && allUsers.filter(x=>{  
+      const currentBranchId = x.get('currentBranch');
+      const currentRoomId = x.get('currentRoomId');
+      if (currentBranchId && currentRoomId && currentBranchId === 'S9Lliu22IIQdJp2plSMb'){
+        return true;
+      }
+      else{
+        return false;
+      }
+    });
+    return filteredItemsForUsers(filteredBySetapakMember, searchText, null, null, null, filteredStaffId, null, rooms, branches);
+  }
+);
+
 export const makeGetHansonMemberItems = () => {
   return getHansonMemberItems;
 }
